@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+
+<body>
+    <h1>Welcome To The Shortest JavaScript MQTT Demo Ever!</h1>
+    <button id="on_button" type="button" onclick="click2();">Click Me to turn LED on</button>
+    <script>
+        /***
+         * 浏览器环境
+         * 使用协议为 ws 和 wss 的 MQTT over WebSocket 连接
+         * EMQX 的 ws 连接默认端口为 8083，wss 为 8084
+         * 注意需要在连接地址后加上一个 path, 例如 /mqtt
+         */
+        const url = 'ws://127.0.0.1:8083/mqtt';
+        const client = mqtt.connect(url)
+
+        client.on('connect', function() {
+            client.subscribe('presence', function(err) {
+                if (!err) {
+                    client.publish('presence', 'Hello mqtt')
+                }
+            })
+        })
+
+        client.on('message', function(topic, message) {
+            // message is Buffer
+            console.log(message.toString())
+                // client.end()
+        })
+
+        function click2() {
+            client.publish('presence', 'Hello, MQTT!', {
+                qos: 0,
+                retain: false
+            }, function(error) {
+                if (error) {
+                    console.log(error)
+                } else {
+                    console.log('Published')
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>
