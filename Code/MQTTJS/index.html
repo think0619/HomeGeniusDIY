@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+
+<body>
+    <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+    <script>
+        /***
+         * 浏览器环境
+         * 使用协议为 ws 和 wss 的 MQTT over WebSocket 连接
+         * EMQX 的 ws 连接默认端口为 8083，wss 为 8084
+         * 注意需要在连接地址后加上一个 path, 例如 /mqtt
+         */
+        const url = 'ws://127.0.0.1:8083/mqtt'
+            /***
+             * Node.js 环境
+             * 使用协议为 mqtt 和 mqtts 的 MQTT over TCP 连接
+             * EMQX 的 mqtt 连接默认端口为 1883，mqtts 为 8084
+             */
+            // const url = 'mqtt://broker.emqx.io:1883'
+
+        // 创建客户端实例
+        const options = {
+            // Clean session
+            clean: true,
+            connectTimeout: 4000,
+            // 认证信息
+            clientId: 'emqx_test',
+            // username: 'emqx_test',
+            // password: 'emqx_test',
+        }
+        const client = mqtt.connect(url, options)
+        client.on('connect', function() {
+            console.log('Connected')
+                // 订阅主题
+            client.subscribe('test', function(err) {
+                if (!err) {
+                    // 发布消息
+                    client.publish('testtopic/1', 'Hello mqtt')
+                }
+            })
+        })
+
+        // 接收消息
+        client.on('message', function(topic, message) {
+            // message is Buffer
+            console.log(message.toString())
+            client.end()
+        })
+    </script>
+</body>
+
+</html>
