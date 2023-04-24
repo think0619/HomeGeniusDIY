@@ -11,49 +11,46 @@ using System.Windows.Forms;
 namespace VLCM3U8.Common
 {
     public class MQTTHandler
-    {
-        IMqttClient mqttClient; 
+    { 
+        public async void HandleWS(MainFrm mainFrm)
+        {
+            //check
+            String mqttUrl = ConfigureHelper.ReadKey("MQTT:FullUrl");
+            String mediaTopic = ConfigureHelper.ReadKey("MQTT:TopicMedia");
+            String sysTopic = ConfigureHelper.ReadKey("MQTT:TopicSystem");
 
-        public async void HandleWS(Form form)
-        { 
-            MqttFactory mqttFactory = new MqttFactory();
-
-              mqttClient = mqttFactory.CreateMqttClient();
-
-            //var mqttClientOptions = new MqttClientOptionsBuilder().WithTcpServer("broker.hivemq.com").Build();
-            var mqttClientOptions = new MqttClientOptionsBuilder().WithWebSocketServer("ws://127.0.0.1:8083/mqtt").Build();
-
-            // Setup message handling before connecting so that queued messages
-            // are also handled properly. When there is no event handler attached all
-            // received messages get lost.
-            mqttClient.ApplicationMessageReceivedAsync += e =>
+            if (!String.IsNullOrEmpty(mqttUrl) )
             {
-                var msg = e.ApplicationMessage;
-                var m1 = msg.Payload.ToString();
-                string payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-                Console.WriteLine(payload);
-
-
-                return Task.CompletedTask;
-            };
-
-            await mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None);
-
-            var mqttSubscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder()
-                .WithTopicFilter(
-                    f =>
+                MqttFactory mqttFactory = new MqttFactory();
+                var mqttClientOptions = new MqttClientOptionsBuilder().WithWebSocketServer(mqttUrl).Build();
+                IMqttClient mqttClient = mqttFactory.CreateMqttClient();
+                 
+                mqttClient.ApplicationMessageReceivedAsync += e =>
+                {
+                    var msg = e.ApplicationMessage;
+                    string payload = Encoding.UTF8.GetString(msg.Payload);
+                    var topic=msg.Topic;
+                    if (mediaTopic.Equals(topic))
                     {
-                        f.WithTopic("presence");
-                    })
-                .Build();
-
-            await mqttClient.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None);
-
-            Console.WriteLine("MQTT client subscribed to topic.");
-
-            Console.WriteLine("Press enter to exit.");
-            Console.ReadLine();
-
+                        mainFrm.UpdateVLCSourceDelegate(payload);
+                    }
+                    else if (sysTopic.Equals(topic))
+                    {
+                    }   
+                    return Task.CompletedTask;
+                }; 
+                try
+                {
+                    await mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None);
+                    var mqttSubscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder()
+                        .WithTopicFilter(f => { f.WithTopic(sysTopic); })
+                        .WithTopicFilter(f => { f.WithTopic(mediaTopic); })
+                        .Build();
+                    await mqttClient.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None);
+                }
+                catch(Exception ex) { }
+              
+            } 
         }
     }
 }
