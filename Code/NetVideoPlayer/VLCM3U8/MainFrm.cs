@@ -9,144 +9,82 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VLCM3U8.Common;
 
 namespace VLCM3U8
 {
     public partial class MainFrm : Form
-    {
-        //MqttFactory mqttFactory = null;
-        //MQtt服务端
-        private static MqttServer mqttServer = null;
-
-        private VideoView vvv;
-
+    { 
         LibVLC libvlc;
         public MainFrm()
         {
             InitializeComponent();
-            libvlc = new LibVLC();
-            vvv=new VideoView();
+            this.StartPosition = FormStartPosition.CenterScreen;
 
-            this.StartPosition= FormStartPosition.CenterScreen;
+            MQTTHandler _MQTTHandler = new MQTTHandler();
+            _MQTTHandler.HandleWS(this);
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            libvlc = new LibVLC();
             Core.Initialize();
             InitVideoPlayer();
-            ////单个循环
-            //var _media = new Media(libvlc, new Uri(videoFilePath[videoCurrentIndex]));
-            //ThreadPool.QueueUserWorkItem(_ => this.videoView1.MediaPlayer.Play(_media));
-            string v1 = "http://seb.sason.top/sc/dsxw_fhd.m3u8";
-            string v2 = "https://streamak0138.akamaized.net/live0138lh-mbm9/_definst_/rti3/chunklist.m3u8";
-            
 
-            string url = v1;
-
-            var media = new Media(libvlc,new Uri(url));
-            this.vvv.MediaPlayer.Play(media);
-            ThreadPool.QueueUserWorkItem(_ => this.vvv.MediaPlayer.Play(media));
-        }
-
-        public void InitVideoPlayer()
-        {
-
-            vvv.MediaPlayer = new MediaPlayer(libvlc);
-            //vvv.Dock = DockStyle.Fill;
-            vvv.MediaPlayer.EndReached += (s, e1) =>
+            String initUrl = ConfigureHelper.ReadKey("VlC:InitUrl");
+            if (Uri.IsWellFormedUriString(initUrl, UriKind.RelativeOrAbsolute))
             {
-                ////单个循环时 超过设定时常 改为列表循环
-                //int setSeconds = 120;
-                //string _SingleVideoCycleMaxSecs = ConfigurationManager.AppSettings["SingleVideoCycleMaxSecs"].ToString();
-                //Int32.TryParse(_SingleVideoCycleMaxSecs, out setSeconds);
-                //if (videoPlayMode == VideoPlayMode.SingleCycle)
-                //{
-                //    var playDuration = (videoView1.MediaPlayer.Media.Duration / 1000) * videoCurrentPlayCount;
-                //    if (setSeconds <= playDuration)
-                //    {
-                //        videoPlayMode = VideoPlayMode.ListCycle;
-                //    }
-                //}
-
-                ////列表循环
-                //if (videoPlayMode == VideoPlayMode.ListCycle)
-                //{
-                //    while (true)
-                //    {
-                //        videoCurrentIndex = (++videoCurrentIndex) % videoFilePath.Length;
-                //        videoCurrentPlayCount = 1;
-                //        if (File.Exists(videoFilePath[videoCurrentIndex]))
-                //        {
-                //            break;
-                //        }
-                //    }
-                //}
-                //else
-                //{
-                //    videoCurrentPlayCount++;
-                //}
-
-                ////单个循环
-                //var _media = new Media(libvlc, new Uri(videoFilePath[videoCurrentIndex]));
-                //ThreadPool.QueueUserWorkItem(_ => this.videoView1.MediaPlayer.Play(_media));
-            };
+                var media = new Media(libvlc, new Uri(initUrl));
+                this.videoView1.MediaPlayer.Play(media);
+                UpdateInfo(initUrl);
+                //ThreadPool.QueueUserWorkItem(_ => this.videoView1.MediaPlayer.Play(media));
+            }
         }
 
-        private   void button1_Click(object sender, EventArgs e)
-        {
-              HandleWS(this);
+        /// <summary>
+        /// init vlcplayer
+        /// </summary>
+        public void InitVideoPlayer()
+        { 
+            this.videoView1.MediaPlayer = new MediaPlayer(libvlc);
+            this.videoView1.Dock = DockStyle.Fill;
+            this.videoView1.MediaPlayer.EndReached += (s, e1) =>{  };
         }
 
-
-        public async void HandleWS(Form form) 
+        /// <summary>
+        /// update vlc player source
+        /// </summary>
+        /// <param name="newsrc"></param>
+        public void UpdateVLCSourceDelegate(string newsrc)
         {
-             
-            /*
-            * This sample subscribes to a topic and processes the received message.
-            */
+            this.videoView1.Invoke(new MethodInvoker(delegate ()
+              {
+                  if (Uri.IsWellFormedUriString(newsrc, UriKind.RelativeOrAbsolute))
+                  {
+                      var media = new Media(libvlc, new Uri(newsrc));
+                      this.videoView1.MediaPlayer.Play(media);
+                      UpdateInfo(newsrc);
+                  }
+              }));
+        }
 
-            MqttFactory mqttFactory = new MqttFactory();
+        public void UpdateInfo(string  src) 
+        {
+            this.label1.Invoke(new MethodInvoker(delegate ()
+            { 
+                this.label1.Text= String.Format($"当前播放Url:{src}");
+            }));
+        }
 
-            var mqttClient = mqttFactory.CreateMqttClient();
-            
-                //var mqttClientOptions = new MqttClientOptionsBuilder().WithTcpServer("broker.hivemq.com").Build();
-                var mqttClientOptions = new MqttClientOptionsBuilder().WithWebSocketServer("ws://127.0.0.1:8083/mqtt").Build();
-
-                // Setup message handling before connecting so that queued messages
-                // are also handled properly. When there is no event handler attached all
-                // received messages get lost.
-                mqttClient.ApplicationMessageReceivedAsync += e =>
-                {
-                   var msg= e.ApplicationMessage;
-                    var m1= msg.Payload.ToString();
-                    string payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-                    Console.WriteLine(payload);
-                    
-
-                    return Task.CompletedTask;
-                };
-
-                await mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None);
-
-                var mqttSubscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder()
-                    .WithTopicFilter(
-                        f =>
-                        {
-                            f.WithTopic("presence");
-                        })
-                    .Build();
-
-                await mqttClient.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None);
-
-                Console.WriteLine("MQTT client subscribed to topic.");
-
-                Console.WriteLine("Press enter to exit.");
-                Console.ReadLine();
-            
+        private void button1_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("x");
         }
     }
 }
