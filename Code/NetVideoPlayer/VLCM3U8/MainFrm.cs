@@ -28,7 +28,7 @@ namespace VLCM3U8
             this.StartPosition = FormStartPosition.CenterScreen;
 
             MQTTHandler _MQTTHandler = new MQTTHandler();
-            _MQTTHandler.HandleWS(this);
+            _MQTTHandler.HandleMQTT(this);
         }
 
         private void Form1_Load(object sender, EventArgs e)
