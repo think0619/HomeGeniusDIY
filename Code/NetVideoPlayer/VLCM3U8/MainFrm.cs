@@ -33,7 +33,7 @@ namespace VLCM3U8
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            libvlc = new LibVLC();
+            libvlc = new LibVLC(new string[] { "--rtsp-timeout=10000", "--ipv4-timeout=10000" });
             Core.Initialize();
             InitVideoPlayer();
 
@@ -80,11 +80,6 @@ namespace VLCM3U8
             { 
                 this.label1.Text= String.Format($"当前播放Url:{src}");
             }));
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("x");
-        }
+        } 
     }
 }

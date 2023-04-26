@@ -90,6 +90,7 @@
             this.ClientSize = new System.Drawing.Size(784, 661);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.panel1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainFrm";
             this.Text = "HomeGenius_WebPlayer_Think";
             this.Load += new System.EventHandler(this.Form1_Load);

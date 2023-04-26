@@ -16,54 +16,196 @@
 </head>
 
 <body>
-    <!--[if lt IE 7]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
+    <div>
+        <h3>系统设置</h3>
+        <div style="margin-top: 15px;">
+            <button id="on_button" type="button" onclick="clickCmd('VolumnPlus');">音量+</button>
+            <button id="on_button" type="button" onclick="clickCmd('VolumnSub');">音量-</button>
+            <button id="on_button" type="button" onclick="clickCmd('Mute');">静音</button>
+            <button id="on_button" type="button" onclick="clickCmd('Unmute');">开启声音</button>
+        </div>
+        <div style="margin-top: 15px;">
+            <button id="on_button" type="button" onclick="clickShutdownBtn();">关机</button>
+        </div>
+    </div>
+    <div>
+        <h3>直选</h3>
+        <div>
+            <button id="on_button" type="button" onclick="clickMedia(1);">中国之声</button>
+            <button id="on_button" type="button" onclick="clickMedia(2);">BBC</button>
+            <button id="on_button" type="button" onclick="clickMedia(3);">CCTV-1</button>
+            <button id="on_button" type="button" onclick="clickMedia(4);">新加坡</button>
+            <button id="on_button" type="button" onclick="clickMedia(5);">南京新闻综合</button>
+            <button id="on_button" type="button" onclick="clickMedia(6);">NHK</button>
+        </div>
+        <div>
+            <select id="selectList" style="width:120px;min-height: 25px;border-radius: 5px;">
+                <option value="11">CCTV-1</option> 
+                <option value="12">CCTV-2</option> 
+                <option value="13">CCTV-3</option> 
+                <option value="14">CCTV-4</option> 
+                <option value="15">CCTV-5</option> 
+                <option value="16">CCTV-6</option> 
+                <option value="17">CCTV-7</option> 
+                <option value="18">CCTV-8</option> 
+                <option value="19">CCTV-9</option> 
+                <option value="20">CCTV-10</option> 
+                <option value="21">CCTV-11</option> 
+                <option value="22">CCTV-12</option> 
+                <option value="23">CCTV-13</option> 
+                <option value="24">CCTV-14</option> 
+                <option value="25">CCTV-15</option> 
+                <option value="26">CCTV-16</option> 
+                <option value="27">CCTV-17</option> 
+              </select>
+            <button id="on_button" type="button" onclick="optionMedia( );">发送</button>
+        </div>
+    </div>
 
+    <div>
+        <h3>输入地址</h3>
+        <div>
+            <input type="text" id="ManualInput" name="ManualInput" style="min-width:250px;min-height: 25px;border-radius: 5px;" />
+            <button id="on_button" type="button" onclick="clickManualMedia();">发送</button>
+        </div>
+    </div>
     <script>
-        /***
-         * 浏览器环境
-         * 使用协议为 ws 和 wss 的 MQTT over WebSocket 连接
-         * EMQX 的 ws 连接默认端口为 8083，wss 为 8084
-         * 注意需要在连接地址后加上一个 path, 例如 /mqtt
-         */
-        const url = 'ws://127.0.0.1:8083/mqtt'
-            /***
-             * Node.js 环境
-             * 使用协议为 mqtt 和 mqtts 的 MQTT over TCP 连接
-             * EMQX 的 mqtt 连接默认端口为 1883，mqtts 为 8084
-             */
-            // const url = 'mqtt://broker.emqx.io:1883'
+        var machineID = 'ABC001';
+        const url2 = "ws://10.10.10.49:8083/mqtt";
+        const url = 'ws://127.0.0.1:8083/mqtt';
+        const client = mqtt.connect(url)
 
-        // 创建客户端实例
-        const options = {
-            // Clean session
-            clean: true,
-            connectTimeout: 4000,
-            // 认证信息
-            clientId: 'emqx_test',
-            // username: 'emqx_test',
-            // password: 'emqx_test',
-        }
-        const client = mqtt.connect(url, options)
         client.on('connect', function() {
-            console.log('Connected')
-                // 订阅主题
-            client.subscribe('test', function(err) {
+            client.subscribe('CMD', function(err) {
                 if (!err) {
-                    // 发布消息
-                    client.publish('testtopic/1', 'Hello mqtt')
+                    // client.publish('CMD', 'Hello mqtt')
                 }
             })
         })
 
-        // 接收消息
         client.on('message', function(topic, message) {
             // message is Buffer
             console.log(message.toString())
-            client.end()
+                // client.end()
         })
+
+        function clickCmd(p) {
+            var url = machineID + "$" + p;
+            client.publish('SystemCMD', url, {
+                qos: 0,
+                retain: false
+            }, function(error) {
+                if (error) {
+                    console.log(error)
+                } else {
+                    console.log('Published')
+                }
+            })
+        }
+
+        function clickMedia(index) {
+            var url = "";
+            if (index == 1) {
+                url = 'http://ngcdn001.cnr.cn/live/zgzs/index.m3u8'; //中国之声
+            } else if (index == 2) {
+                url = 'http://as-hls-ww-live.akamaized.net/pool_904/live/ww/bbc_world_service/bbc_world_service.isml/bbc_world_service-audio=320000.m3u8'; //bbc_world_service
+            } else if (index == 3) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv1hd8m/8000000'; //cctv1
+            } else if (index == 4) {
+                url = 'https://d2e1asnsl7br7b.cloudfront.net/7782e205e72f43aeb4a48ec97f66ebbe/index_4.m3u8'; //singapore
+            } else if (index == 5) {
+                url = 'http://live.nbs.cn/channels/njtv/xwzh/m3u8:500k/live.m3u8'; //南京新闻综合
+            } else if (index == 6) {
+                url = 'https://b-nhkwlive-burnin2.webcdn.stream.ne.jp/live/index_1M.m3u8'; //南京新闻综合
+            } else if (index == 11) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv1hd8m/8000000'; //singapore
+            } else if (index == 12) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv2hd8m/8000000'; //singapore
+            } else if (index == 13) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv38m/8000000'; //singapore
+            } else if (index == 14) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv4hd8m/8000000'; //singapore
+            } else if (index == 15) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv58m/8000000'; //singapore
+            } else if (index == 16) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv6hd8m/8000000'; //singapore
+            } else if (index == 17) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv7hd8m/8000000'; //singapore
+            } else if (index == 18) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv8hd8m/8000000'; //singapore
+            } else if (index == 19) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv9hd8m/8000000'; //singapore
+            } else if (index == 20) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv10hd8m/8000000'; //singapore
+            } else if (index == 21) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv11hd8m/8000000'; //singapore
+            } else if (index == 22) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv12hd8m/8000000'; //singapore
+            } else if (index == 23) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv13xwhd8m/8000000'; //singapore
+            } else if (index == 24) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctvsehd8m/8000000'; //singapore
+            } else if (index == 25) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv15hd8m/8000000'; //singapore
+            } else if (index == 26) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv16hd8m/8000000'; //singapore
+            } else if (index == 27) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv17hd8m/8000000'; //singapore
+            }
+
+            client.publish('MediaCMD', machineID + "$" + url, {
+                qos: 0,
+                retain: false
+            }, function(error) {
+                if (error) {
+                    console.log(error)
+                } else {
+                    console.log('Published')
+                }
+            })
+        }
+
+        function clickManualMedia() {
+            var inputval = document.getElementById('ManualInput').value;
+
+            if (inputval.length > 0) {
+                client.publish('MediaCMD', machineID + "$" + inputval, {
+                    qos: 0,
+                    retain: false
+                }, function(error) {
+                    if (error) {
+                        console.log(error)
+                    } else {
+                        console.log('Published')
+                    }
+                })
+            }
+
+        }
+
+        function clickShutdownBtn() {
+            if (confirm('确认关机？')) {
+                clickCmd('Shutdown');
+            }
+        }
+
+        function optionMedia() {
+            var value = document.getElementById("selectList").value;
+            clickMedia(value)
+        }
     </script>
+    <style>
+        button {
+            margin: 3px 6px;
+            display: inline-block;
+            min-width: 70px;
+            min-height: 30px;
+            background-color: cornflowerblue;
+            border: 0;
+            color: #FFF;
+            border-radius: 5px;
+        }
+    </style>
 </body>
 
 </html>
