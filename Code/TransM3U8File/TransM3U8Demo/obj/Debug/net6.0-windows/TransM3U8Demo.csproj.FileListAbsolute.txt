@@ -1,0 +1,17 @@
+D:\HomeGeniusDIY\Code\TransM3U8File\TransM3U8Demo\bin\Debug\net6.0-windows\TransM3U8Demo.exe
+D:\HomeGeniusDIY\Code\TransM3U8File\TransM3U8Demo\bin\Debug\net6.0-windows\TransM3U8Demo.deps.json
+D:\HomeGeniusDIY\Code\TransM3U8File\TransM3U8Demo\bin\Debug\net6.0-windows\TransM3U8Demo.runtimeconfig.json
+D:\HomeGeniusDIY\Code\TransM3U8File\TransM3U8Demo\bin\Debug\net6.0-windows\TransM3U8Demo.dll
+D:\HomeGeniusDIY\Code\TransM3U8File\TransM3U8Demo\bin\Debug\net6.0-windows\TransM3U8Demo.pdb
+D:\HomeGeniusDIY\Code\TransM3U8File\TransM3U8Demo\obj\Debug\net6.0-windows\TransM3U8Demo.csproj.AssemblyReference.cache
+D:\HomeGeniusDIY\Code\TransM3U8File\TransM3U8Demo\obj\Debug\net6.0-windows\TransM3U8Demo.Form1.resources
+D:\HomeGeniusDIY\Code\TransM3U8File\TransM3U8Demo\obj\Debug\net6.0-windows\TransM3U8Demo.csproj.GenerateResource.cache
+D:\HomeGeniusDIY\Code\TransM3U8File\TransM3U8Demo\obj\Debug\net6.0-windows\TransM3U8Demo.GeneratedMSBuildEditorConfig.editorconfig
+D:\HomeGeniusDIY\Code\TransM3U8File\TransM3U8Demo\obj\Debug\net6.0-windows\TransM3U8Demo.AssemblyInfoInputs.cache
+D:\HomeGeniusDIY\Code\TransM3U8File\TransM3U8Demo\obj\Debug\net6.0-windows\TransM3U8Demo.AssemblyInfo.cs
+D:\HomeGeniusDIY\Code\TransM3U8File\TransM3U8Demo\obj\Debug\net6.0-windows\TransM3U8Demo.csproj.CoreCompileInputs.cache
+D:\HomeGeniusDIY\Code\TransM3U8File\TransM3U8Demo\obj\Debug\net6.0-windows\TransM3U8Demo.dll
+D:\HomeGeniusDIY\Code\TransM3U8File\TransM3U8Demo\obj\Debug\net6.0-windows\refint\TransM3U8Demo.dll
+D:\HomeGeniusDIY\Code\TransM3U8File\TransM3U8Demo\obj\Debug\net6.0-windows\TransM3U8Demo.pdb
+D:\HomeGeniusDIY\Code\TransM3U8File\TransM3U8Demo\obj\Debug\net6.0-windows\TransM3U8Demo.genruntimeconfig.cache
+D:\HomeGeniusDIY\Code\TransM3U8File\TransM3U8Demo\obj\Debug\net6.0-windows\ref\TransM3U8Demo.dll

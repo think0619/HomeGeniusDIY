@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "TransM3U8Demo/1.0.0": {
+        "runtime": {
+          "TransM3U8Demo.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "TransM3U8Demo/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

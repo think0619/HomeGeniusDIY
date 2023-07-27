@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;">
+    <link rel="stylesheet" href="">
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+
+<body>
+    <div>
+        <h3>oFfIcE pC</h3>
+        <h3>系统设置</h3>
+        <div style="margin-top: 15px;">
+            <button id="on_button" type="button" onclick="clickCmd('VolumnPlus');">音量+</button>
+            <button id="on_button" type="button" onclick="clickCmd('VolumnSub');">音量-</button>
+            <button id="on_button" type="button" onclick="clickCmd('Mute');">静音</button>
+            <button id="on_button" type="button" onclick="clickCmd('Unmute');">开启声音</button>
+        </div>
+        <div style="margin-top: 15px;">
+            <button id="on_button" type="button" onclick="clickShutdownBtn();">关机</button>
+        </div>
+        <div style="margin-top: 15px;">
+            <button id="on_button" type="button" onclick="lockScreenBtn();">锁屏</button>
+            <button id="on_button" type="button" onclick="clickCmd('BackDesktop');">回到桌面</button>
+            <button id="on_button" type="button" onclick="clickCmd('MonitorOff');">关闭显示器</button>
+        </div>
+    </div>
+    <div>
+
+    </div>
+    <script>
+        var machineID = 'O01';
+        const url2 = "ws://10.10.10.49:8083/mqtt";
+        const url = 'ws://hw.hellolinux.cn:8083/mqtt';
+        const client = mqtt.connect(url)
+
+        client.on('connect', function() {
+            client.subscribe('CMD', function(err) {
+                if (!err) {
+                    // client.publish('CMD', 'Hello mqtt')
+                }
+            })
+        })
+
+        client.on('message', function(topic, message) {
+            // message is Buffer
+            console.log(message.toString())
+                // client.end()
+        })
+
+        function clickCmd(p) {
+            var url = machineID + "$" + p;
+            client.publish('SystemCMD', url, {
+                qos: 0,
+                retain: false
+            }, function(error) {
+                if (error) {
+                    console.log(error)
+                } else {
+                    console.log('Published')
+                }
+            })
+        }
+
+        function clickMedia(index) {
+            var url = "";
+            if (index == 1) {
+                url = 'http://ngcdn001.cnr.cn/live/zgzs/index.m3u8'; //中国之声
+            } else if (index == 2) {
+                url = 'http://as-hls-ww-live.akamaized.net/pool_904/live/ww/bbc_world_service/bbc_world_service.isml/bbc_world_service-audio=320000.m3u8'; //bbc_world_service
+            } else if (index == 3) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv1hd8m/8000000'; //cctv1
+            } else if (index == 4) {
+                url = 'https://d2e1asnsl7br7b.cloudfront.net/7782e205e72f43aeb4a48ec97f66ebbe/index_4.m3u8'; //singapore
+            } else if (index == 5) {
+                url = 'http://live.nbs.cn/channels/njtv/xwzh/m3u8:500k/live.m3u8'; //南京新闻综合
+            } else if (index == 6) {
+                url = 'https://b-nhkwlive-burnin2.webcdn.stream.ne.jp/live/index_1M.m3u8'; //南京新闻综合
+            } else if (index == 11) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv1hd8m/8000000'; //singapore
+            } else if (index == 12) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv2hd8m/8000000'; //singapore
+            } else if (index == 13) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv38m/8000000'; //singapore
+            } else if (index == 14) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv4hd8m/8000000'; //singapore
+            } else if (index == 15) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv58m/8000000'; //singapore
+            } else if (index == 16) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv6hd8m/8000000'; //singapore
+            } else if (index == 17) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv7hd8m/8000000'; //singapore
+            } else if (index == 18) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv8hd8m/8000000'; //singapore
+            } else if (index == 19) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv9hd8m/8000000'; //singapore
+            } else if (index == 20) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv10hd8m/8000000'; //singapore
+            } else if (index == 21) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv11hd8m/8000000'; //singapore
+            } else if (index == 22) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv12hd8m/8000000'; //singapore
+            } else if (index == 23) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv13xwhd8m/8000000'; //singapore
+            } else if (index == 24) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctvsehd8m/8000000'; //singapore
+            } else if (index == 25) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv15hd8m/8000000'; //singapore
+            } else if (index == 26) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv16hd8m/8000000'; //singapore
+            } else if (index == 27) {
+                url = 'https://live.v1.mk/api/bestv.php?id=cctv17hd8m/8000000'; //singapore
+            }
+
+            client.publish('MediaCMD', machineID + "$" + url, {
+                qos: 0,
+                retain: false
+            }, function(error) {
+                if (error) {
+                    console.log(error)
+                } else {
+                    console.log('Published')
+                }
+            })
+        }
+
+        function clickManualMedia() {
+            var inputval = document.getElementById('ManualInput').value;
+
+            if (inputval.length > 0) {
+                client.publish('MediaCMD', machineID + "$" + inputval, {
+                    qos: 0,
+                    retain: false
+                }, function(error) {
+                    if (error) {
+                        console.log(error)
+                    } else {
+                        console.log('Published')
+                    }
+                })
+            }
+
+        }
+
+        function clickShutdownBtn() {
+            if (confirm('确认关机？')) {
+
+            }
+        }
+
+        function lockScreenBtn() {
+            if (confirm('确认锁屏？')) {
+                clickCmd('LockScreen');
+            }
+        }
+
+
+
+
+        function optionMedia() {
+            var value = document.getElementById("selectList").value;
+            clickMedia(value)
+        }
+    </script>
+    <style>
+        button {
+            margin: 3px 6px;
+            display: inline-block;
+            min-width: 70px;
+            min-height: 30px;
+            background-color: cornflowerblue;
+            border: 0;
+            color: #FFF;
+            border-radius: 5px;
+        }
+    </style>
+</body>
+
+</html>
