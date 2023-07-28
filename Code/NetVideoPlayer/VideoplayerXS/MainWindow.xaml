@@ -19,11 +19,12 @@
 
         <vlc:VideoView  x:Name="video_main" Loaded="video_main_Loaded"  Grid.Column="0" Grid.Row="0">
         </vlc:VideoView>
-        <Button Grid.Column="1" Content="开始" HorizontalAlignment="Left" Margin="58,64,0,0" VerticalAlignment="Top" Click="Button_Click"/>
-        <Button Grid.Column="1" Content="暂停" HorizontalAlignment="Left" Margin="91,64,0,0" VerticalAlignment="Top"/>
-        <Button Grid.Column="1" Content="音量+" HorizontalAlignment="Left" Margin="43,99,0,0" VerticalAlignment="Top" Click="Button_Click_1"/>
-        <Button Grid.Column="1" Content="音量-" HorizontalAlignment="Left" Margin="84,99,0,0" VerticalAlignment="Top" Click="Button_Click_2"/>
-        <Label Grid.Column="1" x:Name="volumnlable" Content="Label" HorizontalAlignment="Left" Margin="48,134,0,0" VerticalAlignment="Top"/>
+        <Button Grid.Column="1" Content="开始" HorizontalAlignment="Left" Margin="15,24,0,0" VerticalAlignment="Top" Click="Button_Click" RenderTransformOrigin="0.476,-1"/>
+        <Button Grid.Column="1" Content="暂停" HorizontalAlignment="Left" Margin="50,49,0,0" VerticalAlignment="Top" Click="Button_Click_3"/>
+        <Button Grid.Column="1" Content="音量+" HorizontalAlignment="Left" Margin="15,79,0,0" VerticalAlignment="Top" Click="Button_Click_1"/>
+        <Button Grid.Column="1" Content="音量-" HorizontalAlignment="Left" Margin="55,79,0,0" VerticalAlignment="Top" Click="Button_Click_2"/>
+        <Label x:Name="volumnlable" Content="Label" HorizontalAlignment="Left" Margin="10,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.386,-0.576" Grid.Column="1"/>
+        <Button Grid.Column="1" Content="继续" HorizontalAlignment="Left" Margin="15,49,0,0" VerticalAlignment="Top" Click="Button_Click_4"/>
 
     </Grid>
 </Window>

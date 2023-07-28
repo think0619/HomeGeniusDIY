@@ -104,8 +104,7 @@ namespace VideoplayerXS
         /// 
         /// </summary>
         private void LoadVLClib()
-        {
-             
+        { 
             LibVLCSharp.Shared.MediaPlayer player = new LibVLCSharp.Shared.MediaPlayer(_libvlc);
             video_main.MediaPlayer = player;
             player.AspectRatio = "16:9";
@@ -113,8 +112,7 @@ namespace VideoplayerXS
             {
                 this.volumnlable.Dispatcher.Invoke(() => {
                     this.volumnlable.Content = video_main.MediaPlayer.Volume;
-                });
-
+                }); 
             };
             //using (LibVLCSharp.Shared.Media media = new Media(_libvlc, new Uri(url)))
             //{
@@ -193,8 +191,7 @@ namespace VideoplayerXS
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            LoadVLClib();
-           
+            LoadVLClib(); 
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -233,9 +230,20 @@ namespace VideoplayerXS
         {
             if (video_main.MediaPlayer != null)
             {
-                video_main.MediaPlayer.Volume = video_main.MediaPlayer.Volume - 1; 
-
+                video_main.MediaPlayer.Volume = video_main.MediaPlayer.Volume - 1;  
             }
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            video_main.MediaPlayer?.Pause();
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+       
+            video_main.MediaPlayer?.Play();
+            var x=video_main.MediaPlayer;
         }
     }
 }
