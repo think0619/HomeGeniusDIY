@@ -17,8 +17,7 @@
             <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
 
-        <vlc:VideoView  x:Name="video_main" Loaded="video_main_Loaded"  Grid.Column="0" Grid.Row="0">
-        </vlc:VideoView>
+        <vlc:VideoView  x:Name="video_main"  Grid.Column="0" Grid.Row="0"/>
         <Button Grid.Column="1" Content="开始" HorizontalAlignment="Left" Margin="15,24,0,0" VerticalAlignment="Top" Click="Button_Click" RenderTransformOrigin="0.476,-1"/>
         <Button Grid.Column="1" Content="暂停" HorizontalAlignment="Left" Margin="50,49,0,0" VerticalAlignment="Top" Click="Button_Click_3"/>
         <Button Grid.Column="1" Content="音量+" HorizontalAlignment="Left" Margin="15,79,0,0" VerticalAlignment="Top" Click="Button_Click_1"/>
