@@ -18,9 +18,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SqliteHelper\SqliteHelper.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Config\appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DB\" />
   </ItemGroup>
 
 </Project>

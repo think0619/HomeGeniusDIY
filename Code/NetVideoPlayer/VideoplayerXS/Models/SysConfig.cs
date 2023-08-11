@@ -13,6 +13,7 @@ namespace VideoplayerXS.Models
         public string Name { get; set; }
         public string Value { get; set; }
 
+        public SysConfig() { }  
 
         public SysConfig(int _Id, string _Category, string _Name, string _Value)
         {

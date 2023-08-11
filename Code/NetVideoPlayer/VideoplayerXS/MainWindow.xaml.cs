@@ -16,6 +16,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using VideoplayerXS.Common;
+using VideoplayerXS.DBHandler;
+using VideoplayerXS.Models;
 using VideoplayerXS.Protocols;
 
 namespace VideoplayerXS
@@ -34,65 +36,65 @@ namespace VideoplayerXS
 
         private void video_main_Loaded(object sender, RoutedEventArgs e)
         {
-           // LibVLC _libvlc = new LibVLC();
-           // LibVLCSharp.Shared.MediaPlayer player = new LibVLCSharp.Shared.MediaPlayer(_libvlc);
-           // //video_main.Width = this.Width;
-           // //video_main.Height = this.Height;
-            
-           // video_main.MediaPlayer = player;
-           // //通过设置宽高比为窗体宽高可达到视频铺满全屏的效果
-           //// player.AspectRatio = this.Width + ":" + this.Height;
-           // string url = @"E:\\Movies\\海边的曼彻斯特\\海边的曼彻斯特.mp4";
-           // //using (LibVLCSharp.Shared.Media media = new Media(_libvlc, new Uri(url)))
-           // //{
-           // //    video_main.MediaPlayer.Play(media);
-           // //}
+            // LibVLC _libvlc = new LibVLC();
+            // LibVLCSharp.Shared.MediaPlayer player = new LibVLCSharp.Shared.MediaPlayer(_libvlc);
+            // //video_main.Width = this.Width;
+            // //video_main.Height = this.Height;
 
-           // //var connectionInfo = new ConnectionInfo("hw.hellolinux.cn",
-           // //                            "root",
-           // //                            new PasswordAuthenticationMethod("root", @"@Xiongsen1994!+1qaz@WSX"),
-           // //                            new PrivateKeyAuthenticationMethod("rsa.key"));
-           // //using (var client = new SftpClient(connectionInfo))
-           // //{
-           // //    client.Connect();
-           // //}
+            // video_main.MediaPlayer = player;
+            // //通过设置宽高比为窗体宽高可达到视频铺满全屏的效果
+            //// player.AspectRatio = this.Width + ":" + this.Height;
+            // string url = @"E:\\Movies\\海边的曼彻斯特\\海边的曼彻斯特.mp4";
+            // //using (LibVLCSharp.Shared.Media media = new Media(_libvlc, new Uri(url)))
+            // //{
+            // //    video_main.MediaPlayer.Play(media);
+            // //}
 
-           // string host = @"hw.hellolinux.cn";
-           // string username = "root"; 
-           // string password = @"@Xiongsen1994!+1qaz@WSX";
+            // //var connectionInfo = new ConnectionInfo("hw.hellolinux.cn",
+            // //                            "root",
+            // //                            new PasswordAuthenticationMethod("root", @"@Xiongsen1994!+1qaz@WSX"),
+            // //                            new PrivateKeyAuthenticationMethod("rsa.key"));
+            // //using (var client = new SftpClient(connectionInfo))
+            // //{
+            // //    client.Connect();
+            // //}
 
-           // string pwd_hex=StringHelper.Convert2HexString(password);
+            // string host = @"hw.hellolinux.cn";
+            // string username = "root"; 
+            // string password = @"@Xiongsen1994!+1qaz@WSX";
 
-           // SSH ssh = new SSH(host, username, password)  ;
+            // string pwd_hex=StringHelper.Convert2HexString(password);
 
-           // string remoteDirectory = "/";
+            // SSH ssh = new SSH(host, username, password)  ;
 
-           // using (SftpClient sftp = new SftpClient(host, username, pwd_hex))
-           // {
-           //     try
-           //     {
-           //         string videoUrl = $"{ssh.GetSSHConnectionString()}/media/电影天堂dygod.org.犯罪都市3.2023.BD.1080P.韩语中字.mkv";
-           //        // sftp.Connect();
-           //         //sftp://user@ip_address:port_number//mnt/some_dir/
-           //         string surl = $"sftp://{username}:{pwd_hex}@{host}:22//media/电影天堂dygod.org.犯罪都市3.2023.BD.1080P.韩语中字.mkv";
-           //         //var files = sftp.ListDirectory(remoteDirectory);
+            // string remoteDirectory = "/";
 
-           //         //foreach (var file in files)
-           //         //{
-           //         //    Console.WriteLine(file.Name);
-           //         //}
+            // using (SftpClient sftp = new SftpClient(host, username, pwd_hex))
+            // {
+            //     try
+            //     {
+            //         string videoUrl = $"{ssh.GetSSHConnectionString()}/media/电影天堂dygod.org.犯罪都市3.2023.BD.1080P.韩语中字.mkv";
+            //        // sftp.Connect();
+            //         //sftp://user@ip_address:port_number//mnt/some_dir/
+            //         string surl = $"sftp://{username}:{pwd_hex}@{host}:22//media/电影天堂dygod.org.犯罪都市3.2023.BD.1080P.韩语中字.mkv";
+            //         //var files = sftp.ListDirectory(remoteDirectory);
 
-           //         //sftp.Disconnect();
-           //         using (LibVLCSharp.Shared.Media media = new Media(_libvlc, new Uri(videoUrl)))
-           //         {
-           //             video_main.MediaPlayer.Play(media);
-           //         }
-           //     }
-           //     catch (Exception ex)
-           //     {
-           //         Console.WriteLine("An exception has been caught " + e.ToString());
-           //     }
-           // }
+            //         //foreach (var file in files)
+            //         //{
+            //         //    Console.WriteLine(file.Name);
+            //         //}
+
+            //         //sftp.Disconnect();
+            //         using (LibVLCSharp.Shared.Media media = new Media(_libvlc, new Uri(videoUrl)))
+            //         {
+            //             video_main.MediaPlayer.Play(media);
+            //         }
+            //     }
+            //     catch (Exception ex)
+            //     {
+            //         Console.WriteLine("An exception has been caught " + e.ToString());
+            //     }
+            // }
 
 
 
@@ -104,15 +106,16 @@ namespace VideoplayerXS
         /// 
         /// </summary>
         private void LoadVLClib()
-        { 
+        {
             LibVLCSharp.Shared.MediaPlayer player = new LibVLCSharp.Shared.MediaPlayer(_libvlc);
             video_main.MediaPlayer = player;
             player.AspectRatio = "16:9";
             video_main.MediaPlayer.VolumeChanged += (a, b) =>
             {
-                this.volumnlable.Dispatcher.Invoke(() => {
+                this.volumnlable.Dispatcher.Invoke(() =>
+                {
                     this.volumnlable.Content = video_main.MediaPlayer.Volume;
-                }); 
+                });
             };
             //using (LibVLCSharp.Shared.Media media = new Media(_libvlc, new Uri(url)))
             //{
@@ -120,9 +123,9 @@ namespace VideoplayerXS
             //}
         }
 
-        private bool LoginSSH(SSHCon sshcon,out string sshConnectStringHex) 
-        { 
-            bool connected=false;
+        private bool LoginSSH(SSHCon sshcon, out string sshConnectStringHex)
+        {
+            bool connected = false;
             using (var client = new SshClient(sshcon.Host, sshcon.Port, sshcon.Username, sshcon.Password))
             {
                 try
@@ -137,9 +140,9 @@ namespace VideoplayerXS
                     }
                     client.Disconnect();
                 }
-                catch 
+                catch
                 {
-                } 
+                }
             }
             sshConnectStringHex = sshcon.GetSSHConnectionString();
             return connected;
@@ -172,7 +175,7 @@ namespace VideoplayerXS
                 try
                 {
                     sftp.Connect();
- 
+
                     var files = sftp.ListDirectory(remoteDirectory);
 
                     foreach (var file in files)
@@ -191,24 +194,22 @@ namespace VideoplayerXS
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            LoadVLClib(); 
+
+            LoadVLClib();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             video_main.MediaPlayer?.Stop();
-            string host = ConfigureHelper.ReadKey("ConnectionString:Host");
-            string port = ConfigureHelper.ReadKey("ConnectionString:Port");
-            string username = ConfigureHelper.ReadKey("ConnectionString:UserName");
-            string password = ConfigureHelper.ReadKey("ConnectionString:Password");
-            if (!String.IsNullOrWhiteSpace(host))
-            {
-                Int32.TryParse(port, out int _port);
-                SSHCon ssh = new SSHCon(host, username, password, _port);
 
-                if (LoginSSH(ssh, out string sshconstring))
+            var CurrentAuthInfo = App.Current.Properties[ConstantValues.CurrentAuthInfo]?.ToString();
+            if (!String.IsNullOrEmpty(CurrentAuthInfo))
+            {
+                SSHCon sshcon = new SSHCon(CurrentAuthInfo);
+                if (LoginSSH(sshcon, out string sshconstring))
                 {
-                     string videoUrl = $"{sshconstring}/media/电影天堂dygod.org.犯罪都市3.2023.BD.1080P.韩语中字.mkv";
+                    string videoUrl = $"{sshconstring}/media/电影天堂dygod.org.犯罪都市3.2023.BD.1080P.韩语中字.mkv";
+                    // string videoUrl = $"{sshconstring}/home/11露天矿生态修复技术全息沙盘展示.mp4";
                     //  string videoUrl = $"{sshconstring}/media/1.mp4";
                     using (LibVLCSharp.Shared.Media media = new Media(_libvlc, new Uri(videoUrl)))
                     {
@@ -222,7 +223,7 @@ namespace VideoplayerXS
         {
             if (video_main.MediaPlayer != null)
             {
-                video_main.MediaPlayer.Volume = video_main.MediaPlayer.Volume + 1; 
+                video_main.MediaPlayer.Volume = video_main.MediaPlayer.Volume + 1;
             }
         }
 
@@ -230,7 +231,7 @@ namespace VideoplayerXS
         {
             if (video_main.MediaPlayer != null)
             {
-                video_main.MediaPlayer.Volume = video_main.MediaPlayer.Volume - 1;  
+                video_main.MediaPlayer.Volume = video_main.MediaPlayer.Volume - 1;
             }
         }
 
@@ -241,10 +242,14 @@ namespace VideoplayerXS
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-       
+
             video_main.MediaPlayer?.Play();
-            var x=video_main.MediaPlayer;
+            var x = video_main.MediaPlayer;
         }
- 
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            // SQLiteHelper.InitializeDatabase();
+        }
     }
 }
