@@ -22,9 +22,9 @@
         <Button Grid.Column="1" Content="暂停" HorizontalAlignment="Left" Margin="50,49,0,0" VerticalAlignment="Top" Click="Button_Click_3"/>
         <Button Grid.Column="1" Content="音量+" HorizontalAlignment="Left" Margin="15,79,0,0" VerticalAlignment="Top" Click="Button_Click_1"/>
         <Button Grid.Column="1" Content="音量-" HorizontalAlignment="Left" Margin="55,79,0,0" VerticalAlignment="Top" Click="Button_Click_2"/>
-        <Label x:Name="volumnlable" Content="Label" HorizontalAlignment="Left" Margin="10,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.386,-0.576" Grid.Column="1"/>
+        <Label x:Name="volumnlable" Content="Label" HorizontalAlignment="Left" Margin="92,76,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.386,-0.576" Grid.Column="1"/>
         <Button Grid.Column="1" Content="继续" HorizontalAlignment="Left" Margin="15,49,0,0" VerticalAlignment="Top" Click="Button_Click_4"/>
-        <Button Grid.Column="1" Content="Button" HorizontalAlignment="Left" Margin="78,139,0,0" VerticalAlignment="Top" Click="Button_Click_5"/>
+        <Button Grid.Column="1" Content="Create SQLite" HorizontalAlignment="Left" Margin="15,139,0,0" VerticalAlignment="Top" Click="Button_Click_5" Width="68" FontSize="8"/>
 
     </Grid>
 </Window>

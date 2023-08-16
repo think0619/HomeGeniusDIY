@@ -23,10 +23,6 @@ namespace VideoplayerXS
             this.Startup += new StartupEventHandler(SQLiteInitial);
         }
 
-        
-
-
-
         public void SQLiteInitial(object sender,StartupEventArgs e) 
         { 
             DatabaseClient sql = new DatabaseClient("app.db");
@@ -46,14 +42,13 @@ namespace VideoplayerXS
             }
 
             //get config value
-            //   string host = ConfigureHelper.ReadKey("ConnectionString:Host");
+            //string host = ConfigureHelper.ReadKey("ConnectionString:Host");
             SqliteHelper.Expression eRetrieve1 = new SqliteHelper.Expression("key", Operators.Equals, "current");
             DataTable selectResult1 = sql.Select(ConstantValues.AutoConfig, 0, null, null, eRetrieve1, null);
             if(selectResult1!=null&&selectResult1.Rows.Count>0) 
             {
                 App.Current.Properties[ConstantValues.CurrentAuthInfo] = selectResult1.Rows[0]["value"].ToString();
-            }
-
+            }  
         }
 
         public void SetInitialConfig() 

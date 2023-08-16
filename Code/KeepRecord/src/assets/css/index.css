@@ -1,0 +1,24 @@
+html,
+body,
+#app {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /* IOS禁止微信调整字体大小 */
+    -webkit-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+    -moz-text-size-adjust: 100% !important;
+}
+
+
+/* .body-footer {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    height: 1.69rem;
+    width: 100%;
+    color: #999999;
+    font-size: 0.24rem;
+    line-height: 0.51rem;
+} */

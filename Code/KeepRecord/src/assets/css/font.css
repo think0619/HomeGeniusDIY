@@ -1,0 +1,30 @@
+@font-face {
+    font-family: PingFang;
+    src: url(../fonts/PingFangRegular.ttf);
+}
+
+@font-face {
+    font-family: PingFangELight;
+    src: url(../fonts/PINGFANGEXTRALIGHT.ttf);
+}
+
+@font-face {
+    font-family: PingFangMedium;
+    src: url(../fonts/PINGFANGMEDIUM.ttf);
+}
+
+@font-face {
+    font-family: PingFangLight;
+    src: url(../fonts/PINGFANGLIGHT.ttf);
+}
+
+@font-face {
+    font-family: PingFangHeavy;
+    src: url(../fonts/PINGFANGHEAVY.ttf);
+}
+
+
+/* @font-face {
+    font-family: Youshe;
+    src: url(../fonts/优设标题黑.ttf);
+} */
