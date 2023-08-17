@@ -67,7 +67,7 @@ ScaffoldingReadMe.txt
 
 # StyleCop
 StyleCopReport.xml
-
+*.NetVideoPlayer.rar
 # Files built by Visual Studio
 *_i.c
 *_p.c
