@@ -3,9 +3,10 @@ import json
 import urllib.parse 
 import datetime
 import time  
+from datetime import date
 
-downloadFileHour =7
-downloadFileMin=29  
+downloadFileHour =8
+downloadFileMin=0  
  # 
 def publishWeatherWechat(): 
     weatherRequest = requests.get('https://restapi.amap.com/v3/weather/weatherInfo?key=a50192af99bdbfc75df83077162c9b80&city=320111&extensions=base')
@@ -74,7 +75,26 @@ def publishWeatherForecastWXPusher():
 
 
 
+def publishBusinessTripWXPusher():  
+  d0 = date(2023, 8, 3)
+  d1 = date.today()
+  deltaDays = (d1 - d0).days+1 
+  tip="出差第 "+ str(deltaDays)+" 天"
+  content=tip+"\r\n"+"出差开始日期:2023年8月3日"
+  url = "https://wxpusher.zjiecode.com/api/send/message"
+  payload = json.dumps({
+     "appToken": "AT_64romn9ALIEkRLr3XzqOQXgQq1vklnS7",
+     "content": content,
+     "summary": tip,
+     "contentType": 1,
+     "topicIds": [ ],
+     "uids": ["UID_UrrCtZV0ovUoiZm5kuBBMgze1B2I","UID_Oz43G2YWVwWb2Ipnc00PRMo0oVwZ"],
+     "url": "",
+     "verifyPay": False})
+  headers = { 'Content-Type': 'application/json'}
+  response = requests.request("POST", url, headers=headers, data=payload)
 
+        
 
 
 
@@ -84,7 +104,7 @@ def publishWeatherForecastWXPusher():
 
  
 publishWeatherForecastWXPusher()
- 
+publishBusinessTripWXPusher()
  
 
 while True:

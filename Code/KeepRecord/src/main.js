@@ -10,7 +10,7 @@ import { Toast } from 'vant';
 import { Image as VanImage } from 'vant';
 import { Space } from 'vant';
 import { Col, Row } from 'vant';
-import { Calendar, Cell } from 'vant';
+import { Calendar, Cell, Field, CellGroup } from 'vant';
 
 
 
@@ -27,5 +27,7 @@ app.use(Col);
 app.use(Row);
 app.use(Calendar);
 app.use(Cell);
+app.use(CellGroup);
+app.use(Field);
 
 app.mount('#app');
