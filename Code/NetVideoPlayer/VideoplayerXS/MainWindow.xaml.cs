@@ -151,6 +151,9 @@ namespace VideoplayerXS
 
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
+            string x = @"@Diaoying1985!+!QAZ@WSX#EDC";
+            int len = x.Length;
+
             //SQLiteHelper.InitializeDatabase();
         }
     }
