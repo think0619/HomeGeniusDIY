@@ -15,9 +15,19 @@
   <!-- 允许输入数字，调起带符号的纯数字键盘 -->
   <van-field v-model="number" type="number" label="数字" />
   <!-- 输入密码 -->
-  <van-field v-model="password" type="password" label="密码" />
+  <van-field v-model="password" type="password" label="密码" /> 
 </van-cell-group>
 
+<van-cell-group inset>
+    <van-field  v-for="(item,index) in testlist"
+    :key="index"
+    :v-model="item.model"
+    :type="item.type"
+    :label="item.label"
+    
+    />
+</van-cell-group>
+  
     <!-- <div class="btnArea"> -->
         <!-- <van-button type="primary" @click="showCalendarDialog">选择单个日期</van-button> -->
         <!-- <van-cell title="选择单个日期" :value="date" @click="showcalendar" color="#ee0a24" /> -->
@@ -53,6 +63,13 @@ export default {
             title: ' ',
             contentTitle: '运动数据',
             active: 0,
+
+            testlist:[
+                {"model":"1","type":"text","label":"label1"},
+                {"model":"2","type":"text","label":"label2"},
+                {"model":"3","type":"text","label":"label3"},
+                {"model":"4","type":"text","label":"label4"},
+            ],
 
             curBtnIndex: -1,
             // scrolltop:0,
