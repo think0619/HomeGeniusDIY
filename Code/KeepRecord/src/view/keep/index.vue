@@ -1,24 +1,40 @@
 <template>
-
     <div class="title">
-        <van-nav-bar  :title="contentTitle" ></van-nav-bar>
+        <van-nav-bar :title="contentTitle"></van-nav-bar>
         <span>{{ currentdate }}</span>
-    </div> 
+    </div>
+    <van-form @submit="onSubmit">
+        <van-cell-group inset>
+            <van-field v-model="pickTypeResult" is-link readonly name="typePicker" label="运动种类" placeholder="点击选择种类" @click="showTypeShowPicker" />
+            <van-field v-model="numberRec" name="countInput" label="数值" placeholder="数值"   type="number" :rules="[{ required: true, message: '请填写数值' }]" />
+            <van-field v-model="pickUnitsResult" is-link readonly name="unitsPicker" label="单位" placeholder="点击选择单位"   @click="showUnitsShowPicker" />
 
-<van-cell-group inset>
-  <!-- 输入任意文本 -->
-  <van-field v-model="text" label="文本" />
-  <!-- 输入手机号，调起手机号键盘 -->
-  <van-field v-model="tel" type="tel" label="手机号" />
-  <!-- 允许输入正整数，调起纯数字键盘 -->
-  <van-field v-model="digit" type="digit" label="整数" />
-  <!-- 允许输入数字，调起带符号的纯数字键盘 -->
-  <van-field v-model="number" type="number" label="数字" />
-  <!-- 输入密码 -->
-  <van-field v-model="password" type="password" label="密码" /> 
-</van-cell-group>
+            <van-popup v-model:show="showTypePicker" position="bottom">
+                <van-picker :columns="typeColumns" @confirm="onConfirmTypePicker" @cancel="hideTypeShowPicker" />
+            </van-popup>
+            <van-popup v-model:show="showUnitsPicker" position="bottom">
+                <van-picker :columns="unitsColumns" @confirm="onConfirmUnitsPicker" @cancel="hideUnitsShowPicker" />
+            </van-popup>
 
-<van-cell-group inset>
+
+        </van-cell-group>
+        <div style="margin: 16px;">
+        <van-button round block type="primary" native-type="submit"> 提交   </van-button>
+        </div>
+        
+    </van-form>
+
+
+
+
+
+
+
+
+
+
+
+    <!-- <van-cell-group inset>
     <van-field  v-for="(item,index) in testlist"
     :key="index"
     :v-model="item.model"
@@ -26,12 +42,12 @@
     :label="item.label"
     
     />
-</van-cell-group>
-  
+</van-cell-group> -->
+
     <!-- <div class="btnArea"> -->
-        <!-- <van-button type="primary" @click="showCalendarDialog">选择单个日期</van-button> -->
-        <!-- <van-cell title="选择单个日期" :value="date" @click="showcalendar" color="#ee0a24" /> -->
-        <!-- <van-calendar v-model:show="showcalendar" @confirm="confirmCalendarPick" />
+    <!-- <van-button type="primary" @click="showCalendarDialog">选择单个日期</van-button> -->
+    <!-- <van-cell title="选择单个日期" :value="date" @click="showcalendar" color="#ee0a24" /> -->
+    <!-- <van-calendar v-model:show="showcalendar" @confirm="confirmCalendarPick" />
 
     </div> -->
 </template>   
@@ -55,21 +71,47 @@ export default {
     data() {
         const date = ref('');
         return {
+            currentdate: '', // 
+
+            numberRec:'', 
+
+            showTypePicker: false,
+            pickTypeResult: '',
+            typeColumns: [
+                { text: '跑步', value: 'run' },
+                { text: '跳绳', value: 'ropeSkip' },
+                { text: '拳击', value: 'boxing' },
+                { text: '俯卧撑', value: 'pushup' },
+                { text: '骑行', value: 'riding' },],
+
+            showUnitsPicker: false,
+            pickUnitsResult: '',
+            unitsColumns: [
+                { text: '分钟', value: 'min' },
+                { text: '次', value: 'times' },
+                { text: '个', value: 'piece' },
+                { text: '公里', value: 'km' }, ],
+
+
+
+
+
+
+
+
+
+
+
+
             showcalendar: false,
             calendarDate: '',
-            currentdate: '',
+
             timer: '',
+            showPicker1: false,
 
             title: ' ',
             contentTitle: '运动数据',
             active: 0,
-
-            testlist:[
-                {"model":"1","type":"text","label":"label1"},
-                {"model":"2","type":"text","label":"label2"},
-                {"model":"3","type":"text","label":"label3"},
-                {"model":"4","type":"text","label":"label4"},
-            ],
 
             curBtnIndex: -1,
             // scrolltop:0,
@@ -85,13 +127,32 @@ export default {
     computed: {
     },
     setup() {
-        const tel = ref('');
-    const text = ref('');
-    const digit = ref('');
-    const number = ref('');
-    const password = ref('');
+        const typeColumns1 = [
+            { text: '跑步', value: 'run' },
+            { text: '跳绳', value: 'ropeSkip' },
+            { text: '拳击', value: 'boxing' },
+            { text: '俯卧撑', value: 'pushup' },
+            { text: '骑行', value: 'riding' },
+        ];
 
-    return { tel, text, digit, number, password };
+
+
+        //     const tel = ref('');
+        //  var text = ref('');
+        // const digit = ref('');
+        // const number = ref('');
+        // const password = ref('');
+
+        // const result = ref('');
+        // const showPicker = ref(false);
+
+
+        // const onConfirm = ({ selectedOptions }) => {
+        //     result.value = selectedOptions[0]?.text;
+        //     showPicker.value = false;
+        // };
+
+        return { typeColumns1 };
 
         // const date = ref('');
         // const show1 = ref(false);
@@ -108,9 +169,53 @@ export default {
         // };
     },
     mounted() {
-        this.setTitle(); 
+        this.setTitle();
     },
     methods: {
+        showTypeShowPicker() {
+            this.showTypePicker = true;
+        },
+        hideTypeShowPicker() {
+            this.showTypePicker = false;
+        },
+        onConfirmTypePicker(selectedOption) {
+            var selectObj = selectedOption.selectedOptions[0];
+            var selectText = selectObj?.text;
+
+            this.pickTypeResult = selectText;
+            this.showTypePicker = false;
+        },
+
+        showUnitsShowPicker() {
+            this.showUnitsPicker = true;
+        },
+        hideUnitsShowPicker() {
+            this.showUnitsPicker = false;
+        },
+        onConfirmUnitsPicker(selectedOption) {
+            var selectObj = selectedOption.selectedOptions[0];
+            var selectText = selectObj?.text;
+
+            this.pickUnitsResult = selectText;
+            this.showUnitsPicker = false;
+        },
+        onSubmit(values){
+            console.log('submit', values);
+        },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         showCalendarDialog() {
             this.showcalendar = true;
         },
@@ -120,16 +225,16 @@ export default {
             this.showcalendar = false;
             showToast(this.calendarDate);
         },
-        getDate(){
+        getDate() {
             var _this = this;
             let yy = new Date().getFullYear();
             let mm = new Date().getMonth() + 1;
-            let dd = new Date().getDate();  
-            let todayDate = yy + "-" + mm + "-" + dd; 
+            let dd = new Date().getDate();
+            let todayDate = yy + "-" + mm + "-" + dd;
             return todayDate;
         },
-        setTitle(){ 
-            this.contentTitle = this.getDate()+" 运动数据";
+        setTitle() {
+            this.contentTitle = this.getDate() + " 运动数据";
         }, 
 
         getdateTime() {
@@ -154,9 +259,9 @@ export default {
 }; 
 </script>
 
-<style scoped> 
-.title>span {
-    display: block;
-    font-size: 24px;;
+<style scoped> .title>span {
+     display: block;
+     font-size: 24px;
+     ;
  }
- </style>
+</style>

@@ -10,13 +10,14 @@ import { Toast } from 'vant';
 import { Image as VanImage } from 'vant';
 import { Space } from 'vant';
 import { Col, Row } from 'vant';
-import { Calendar, Cell, Field, CellGroup } from 'vant';
+import { Form, Calendar, Cell, Field, CellGroup, Picker, Popup } from 'vant';
 
 
 
 const app = createApp(App);
 app.use(router);
 app.use(Button);
+app.use(Form);
 app.use(NavBar);
 app.use(Tabbar);
 app.use(TabbarItem);
@@ -29,5 +30,7 @@ app.use(Calendar);
 app.use(Cell);
 app.use(CellGroup);
 app.use(Field);
+app.use(Popup);
+app.use(Picker);
 
 app.mount('#app');
