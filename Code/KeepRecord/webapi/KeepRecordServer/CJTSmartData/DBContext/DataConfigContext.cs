@@ -14,14 +14,14 @@ namespace TextVoiceServer.DBContext
         {  
         } 
          
-         public DbSet<KeepRecord> view_keeprecord { get; set; }
+         public DbSet<KeepRecordView> view_keeprecord { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<KeepRecord>().ToView(nameof(view_keeprecord)).HasKey(t => t.RecID);
+            modelBuilder.Entity<KeepRecordView>().ToView(nameof(view_keeprecord)).HasKey(t => t.RecID);
 
             //modelBuilder.Entity<NewGold>(entity =>
             //{

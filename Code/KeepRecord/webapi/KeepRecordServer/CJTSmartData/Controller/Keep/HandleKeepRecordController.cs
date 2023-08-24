@@ -35,12 +35,10 @@ namespace TextVoiceServer.ContentMgmt
 
         }
 
-        [HttpPost("AddRecord")]
-        public string InsertRecord([FromBody]KeepRecord newInsertParam)
+        [HttpPost("Add")]
+        public string InsertRecord([FromBody]KeepRecordView newInsertParam)
         {
-
-
-
+             
             return "";
         }
 
