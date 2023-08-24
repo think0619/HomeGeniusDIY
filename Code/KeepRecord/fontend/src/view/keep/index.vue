@@ -5,12 +5,17 @@
     </div>
     <van-form @submit="onSubmit">
         <van-cell-group inset>
-            <van-cell title="日期" :value="calendarPickDate" @click="showCalendarForm = true" />
+            <!-- <van-cell title="日期" :value="calendarPickDate" name="datePicker" @click="showCalendarForm = true" /> -->
+            <van-field v-model="calendarPickDate" is-link readonly name="datePicker" label="日期" placeholder="点击选择日期" @click="showCalendarForm = true"/>
             <van-calendar v-model:show="showCalendarForm" @confirm="onConfirmDate" />
 
-            <van-field v-model="pickTypeResult" is-link readonly name="typePicker" label="种类" placeholder="点击选择种类" @click="showTypeShowPicker" />
+            <van-field v-model="pickTypeResult" is-link readonly name="typePicker" label="运动种类" placeholder="点击选择种类" @click="showTypeShowPicker" />
             <van-field v-model="numberRec" name="countInput" label="数值" placeholder="数值"   type="number" :rules="[{ required: true, message: '请填写数值' }]" />
-            <van-field v-model="pickUnitsResult" is-link readonly name="unitsPicker" label="单位" placeholder="点击选择单位"   @click="showUnitsShowPicker" />
+            <van-field v-model="pickUnitsResult" is-link readonly name="unitsPicker" label="单位" placeholder="点击选择单位"   @click="showUnitsShowPicker('main')" />
+
+            
+            <van-field v-model="numberRecSub" name="countInputSub" label="数值" placeholder="数值"   type="number" :rules="[{ required: true, message: '请填写数值' }]" />
+            <van-field v-model="pickUnitsResultSub" is-link readonly name="unitsPickerSub" label="单位" placeholder="点击选择单位"   @click="showUnitsShowPicker('sub')" />
 
             <van-popup v-model:show="showTypePicker" position="bottom">
                 <van-picker :columns="typeColumns" @confirm="onConfirmTypePicker" @cancel="hideTypeShowPicker" />
@@ -76,7 +81,8 @@ export default {
         return {
             currentdate: '', // 
 
-            numberRec:'',
+            numberRec:'', 
+            numberRecSub:'',
             
             showCalendarForm:false,
             calendarPickDate:'',
@@ -84,19 +90,21 @@ export default {
             showTypePicker: false,
             pickTypeResult: '',
             typeColumns: [
-                { text: '跑步', value: 'run' },
-                { text: '跳绳', value: 'ropeSkip' },
-                { text: '拳击', value: 'boxing' },
-                { text: '俯卧撑', value: 'pushup' },
-                { text: '骑行', value: 'riding' },],
+                { text: '跑步', value: 1 },
+                { text: '跳绳', value: 2 },
+                { text: '拳击', value: 3 },
+                { text: '俯卧撑', value: 4 },
+                { text: '骑行', value: 5 },],
 
             showUnitsPicker: false,
+            focusUnitsOption:'',
             pickUnitsResult: '',
+            pickUnitsResultSub: '',
             unitsColumns: [
-                { text: '分钟', value: 'min' },
-                { text: '次', value: 'times' },
-                { text: '个', value: 'piece' },
-                { text: '公里', value: 'km' }, ],
+                { text: '分钟', value: 1 },
+                { text: '次', value: 2 },
+                { text: '个', value: 3 },
+                { text: '公里', value: 4 }, ],
 
 
 
@@ -185,24 +193,33 @@ export default {
             this.showTypePicker = false;
         },
         onConfirmTypePicker(selectedOption) {
+            var _this=this;
             var selectObj = selectedOption.selectedOptions[0];
-            var selectText = selectObj?.text;
-
-            this.pickTypeResult = selectText;
-            this.showTypePicker = false;
+            var selectText = selectObj?.text; 
+            _this.pickTypeResult = selectText;
+            _this.showTypePicker = false; 
         },
 
-        showUnitsShowPicker() {
+        showUnitsShowPicker(option) {
             this.showUnitsPicker = true;
+
+            this.focusUnitsOption=option;
         },
         hideUnitsShowPicker() {
             this.showUnitsPicker = false;
         },
         onConfirmUnitsPicker(selectedOption) {
+            var _this=this;
             var selectObj = selectedOption.selectedOptions[0];
-            var selectText = selectObj?.text;
+            var selectText = selectObj?.text; 
+             
+            if(_this.focusUnitsOption==='main'){
+                _this.pickUnitsResult = selectText;
+            }else if(_this.focusUnitsOption==='sub'){
+                _this.pickUnitsResultSub = selectText;
+            } 
+             _this.focusUnitsOption=''; 
 
-            this.pickUnitsResult = selectText;
             this.showUnitsPicker = false;
         },
         onSubmit(values){
