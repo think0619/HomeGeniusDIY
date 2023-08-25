@@ -36,16 +36,41 @@ namespace TextVoiceServer.ContentMgmt
         }
 
         [HttpPost("Add")]
-        public string InsertRecord([FromBody]KeepRecordView newInsertParam)
+        public string InsertRecord([FromBody] KeepRecord newInsertParam)
         {
-             
-            return "";
+            if (newInsertParam != null) 
+            {
+            using var context = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>();
+            var transaction = context.Database.BeginTransaction();
+                try
+                {
+                    context.tb_keeprecord.Add(new KeepRecord()
+                    {
+                        TypeId=newInsertParam.TypeId,
+                        Count=newInsertParam.Count,
+                        UnitsId=newInsertParam.UnitsId,
+                        SubCount=newInsertParam.SubCount,
+                        SubUnitsId=newInsertParam.SubUnitsId,
+                        Status=1,
+                        RecordDatetime=DateTime.Now,
+                        RecordDate=newInsertParam.RecordDate, 
+                    });
+                    context.SaveChanges();
+                    transaction.Commit();
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback(); 
+                }
+            } 
+            return "HH";
         }
 
 
         [HttpGet("GetHH")]
         public void GetHH() 
         {
+            //var transaction = context.Database.BeginTransaction();
             //using (var dbcontext = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>())
             //{
             //    foreach (var item in dbcontext.view_keeprecord.Where(alert => alert.recid != 0 && ids.Contains(alert.recid.ToString())))
@@ -55,8 +80,8 @@ namespace TextVoiceServer.ContentMgmt
             //    dbcontext.SaveChanges();
             //}
 
-        } 
-        
-       
+        }
+
+
     }
 }

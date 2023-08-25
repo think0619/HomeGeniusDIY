@@ -14,7 +14,8 @@ namespace Entities.Keep
         public Decimal SubCount { get; set; }
         public string SubUnits { get; set; }
         public int SubUnitsId { get; set; }
-        public DateTime? RecordDatetime { get; set; } 
+        public DateTime? RecordDatetime { get; set; }
+        public DateTime? RecordDate { get; set; }
     }
 
 

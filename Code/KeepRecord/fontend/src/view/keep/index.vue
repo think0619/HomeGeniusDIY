@@ -3,7 +3,7 @@
         <van-nav-bar :title="contentTitle"></van-nav-bar>
         <span>{{ currentdate }}</span>
     </div>
-    <van-form @submit="onSubmit">
+    <van-form @submit="onAddSubmit">
         <van-cell-group inset>
             <!-- <van-cell title="日期" :value="calendarPickDate" name="datePicker" @click="showCalendarForm = true" /> -->
             <van-field v-model="calendarPickDate" is-link readonly name="datePicker" label="日期" placeholder="点击选择日期" @click="showCalendarForm = true"/>
@@ -63,8 +63,8 @@
 
 
 
-<script setup  lang="jsx">
-import { ref } from 'vue';
+<script setup  lang="jsx"> 
+import { ref } from 'vue'; 
 import { useRouter, useRoute } from 'vue-router';
 const router = useRouter();
 const route = useRoute();
@@ -72,7 +72,7 @@ const active = ref(route.path);
 </script>
 
 <script lang="jsx">
-import { showToast } from 'vant';
+import { addkeeprecord } from "@/api/keep"; 
 export default {
     components: {
     },
@@ -222,12 +222,41 @@ export default {
 
             this.showUnitsPicker = false;
         },
-        onSubmit(values){
-            console.log('submit', values);
-        },
         onConfirmDate(date){
             this.calendarPickDate=`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
             this.showCalendarForm=false; 
+        },
+        onAddSubmit(inputValue){ 
+            var _this=this;
+            var newObj={
+                "RecordDate":inputValue.datePicker,
+                "TypeId":-1,
+                "Count":Number(inputValue.countInput),
+                "UnitsId":-1,
+                "SubCount":Number(inputValue.countInputSub),
+                "SubUnitsId":-1,
+            };
+            
+            //type
+            _this.typeColumns.forEach((t)=>{
+                if(inputValue.typePicker==t.text){
+                    newObj.TypeId=t.value;
+                    return false ;
+                }
+                return true;
+            });
+
+            //units
+            _this.unitsColumns.forEach((u)=>{
+                if(inputValue.unitsPicker==u.text){
+                    newObj.UnitsId=u.value;
+                }
+                if(inputValue.unitsPickerSub==u.text){
+                    newObj.SubUnitsId=u.value;
+                }
+            }); 
+            addkeeprecord(newObj);
+            console.log('submit', newObj);
         },
 
 
