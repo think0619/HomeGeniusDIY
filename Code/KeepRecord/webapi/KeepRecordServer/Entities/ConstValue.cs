@@ -63,5 +63,9 @@ namespace Entities
 
         public static string SignalRAdmin = "SignalRAdmin";
 
+
+        public static string Success = "Success";
+        public static string Fail = "Fail";
+
     }
 }

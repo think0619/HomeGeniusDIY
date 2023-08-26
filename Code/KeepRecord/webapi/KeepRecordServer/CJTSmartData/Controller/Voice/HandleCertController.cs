@@ -40,12 +40,6 @@ namespace TextVoiceServer.ContentMgmt
         }
 
 
-
-        [HttpGet("GetQueryResult")]
-        [HttpPost("GetQueryResult")]
-        public string GetQueryResult([FromBody] CertQuertParam certQuertParam )
-        { 
-            return ""; 
-        }
+ 
     }
 }

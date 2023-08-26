@@ -15,6 +15,9 @@ using Entities.Keep;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Org.BouncyCastle.Crypto;
+using log4net;
+using Entities.Keep.Result;
+using Entities.Content;
 
 namespace TextVoiceServer.ContentMgmt
 {
@@ -22,6 +25,7 @@ namespace TextVoiceServer.ContentMgmt
     [ApiController]
     public class HandleKeepRecordController : ControllerBase
     {
+        ILog log = LogManager.GetLogger(typeof(HandleKeepRecordController));
         private readonly IServiceScopeFactory _serviceScopeFactory;
         public HandleKeepRecordController(IServiceScopeFactory serviceScopeFactory )
         {
@@ -38,6 +42,11 @@ namespace TextVoiceServer.ContentMgmt
         [HttpPost("Add")]
         public string InsertRecord([FromBody] KeepRecord newInsertParam)
         {
+            TipResult tip = new TipResult()
+            {
+                Status = 0,
+                Msg = ""
+            };
             if (newInsertParam != null) 
             {
             using var context = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>();
@@ -57,31 +66,49 @@ namespace TextVoiceServer.ContentMgmt
                     });
                     context.SaveChanges();
                     transaction.Commit();
+
+                    tip.Status = 1;
+                    tip.Msg = "Add success.";
                 }
-                catch (Exception)
+                catch (Exception ex) 
                 {
-                    transaction.Rollback(); 
+                    transaction.Rollback();
+                    tip.Status = 0;
+                    tip.Msg = $"Exception:{ex.Message}.";
                 }
-            } 
-            return "HH";
+            }
+             
+            tip.Status=0;
+            tip.Msg="params error";
+            return JsonHelper.SerializeObject(tip);
         }
 
 
-        [HttpGet("GetHH")]
-        public void GetHH() 
+        [HttpGet("Query")]
+        [HttpPost("Query")]
+        public async Task<IActionResult> GetRecord([FromBody] PageQuery pagequery) 
         {
-            //var transaction = context.Database.BeginTransaction();
-            //using (var dbcontext = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>())
-            //{
-            //    foreach (var item in dbcontext.view_keeprecord.Where(alert => alert.recid != 0 && ids.Contains(alert.recid.ToString())))
-            //    {
-            //        item.Status = false;
-            //    }
-            //    dbcontext.SaveChanges();
-            //}
-
-        }
-
-
+            KeepRecordViewTip datatip = new KeepRecordViewTip()
+            {
+                Status = 0,
+                Data = new List<KeepRecordView>()
+            };
+            try
+            {
+                using (var dbcontext = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>())
+                {
+                    int skipcount = (pagequery.PageIndex <= 1)?0: ((pagequery.PageIndex - 1) * pagequery.PageCount);
+                    datatip.Data = await dbcontext.view_keeprecord.OrderBy(x => x.RecID).Skip(skipcount).Take(pagequery.PageCount).ToListAsync();
+                    datatip.Status = 1;
+                    datatip.Msg = "Success";
+                }
+            }
+            catch (Exception ex)
+            {
+                datatip.Msg = $"Exception:{ex.Message}";
+            }
+            
+            return Ok(datatip);
+        } 
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using TextVoiceServer.DBContext;
 using TextVoiceServer.Serivices;
 
@@ -45,12 +46,11 @@ namespace TextVoiceServer
 
             //services.AddHostedService<HandleSystemCfgService>();
             //services.AddHostedService<HandleMQPublishService>();
-            services.AddRazorPages();
-
+            services.AddRazorPages(); 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -81,6 +81,7 @@ namespace TextVoiceServer
 
             app.UseAuthorization();
 
+           // loggerFactory.AddLog4Net(); // << Add this line
 
             app.UseEndpoints(endpoints =>
             {
