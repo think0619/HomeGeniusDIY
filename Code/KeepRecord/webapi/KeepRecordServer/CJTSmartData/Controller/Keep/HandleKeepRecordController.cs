@@ -99,6 +99,7 @@ namespace TextVoiceServer.ContentMgmt
                 {
                     int skipcount = (pagequery.PageIndex <= 1)?0: ((pagequery.PageIndex - 1) * pagequery.PageCount);
                     datatip.Data = await dbcontext.view_keeprecord.OrderBy(x => x.RecID).Skip(skipcount).Take(pagequery.PageCount).ToListAsync();
+                    datatip.Total = dbcontext.view_keeprecord.Count(); 
                     datatip.Status = 1;
                     datatip.Msg = "Success";
                 }

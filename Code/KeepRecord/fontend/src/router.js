@@ -16,13 +16,14 @@ const cart = () =>
 const goods = () =>
     import ('@/view/goods/index.vue')
 
-const keep = () =>
+const keepadd = () =>
     import ('@/view/keep/index.vue')
-
+const keepview = () =>
+    import ('@/view/keep/view.vue')
 
 const routes = [{
         path: '/',
-        redirect: '/keep'
+        redirect: '/keep/view'
     },
     {
         path: '/home',
@@ -33,59 +34,31 @@ const routes = [{
         },
     },
     {
-        path: '/main',
-        name: '标签页面',
-        component: main,
-        children: [{
-                name: 't1',
-                path: 't1',
-                component: tab1,
-
-            },
-            {
-                name: 't2',
-                path: 't2',
-                component: tab2,
-
-            },
-            {
-                name: 't3',
-                path: 't3',
-                component: tab3,
-
-            },
-            {
-                name: 't4',
-                path: 't4',
-                component: tab4,
-
-            },
+        name: 'keepadd',
+        path: '/keep',
+        // component: keepadd,
+        children: [
+            { name: 'add', path: 'add', component: keepadd },
+            { name: 'view', path: 'view', component: keepview },
         ]
     },
-    {
-        name: 'keep',
-        path: '/keep',
-        component: keep,
-        meta: {
-            title: '购物车',
-        },
-    },
-    {
-        name: 'cart',
-        path: '/cart',
-        component: cart,
-        meta: {
-            title: '购物车',
-        },
-    },
-    {
-        name: 'goods',
-        path: '/goods',
-        component: goods,
-        meta: {
-            title: '商品详情',
-        },
-    },
+    // {
+    //     name: 'keepview',
+    //     path: '/keep/view',
+    //     component: keepview,
+    //     meta: {
+    //         title: '购物车',
+    //     },
+    // },
+    // {
+    //     name: 'keepadd',
+    //     path: '/keep/add',
+    //     component: keepadd,
+    //     meta: {
+    //         title: '购物车',
+    //     },
+    // },
+
 ];
 
 const router = createRouter({

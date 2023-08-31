@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 using TextVoiceServer.DBContext;
 using TextVoiceServer.Serivices;
 
@@ -35,14 +36,18 @@ namespace TextVoiceServer
             //init redis 
             //InitRedis();
 
-            services.AddControllers().AddNewtonsoftJson();
+            services.AddControllers().AddNewtonsoftJson(
+               opt =>
+                 {
+                     opt.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();//json字符串大小写原样输出
+                 }) ;
             ////auto start , Microsoft.Extensions.Hosting.IHostApplicationLifetime applicationLifetime
             /// services.Configure<SensorValueCfg>(Configuration);
             //applicationLifetime.ApplicationStarted.Register(OnStartup);  
 
             //add cross 
             services.AddCors();
-            services.AddControllers();  
+           // services.AddControllers() ;  
 
             //services.AddHostedService<HandleSystemCfgService>();
             //services.AddHostedService<HandleMQPublishService>();
