@@ -1,15 +1,25 @@
- <template>
+<template>
     <div class="title"> </div>
     <van-nav-bar :title="contentTitle"></van-nav-bar>
-    <van-list class="dataview" v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad"> 
-        <van-swipe-cell v-for="(item, index) in list" :key="index">
-            <van-card :num="item.RecId" :price="item.RecId" desc="描述信息" title="商品标题" class="goods-card"
-                thumb="https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg" />
-            <template #right> <van-button square text="删除" type="danger" class="delete-button" /></template>
-        </van-swipe-cell> 
-    </van-list> 
-</template>   
- 
+    <van-pull-refresh class="h1" v-model="refreshing" @refresh="onRefresh">
+            <van-list class="dataview" v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad" >
+                <van-swipe-cell v-for="(item, index) in list" :key="index" :name="item.RecID" @click="swiopeclick" @open="swipeOpen">
+                    <van-card   class="goods-card" 
+                    :centered="false"
+                    :tag="item.TypeName"
+                    :price="item.index" 
+                    currency=""
+                    :title="item._RecordDate" 
+                    :desc="item.DescInfo"  
+                    thumb="https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg" />
+                    <template #right>
+                        <van-button square type="danger" text="删除" class="swipe-button"  @click="click"  />
+                        <van-button square type="primary" text="修改"  class="swipe-button"  />
+                    </template>
+                </van-swipe-cell>
+            </van-list>
+        </van-pull-refresh>
+</template>    
 
 <script setup  lang="jsx">
 import { ref } from 'vue';
@@ -18,22 +28,19 @@ import { useRouter, useRoute } from 'vue-router';
 const router = useRouter();
 const route = useRoute();
 const active = ref(route.path);   
-</script>
+</script> 
 
-
-
-<script lang="jsx"> 
-import { querykeeprecord } from "@/api/keep"; 
+<script lang="jsx">
+import { showConfirmDialog } from 'vant';
+import { querykeeprecord } from "@/api/keep";
 
 export default {
     components: {
-
     },
     data() {
-
         return {
-            contentTitle: '', //  
-
+            contentTitle: '', //   
+            refreshing:false,
             loading: false, 		// 是否处在加载状态
             finished: false, 		// 是否已加载完成
             error: false, 		// 是否加载失败
@@ -41,13 +48,9 @@ export default {
             page: 1,				// 分页
             page_size: 10,		// 每页条数
             total: 0,
-            testlist: [
-                { num: 1, name: 'aa', price: 1234 },
-                { num: 2, name: 'bb', price: 333 },
-                { num: 3, name: 'vv', price: 444 },
-                { num: 3, name: 'vv', price: 444 },
-                { num: 3, name: 'vv', price: 444 }, 
-            ]
+
+            selectedItem:''
+         
         };
     },
     computed: {
@@ -60,76 +63,79 @@ export default {
     methods: {
         setTitle() {
             this.contentTitle = "运动数据";
-        }, // 获取列表数据方法
-        async getList() { 
-            let { data: res } =await querykeeprecord({
-                PageIndex: this.page,
-                PageCount: this.page_size,
+        },
+        // 获取列表数据方法
+        async getList() {
+            let _this = this;
+            let { data: res } = await querykeeprecord({
+                PageIndex: _this.page,
+                PageCount: _this.page_size,
             })
-            if (res.Data.length === 0) {  		// 判断获取数据条数若等于0
-               // this.list = [];				// 清空数组
-                this.finished = true;		// 停止加载
+            if (res.Data.length === 0) {
+                _this.finished = true;
             }
-            // 若数据条数不等于0
-            this.total = res.Total;		// 给数据条数赋值
-        
-            this.list.push(...res.Data)	// 将数据放入list中
-            this.loading = false;			// 加载状态结束 
-            // 如果list长度大于等于总数据条数,数据全部加载完成
-            if (this.list.length >= res.Total) {
-                this.finished = true;		// 结束加载状态
-            } 
-        //     console.log("this.list.length :", this.list.length) ;
-        //     console.log("this.Total :", this.Total) ;
-        //    console.log(" this.finished :", this.finished ) ;
-        },
-        // 被 @load调用的方法
-        onLoad() { // 若加载条到了底部
-            if(!this.finished){
+            _this.total = res.Total;		// 
+            _this.list.push(...res.Data)	//  
 
-             
-            this.getList();	   this.page++;		
-            }			
-            // let timer = setTimeout(() => {	// 定时器仅针对本地数据渲染动画效果,项目中axios请求不需要定时器
-            //     this.getList();					// 调用上面方法,请求数据
-            //     this.page++;					// 分页数加一
-            //     this.finished && clearTimeout(timer);//清除计时器
-            // }, 100);
+            let index=1;
+            _this.list.forEach((e)=>{
+                e.index=index;
+                index++;
+            }); 
+            _this.loading = false;			// 
+
+            if (_this.list.length >= res.Total) {
+                _this.finished = true;		// 
+            }
         },
-        // 加载失败调用方法
+        onLoad() {
+            if (!this.finished) {
+                this.getList();
+                 this.refreshing=false;
+                this.page++;
+            }
+        },
         onRefresh() {
-            this.finished = false; 		// 清空列表数据
-            this.loading = true; 			// 将 loading 设置为 true，表示处于加载状态
-            this.page = 1;				// 分页数赋值为1
-            this.list = [];				// 清空数组
+            this.page = 1;				//  
+            this.list = [];				//  
+            this.finished = false; 		// 
+            this.loading = true; 		// 将 loading 设置为 true，表示处于加载状态
             this.onLoad(); 				// 重新加载数据
+        }, 
+        click(){
+            console.log('clickxx');
+ 
+            showConfirmDialog({
+  title: '标题',
+  message:
+    '如果解决方法是丑陋的，那就肯定还有更好的解决方法，只是还没有发现而已。',
+})
+  .then(() => {
+    // on confirm
+  })
+  .catch(() => {
+    // on cancel
+  });
+        }, 
+        swiopeclick(position){
+           // console.log('swiopeclick',position);
+        }, 
+        swipeOpen(item){
+            let _this=this;
+            _this.selectedItem=item.name;
+           // console.log('swipeopen name',item.name);
+           // console.log('swipeopen position',item.position,);
         },
-        informList() {
-            return {
-                data: {
-                    total: 10,
-                    list: [{ num: 1, name: 'aa', price: 1234 },
-                    { num: 2, name: 'bb', price: 333 },
-                    { num: 3, name: 'vv', price: 444 },
-                    { num: 3, name: 'vv', price: 444 },
-                    { num: 3, name: 'vv', price: 444 },
-                    { num: 3, name: 'vv', price: 4442 }, 
-
-                    ]
-                }
-            }
-        }
-
-
-
+        
     }
 }; 
 </script>
 
-<style scoped> .title>span {
+<style scoped> 
+
+.title>span {
      display: block;
      font-size: 24px;
-     ;
  }
 
  .goods-card {
@@ -137,13 +143,17 @@ export default {
 
  }
 
- .delete-button {
+ .swipe-button {
      height: 100%;
+ }
+ .h1{
+    height: calc(100% - var(--van-nav-bar-height));
  }
 
  .dataview {
-      height:calc(100% - 46px);
-      margin-bottom: 150px;
+    
+      height: 100% ;  
+     margin-bottom: 150px;
      width: 100%;
      overflow-y: auto;
  }

@@ -10,7 +10,7 @@ import { Toast } from 'vant';
 import { Image as VanImage } from 'vant';
 import { Space } from 'vant';
 import { Col, Row } from 'vant';
-import { Form, Calendar, Cell, Field, CellGroup, Picker, Popup, Card, SwipeCell, List } from 'vant';
+import { Form, Calendar, Cell, Field, CellGroup, Picker, Popup, Card, SwipeCell, List, PullRefresh } from 'vant';
 
 
 
@@ -35,6 +35,8 @@ app.use(Picker);
 app.use(Card);
 app.use(SwipeCell);
 app.use(List);
+app.use(PullRefresh);
+//app.use(showConfirmDialog);
 
 
 app.mount('#app');

@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
+using System.Runtime.Serialization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Entities.Keep
 {
     public class KeepRecordView 
     {
+        //[JsonIgnore]
+        //[IgnoreDataMember]
         public int RecID { get; set; }
+
         
         public string TypeName { get; set; }
         public Decimal Count { get; set; }
@@ -16,7 +21,11 @@ namespace Entities.Keep
         public Decimal SubCount { get; set; }
         public string SubUnits { get; set; }
         public int SubUnitsId { get; set; }
+
+        [IgnoreDataMember]
         public DateTime? RecordDatetime { get; set; }
+
+        [IgnoreDataMember]
         public DateTime? RecordDate { get; set; }
 
         [NotMapped]
@@ -48,6 +57,15 @@ namespace Entities.Keep
                 {
                     return "";
                 }
+            }
+        }
+
+        [NotMapped]
+        public string DescInfo 
+        {
+            get 
+            {
+                return String.Format($"{TypeName}:{Count}{Units} / {SubCount}{SubUnits}");
             }
         }
     } 
