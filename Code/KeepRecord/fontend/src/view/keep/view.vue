@@ -3,7 +3,7 @@
     <van-nav-bar :title="contentTitle"></van-nav-bar>
     <van-pull-refresh class="h1" v-model="refreshing" @refresh="onRefresh">
             <van-list class="dataview" v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad" >
-                <van-swipe-cell v-for="(item, index) in list" :key="index" :name="item.RecID" @click="swiopeclick" @open="swipeOpen">
+                <van-swipe-cell v-for="(item, index) in list" :key="index" :name="item.RecID" @click="swipeClick" @open="swipeOpen"  :before-close="beforeClose">
                     <van-card   class="goods-card" 
                     :centered="false"
                     :tag="item.TypeName"
@@ -13,8 +13,8 @@
                     :desc="item.DescInfo"  
                     thumb="https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg" />
                     <template #right>
-                        <van-button square type="danger" text="删除" class="swipe-button"  @click="click"  />
-                        <van-button square type="primary" text="修改"  class="swipe-button"  />
+                        <van-button square type="danger" text="删除" class="swipe-button"  @click="delClick"  />
+                        <van-button square type="primary" text="修改"  class="swipe-button"  @click="editClick" />
                     </template>
                 </van-swipe-cell>
             </van-list>
@@ -32,7 +32,7 @@ const active = ref(route.path);
 
 <script lang="jsx">
 import { showConfirmDialog } from 'vant';
-import { querykeeprecord } from "@/api/keep";
+import { querykeeprecord,deletekeeprecord } from "@/api/keep";
 
 export default {
     components: {
@@ -47,10 +47,8 @@ export default {
             list: [],				// 列表
             page: 1,				// 分页
             page_size: 10,		// 每页条数
-            total: 0,
-
-            selectedItem:''
-         
+            total: 0, 
+            selectedItem:'' 
         };
     },
     computed: {
@@ -102,30 +100,37 @@ export default {
             this.loading = true; 		// 将 loading 设置为 true，表示处于加载状态
             this.onLoad(); 				// 重新加载数据
         }, 
-        click(){
-            console.log('clickxx');
- 
+        delClick() {
             showConfirmDialog({
-  title: '标题',
-  message:
-    '如果解决方法是丑陋的，那就肯定还有更好的解决方法，只是还没有发现而已。',
-})
-  .then(() => {
-    // on confirm
-  })
-  .catch(() => {
-    // on cancel
-  });
-        }, 
-        swiopeclick(position){
+                title: '提示',
+                message: '确认删除吗？',
+            }).then(() => {
+                // on confirm
+                let _this=this;
+
+
+
+            }).catch(() => {
+                // on cancel
+            });
+        },
+        editClick(){
+            this.$router.push('/keep/add')
+        },
+        swipeClick(position){
            // console.log('swiopeclick',position);
         }, 
         swipeOpen(item){
             let _this=this;
             _this.selectedItem=item.name;
+            
            // console.log('swipeopen name',item.name);
            // console.log('swipeopen position',item.position,);
         },
+        beforeClose(position ){
+            return true;
+            console.log(position)
+        }
         
     }
 }; 
