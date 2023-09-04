@@ -31,7 +31,7 @@ const active = ref(route.path);
 </script> 
 
 <script lang="jsx">
-import { showConfirmDialog } from 'vant';
+import { showConfirmDialog,showSuccessToast, showFailToast  } from 'vant';
 import { querykeeprecord,deletekeeprecord } from "@/api/keep";
 
 export default {
@@ -106,12 +106,18 @@ export default {
                 message: '确认删除吗？',
             }).then(() => {
                 // on confirm
-                let _this=this;
-
-
-
+                let _this=this; 
+                let res = deletekeeprecord({
+                    RecID:_this.selectedItem
+                  });
+                  console.log(res)
+                  if(res.Status==1){
+                    showSuccessToast(res.Msg);
+                  }else{
+                    showFailToast(res.Msg);
+                  } 
             }).catch(() => {
-                // on cancel
+                showFailToast("xx");
             });
         },
         editClick(){
@@ -124,7 +130,7 @@ export default {
             let _this=this;
             _this.selectedItem=item.name;
             
-           // console.log('swipeopen name',item.name);
+            console.log('swipeopen name', _this.selectedItem);
            // console.log('swipeopen position',item.position,);
         },
         beforeClose(position ){
