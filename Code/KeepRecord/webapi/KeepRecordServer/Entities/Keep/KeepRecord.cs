@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
@@ -46,6 +47,19 @@ namespace Entities.Keep
                 }
             }
         }
+
+        
+        public long UpdateDatetime { get; set; }
+
+        public DateTime U 
+        {
+            get {
+
+                return DateTimeOffset.FromUnixTimeMilliseconds(UpdateDatetime).DateTime;
+            }
+        }
+
+
         public int Status { get; set; }
     } 
 }

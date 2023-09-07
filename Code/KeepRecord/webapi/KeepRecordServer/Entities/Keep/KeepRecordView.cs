@@ -68,5 +68,16 @@ namespace Entities.Keep
                 return String.Format($"{TypeName}:{Count}{Units} / {SubCount}{SubUnits}");
             }
         }
+
+        public long UpdateDatetime { get; set; }
+
+        [NotMapped]
+        public DateTime U
+        {
+            get
+            { 
+                return DateTimeOffset.FromUnixTimeMilliseconds(UpdateDatetime).DateTime;
+            }
+        }
     } 
 }

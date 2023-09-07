@@ -7,7 +7,7 @@
                     <van-card   class="goods-card" 
                     :centered="false"
                     :tag="item.TypeName"
-                    :price="item.index" 
+                    :price="item.RecID" 
                     currency=""
                     :title="item._RecordDate" 
                     :desc="item.DescInfo"  
@@ -60,7 +60,7 @@ export default {
     },
     methods: {
         setTitle() {
-            this.contentTitle = "运动数据";
+            this.contentTitle = "x";
         },
         // 获取列表数据方法
         async getList() {
@@ -106,22 +106,31 @@ export default {
                 message: '确认删除吗？',
             }).then(() => {
                 // on confirm
-                let _this=this; 
-                let res = deletekeeprecord({
-                    RecID:_this.selectedItem
-                  });
-                  console.log(res)
-                  if(res.Status==1){
-                    showSuccessToast(res.Msg);
-                  }else{
-                    showFailToast(res.Msg);
-                  } 
+                let _this = this;
+                deletekeeprecord({
+                    RecID: _this.selectedItem
+                }).then(response => {
+                    let res = response.data;
+                    if (res.Status == 1) {
+                        showSuccessToast({ 
+                            message:res.Msg,
+                            wordBreak:'break-word'
+                        });
+                        _this.onRefresh(); 	
+                    } else {
+                        showFailToast({ 
+                            message:res.Msg,
+                            wordBreak:'break-word'
+                        });
+                    }
+                }).catch(() => { 
+                });
             }).catch(() => {
                 showFailToast("xx");
             });
         },
-        editClick(){
-            this.$router.push('/keep/add')
+        editClick(){ 
+            this.$router.push({path:'/keep/add',query:{recid:this.selectedItem}});
         },
         swipeClick(position){
            // console.log('swiopeclick',position);

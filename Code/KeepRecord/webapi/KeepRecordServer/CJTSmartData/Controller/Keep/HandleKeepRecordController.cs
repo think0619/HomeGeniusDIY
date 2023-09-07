@@ -18,6 +18,7 @@ using Org.BouncyCastle.Crypto;
 using log4net;
 using Entities.Keep.Result;
 using Entities.Content;
+using Ubiety.Dns.Core.Records;
 
 namespace TextVoiceServer.ContentMgmt
 {
@@ -27,9 +28,9 @@ namespace TextVoiceServer.ContentMgmt
     {
         ILog log = LogManager.GetLogger(typeof(HandleKeepRecordController));
         private readonly IServiceScopeFactory _serviceScopeFactory;
-        public HandleKeepRecordController(IServiceScopeFactory serviceScopeFactory )
+        public HandleKeepRecordController(IServiceScopeFactory serviceScopeFactory)
         {
-            _serviceScopeFactory = serviceScopeFactory; 
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         [HttpGet]
@@ -40,53 +41,113 @@ namespace TextVoiceServer.ContentMgmt
         }
 
         [HttpPost("Add")]
-        public string InsertRecord([FromBody] KeepRecord newInsertParam)
+        public async Task<IActionResult> InsertRecord([FromBody] KeepRecord newInsertParam)
         {
             TipResult tip = new TipResult()
             {
                 Status = 0,
                 Msg = ""
             };
-            if (newInsertParam != null) 
+            if (newInsertParam != null)
             {
-            using var context = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>();
-            var transaction = context.Database.BeginTransaction();
+                using var context = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>();
+                var transaction = context.Database.BeginTransaction();
                 try
                 {
                     context.tb_keeprecord.Add(new KeepRecord()
                     {
-                        TypeId=newInsertParam.TypeId,
-                        Count=newInsertParam.Count,
-                        UnitsId=newInsertParam.UnitsId,
-                        SubCount=newInsertParam.SubCount,
-                        SubUnitsId=newInsertParam.SubUnitsId,
-                        Status=1,
-                        RecordDatetime=DateTime.Now,
-                        RecordDate=newInsertParam.RecordDate, 
+                        TypeId = newInsertParam.TypeId,
+                        Count = newInsertParam.Count,
+                        UnitsId = newInsertParam.UnitsId,
+                        SubCount = newInsertParam.SubCount,
+                        SubUnitsId = newInsertParam.SubUnitsId,
+                        Status = 1,
+                        RecordDatetime = DateTime.Now,
+                        RecordDate = newInsertParam.RecordDate,
                     });
-                    context.SaveChanges();
+                    await context.SaveChangesAsync();
                     transaction.Commit();
 
                     tip.Status = 1;
-                    tip.Msg = "Add success.";
+                    tip.Msg = "Successfully added.";
                 }
-                catch (Exception ex) 
+                catch (Exception ex)
                 {
                     transaction.Rollback();
                     tip.Status = 0;
                     tip.Msg = $"Exception:{ex.Message}.";
                 }
             }
-             
-            tip.Status=0;
-            tip.Msg="params error";
-            return JsonHelper.SerializeObject(tip);
+            else
+            {
+                tip.Status = 0;
+                tip.Msg = "params error.";
+            }
+            return Ok(tip);
+        }
+
+
+        [HttpPost("Update")]
+        public async Task<IActionResult> UpdateRecord([FromBody] KeepRecord updateParam)
+        {
+            TipResult tip = new TipResult()
+            {
+                Status = 0,
+                Msg = ""
+            };
+            if (updateParam != null)
+            {
+                using var context = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>();
+                var transaction = context.Database.BeginTransaction();
+                try
+                {
+                    var updateObj = context.tb_keeprecord.Find(updateParam.RecID);
+                    if(updateObj != null) 
+                    {
+                        updateObj.TypeId = updateObj.TypeId;
+                        updateObj.Count = updateObj.Count;
+                        updateObj.UnitsId = updateObj.UnitsId;
+                        updateObj.SubCount = updateObj.SubCount;
+                        updateObj.SubUnitsId = updateObj.SubUnitsId;
+                        updateObj.Status = 1;
+                    }
+
+                    //context.tb_keeprecord.Add(new KeepRecord()
+                    //{
+                    //    TypeId = newInsertParam.TypeId,
+                    //    Count = newInsertParam.Count,
+                    //    UnitsId = newInsertParam.UnitsId,
+                    //    SubCount = newInsertParam.SubCount,
+                    //    SubUnitsId = newInsertParam.SubUnitsId,
+                    //    Status = 1,
+                    //    RecordDatetime = DateTime.Now,
+                    //    RecordDate = newInsertParam.RecordDate,
+                    //});
+                  //  await context.SaveChangesAsync();
+                    transaction.Commit();
+
+                    tip.Status = 1;
+                    tip.Msg = "Successfully added.";
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    tip.Status = 0;
+                    tip.Msg = $"Exception:{ex.Message}.";
+                }
+            }
+            else
+            {
+                tip.Status = 0;
+                tip.Msg = "params error.";
+            }
+            return Ok(tip);
         }
 
 
         [HttpGet("Query")]
         [HttpPost("Query")]
-        public async Task<IActionResult> GetRecord([FromBody] PageQuery pagequery) 
+        public async Task<IActionResult> GetRecord([FromBody] PageQuery pagequery)
         {
             KeepRecordViewTip datatip = new KeepRecordViewTip()
             {
@@ -97,9 +158,9 @@ namespace TextVoiceServer.ContentMgmt
             {
                 using (var dbcontext = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>())
                 {
-                    int skipcount = (pagequery.PageIndex <= 1)?0: ((pagequery.PageIndex - 1) * pagequery.PageCount);
+                    int skipcount = (pagequery.PageIndex <= 1) ? 0 : ((pagequery.PageIndex - 1) * pagequery.PageCount);
                     datatip.Data = await dbcontext.view_keeprecord.OrderBy(x => x.RecID).Skip(skipcount).Take(pagequery.PageCount).ToListAsync();
-                    datatip.Total = dbcontext.view_keeprecord.Count(); 
+                    datatip.Total = dbcontext.view_keeprecord.Count();
                     datatip.Status = 1;
                     datatip.Msg = "Success";
                 }
@@ -108,8 +169,49 @@ namespace TextVoiceServer.ContentMgmt
             {
                 datatip.Msg = $"Exception:{ex.Message}";
             }
-            
+
             return Ok(datatip);
-        } 
+        }
+
+        [HttpPost("Del")]
+        public async Task<IActionResult> DeleteRecord([FromBody] KeepRecord keeprec)
+        {
+            TipResult tip = new TipResult()
+            {
+                Status = 0,
+                Msg = ""
+            };
+            if (keeprec?.RecID != -1)
+            {
+                using var context = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>();
+                var transaction = context.Database.BeginTransaction();
+                try
+                {
+                    var deleteItem = context.tb_keeprecord.Find(keeprec.RecID);
+                    if (deleteItem != null)
+                    {
+                        deleteItem.Status = 0;
+                    }
+                    await context.SaveChangesAsync();
+                    transaction.Commit();
+
+                    tip.Status = 1;
+                    tip.Msg = "Deleted successfully.";
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    tip.Status = 0;
+                    tip.Msg = $"Exception:{ex.Message}.";
+                }
+            }
+            else
+            {
+                tip.Status = 0;
+                tip.Msg = "params error";
+            } 
+            return Ok(tip);
+        }
+
     }
 }
