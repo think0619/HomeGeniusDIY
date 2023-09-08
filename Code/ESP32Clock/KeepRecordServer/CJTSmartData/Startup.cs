@@ -49,7 +49,7 @@ namespace TextVoiceServer
             services.AddCors();
            // services.AddControllers() ;  
 
-            //services.AddHostedService<HandleSystemCfgService>();
+            services.AddHostedService<HandleSQLiteConfigService>();
             //services.AddHostedService<HandleMQPublishService>();
             services.AddRazorPages(); 
         }

@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsgMiddleServer", "CJTSmart
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Entities", "Entities\Entities.csproj", "{8559EEA6-C894-462A-9ACB-967AC9CAA434}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqliteHelper", "SqliteHelper\SqliteHelper.csproj", "{29A5DFE9-DA2F-46C6-B468-5982E465CC4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{8559EEA6-C894-462A-9ACB-967AC9CAA434}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8559EEA6-C894-462A-9ACB-967AC9CAA434}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8559EEA6-C894-462A-9ACB-967AC9CAA434}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29A5DFE9-DA2F-46C6-B468-5982E465CC4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29A5DFE9-DA2F-46C6-B468-5982E465CC4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29A5DFE9-DA2F-46C6-B468-5982E465CC4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29A5DFE9-DA2F-46C6-B468-5982E465CC4E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

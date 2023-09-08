@@ -16,11 +16,6 @@ namespace TextVoiceServer.DBContext
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-          
-
-
-
         }
     }
 }

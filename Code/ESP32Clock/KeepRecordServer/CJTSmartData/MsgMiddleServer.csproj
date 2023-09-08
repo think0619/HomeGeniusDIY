@@ -10,6 +10,7 @@
     <Compile Remove="DBContext\MSSQLDataConfigContext.cs" />
     <Compile Remove="DBContext\SXMSSQLDataConfigContext.cs" />
     <Compile Remove="Hubs\DataProviderHub.cs" />
+    <Compile Remove="Services\HandleSystemCfgService.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Entities\Entities.csproj" />
+    <ProjectReference Include="..\SqliteHelper\SqliteHelper.csproj" />
   </ItemGroup>
 
   <ItemGroup>
