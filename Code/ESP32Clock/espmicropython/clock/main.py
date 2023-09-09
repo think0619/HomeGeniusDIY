@@ -40,7 +40,7 @@ def connectwifi_func():
     ssid=commonhelper.readConfig('ssid');
     pwd=commonhelper.readConfig('password');
     connectR=False
-    for index in range(10):
+    for index in range(100):
         connectR=wifihelper.connectwifi(ssid, pwd)
         if(connectR):
             break

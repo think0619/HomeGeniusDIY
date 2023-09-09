@@ -12,7 +12,7 @@ except:
 # The NTP host can be configured at runtime by doing: ntptime.host = 'myhost.org'
 host = "ntp.aliyun.com"
 # The NTP socket timeout can be configured at runtime by doing: ntptime.timeout = 2
-timeout = 10
+timeout = 60
 
 
 def time():

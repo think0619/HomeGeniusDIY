@@ -5,14 +5,29 @@
 #webrepl.start()
 import _thread
 import main
+import time
+import commonhelper  
+from machine import Pin
 
-#main.updatetime_func()
-#main.showtime_func(0,0)
-#updatetimeTimer_func()
+p1 = Pin(13, Pin.OUT)    # create output pin on GPIO4
+p1.value(0)      
 
-
-
-main.updatetime_func()
-_thread.start_new_thread(main.showtime_func, (1,1))
-_thread.start_new_thread(main.updatetimeTimer_func, ()) 
-    
+def closeRelayAndReset():
+    while True:
+        if(commonhelper.needCloseRelay()):
+            p1 = Pin(13, Pin.OUT)    # create output pin on GPIO4 
+            p1.value(1)             # set pin to low level
+            time.sleep(0.5)
+            p1.value(0)
+            commonhelper.resetRelayApiConfig()
+        else:
+            time.sleep(5*60)
+ 
+ 
+if(main.connectwifi_func()):
+    if(commonhelper.needRun()): 
+        _thread.start_new_thread(closeRelayAndReset, ()) 
+    else:
+        main.showinfo('stop')
+else:
+    main.showinfo('wifi')

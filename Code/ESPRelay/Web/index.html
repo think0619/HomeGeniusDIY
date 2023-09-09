@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+    <script src="mqtt.min.js"></script>
+</head>
+
+<body>
+    <div>
+        <h3>系统设置</h3>
+        <div style="margin-top: 15px;">
+            <button id="on_button" type="button" onclick="clickCmd('VolumnPlus');">音量+</button>
+            <button id="on_button" type="button" onclick="clickCmd('VolumnSub');">音量-</button>
+        </div>
+    </div>
+    <script>
+        const url = 'ws://hw.hellolinux.cn:8083/mqtt';
+        const client = mqtt.connect(url)
+        client.on('connect', function() {
+            client.subscribe('RelayCMD', function(err) {
+                if (!err) {
+                    client.publish('RelayCMD', 'Hello mqtt')
+                } else {
+                    console.log(err.toString())
+                }
+            })
+        })
+
+        client.on('message', function(topic, message) {
+            // message is Buffer
+            console.log(topic.toString())
+            console.log(message.toString())
+                // client.end()
+        })
+
+        function clickCmd(p) {
+            var today = new Date();
+            var date = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
+            var url = "time==" + date;
+            client.publish('RelayCMD', url, {
+                qos: 0,
+                retain: false
+            }, function(error) {
+                if (error) {
+                    console.log(error)
+                } else {
+                    console.log('Published')
+                }
+            })
+        }
+    </script>
+    <style>
+        button {
+            margin: 3px 6px;
+            display: inline-block;
+            min-width: 70px;
+            min-height: 30px;
+            background-color: cornflowerblue;
+            border: 0;
+            color: #FFF;
+            border-radius: 5px;
+        }
+    </style>
+</body>
+
+</html>
