@@ -8,10 +8,9 @@ import main
 import time
 import commonhelper  
 from machine import Pin
+import mqtthelper
 
-p1 = Pin(13, Pin.OUT)    # create output pin on GPIO4
-p1.value(0)      
-
+ 
 def closeRelayAndReset():
     while True:
         if(commonhelper.needCloseRelay()):
@@ -26,7 +25,7 @@ def closeRelayAndReset():
  
 if(main.connectwifi_func()):
     if(commonhelper.needRun()): 
-        _thread.start_new_thread(closeRelayAndReset, ()) 
+        _thread.start_new_thread(mqtthelper.main(), ()) 
     else:
         main.showinfo('stop')
 else:

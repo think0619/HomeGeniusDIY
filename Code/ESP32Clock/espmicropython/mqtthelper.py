@@ -4,10 +4,13 @@ from umqtt.simple import MQTTClient
 import machine
 
 # Default MQTT MQTT_BROKER to connect to
-# const url = 'ws://hw.hellolinux.cn:8083/mqtt';
-MQTT_BROKER = "hw.hellolinux.cn"
+# const url = 'ws://hw.hellolinux.cn:8083/';
+MQTT_BROKER = "121.37.160.39"
 CLIENT_ID = ubinascii.hexlify(machine.unique_id())
-TOPIC = b"RelayCMD/mqtt"
+TOPIC = b"RelayCMD"
+User="homediskrelay"
+Password="@Xiongsen1994!+"
+
 
 # Ping the MQTT broker since we are not publishing any message
 last_ping = time.time()
@@ -24,7 +27,7 @@ def reset():
     machine.reset()
     
 def main():
-    mqttClient = MQTTClient("xx", MQTT_BROKER,port=8083,   keepalive=60)
+    mqttClient = MQTTClient("esp32_relay", "hw.hellolinux.cn",port=1883,ssl=False,user="homediskrelay",password ="@Xiongsen1994!+",   keepalive=60)
     mqttClient.set_callback(sub_cb)
     mqttClient.connect()
     mqttClient.subscribe(TOPIC)
