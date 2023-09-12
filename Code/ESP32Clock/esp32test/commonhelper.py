@@ -23,4 +23,17 @@ def readConfig(key):
     f = open('config.json', 'r')
     c = ujson.loads(f.read())
     return c[key]
- 
+
+def needCloseRelay():
+    #http://hw.hellolinux.cn:8888/api/configservice/set?key=espopsrelayclose&value=1
+    response = urequests.get("http://hw.hellolinux.cn:8888/api/configservice/get?key=espopsrelayclose")
+    result=response.text
+    response.close()
+    return  result=="1"
+
+def resetRelayApiConfig():
+    #http://hw.hellolinux.cn:8888/api/configservice/set?key=espopsrelayclose&value=1
+    response = urequests.get("http://hw.hellolinux.cn:8888/api/configservice/set?key=espopsrelayclose&value=0") 
+    response.close()
+    return  'success'
+  

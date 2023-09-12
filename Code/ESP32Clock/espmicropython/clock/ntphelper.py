@@ -10,9 +10,9 @@ except:
     import struct
 
 # The NTP host can be configured at runtime by doing: ntptime.host = 'myhost.org'
-host = "ntp.aliyun.com"
+host = "cn.pool.ntp.org"
 # The NTP socket timeout can be configured at runtime by doing: ntptime.timeout = 2
-timeout = 60
+timeout = 90
 
 
 def time():
@@ -24,6 +24,8 @@ def time():
         s.settimeout(timeout)
         res = s.sendto(NTP_QUERY, addr)
         msg = s.recv(48)
+    except OSError as e:
+        print(e)
     finally:
         s.close()
     val = struct.unpack("!I", msg[40:44])[0]
@@ -48,3 +50,4 @@ def settime():
     import machine  
     tm = utime.gmtime(t)  
     machine.RTC().datetime((tm[0], tm[1], tm[2], tm[6] + 1, tm[3], tm[4], tm[5], 0))
+

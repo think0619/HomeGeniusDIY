@@ -5,19 +5,25 @@
 #webrepl.start()
 import _thread
 import main
-import time
-import commonhelper
-
-#main.updatetime_func()
-#main.showtime_func(0,0)
-#updatetimeTimer_func()
+import time,utime 
+import commonhelper   
+ 
 if(main.connectwifi_func()):
-    if(commonhelper.needRun()):
-        main.updatetime_func()
-        _thread.start_new_thread(main.showtime_func, (1,1))
-        _thread.start_new_thread(main.updatetimeTimer_func, ())
-    else:
-        main.showinfo('stop')
+     if(commonhelper.needRun()):
+         _thread.start_new_thread(main.updatetimeTimer_func, ())
+         _thread.start_new_thread(main.showTimeOnMax7219, ())
+     else:
+         main.showMsgOnMax7219("Task deadline") 
 else:
-    main.showinfo('wifi')
-    
+    main.showMsgOnMax7219("WiFI error") 
+          
+ 
+# if(main.connectwifi_func()):
+#     if(commonhelper.needRun()): 
+#         _thread.start_new_thread(mqtthelper.main(), ()) 
+#         _thread.start_new_thread(printtest(), ()) 
+#     else:
+#         main.showinfo('stop')
+# else:
+#     main.showinfo('wifi')
+
