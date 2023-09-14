@@ -19,8 +19,8 @@
     <div>
         <h3>系统设置</h3>
         <div style="margin-top: 15px;">
-            <button id="on_button" type="button" onclick="clickCmd('VolumnPlus');">音量+</button>
-            <button id="on_button" type="button" onclick="clickCmd('VolumnSub');">音量-</button>
+            <button id="on_button" type="button" onclick="clickCmd('on');">打开</button>
+            <button id="on_button" type="button" onclick="clickCmd('off');">关闭</button>
         </div>
     </div>
     <script>
@@ -33,9 +33,9 @@
             password: '@Xiongsen1994!+'
         })
         client.on('connect', function() {
-            client.subscribe('RelayCMD', function(err) {
+            client.subscribe('ShowClockTime', function(err) {
                 if (!err) {
-                    client.publish('RelayCMD/mqtt', 'Hello mqtt')
+                    client.publish('ShowClockTime', 'on')
                 } else {
                     console.log(err.toString())
                 }
@@ -50,10 +50,8 @@
         })
 
         function clickCmd(p) {
-            var today = new Date();
-            var date = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
-            var url = "time==" + date;
-            client.publish('RelayCMD', url, {
+
+            client.publish('ShowClockTime', p, {
                 qos: 0,
                 retain: false
             }, function(error) {

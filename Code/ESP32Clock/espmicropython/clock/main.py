@@ -6,11 +6,14 @@ import _thread
 import ntptime
 import wifihelper
 import ntphelper
-import max7219 
+import max7219
+import tm1637
+from umqtt.simple import MQTTClient
+from datetime import datetime
 
 clkPin=13
 dioPin=14 
-        
+showClock=True       
 
             
 def connectwifi_func():
@@ -44,13 +47,14 @@ def showTimeOnMax7219():
         hour=commonhelper.xfill(current_time[3],2)
         minute=commonhelper.xfill(current_time[4],2)  
         display.fill(0)
-        display.text(hour+minute,0,0,1)
-        if(index==0): 
-#             display.rect (0, 7, 1, 1,1) 
-#             display.rect (7, 7, 1, 1,1) 
-#             display.rect (15, 7, 1, 1,1)  
-#             display.rect (23, 7, 1, 1,1) 
-            display.rect (31, 7, 1, 1,1)    
+        if(showClock):
+            display.text(hour+minute,0,0,1)
+            if(index==0): 
+#               display.rect (0, 7, 1, 1,1) 
+#               display.rect (7, 7, 1, 1,1) 
+#               display.rect (15, 7, 1, 1,1)  
+#               display.rect (23, 7, 1, 1,1) 
+                display.rect (31, 7, 1, 1,1)    
         display.show() 
         index = (index+1) % 2 
         time.sleep(1)  
@@ -81,6 +85,45 @@ def updatetimeTimer_func():
             time.sleep(90)
         else:
             time.sleep(60)
+            
+def mqttsub_cb(topic, msg):
+    if(topic==TOPIC):
+        if(msg=="on"):
+            showClock=True
+        elif(msg=="off"):
+            showClock=False
+            
+
+def connectmqtt():
+    MQTT_BROKER = "hw.hellolinux.cn" 
+    global TOPIC = b"ShowClockTime"
+    User="homediskrelay"
+    Password="@Xiongsen1994!+" 
+    mqttClient = MQTTClient("esp32_clock", MQTT_BROKER,port=1883,ssl=False,user=User,password =Password,   keepalive=60)
+    mqttClient.set_callback(mqttsub_cb)
+    mqttClient.connect()
+    mqttClient.subscribe(TOPIC)
+    print(f"Connected to MQTT  Broker :: {MQTT_BROKER}, and waiting for callback function to be called!")
+    while True:
+        if False:
+            # Blocking wait for message
+            mqttClient.wait_msg()
+        else:
+            # Non-blocking wait for message
+            mqttClient.check_msg()
+            # Then need to sleep to avoid 100% CPU usage (in a real
+            # app other useful actions would be performed instead)
+            global last_ping
+            if (time.time() - last_ping) >= ping_interval:
+                mqttClient.ping()
+                last_ping = time.time()
+                now = time.localtime()
+                print(f"Pinging MQTT Broker, last ping :: {now[0]}/{now[1]}/{now[2]} {now[3]}:{now[4]}:{now[5]}")
+            time.sleep(1)
+            
+#    print("Disconnecting...")
+#    mqttClient.disconnect()
+
 
 #flow effect
 #     while True:
@@ -90,8 +133,21 @@ def updatetimeTimer_func():
 #             time.sleep(0.10)
 #             display.fill(0)
      
+def show1637(): 
+    clkPin=16
+    dioPin=19 
+    tm = tm1637.TM1637(clk=Pin(clkPin), dio=Pin(dioPin)) 
+    tm.brightness(0) 
+    showColon=True
+    while True: 
+        tm.show(str(days_between), showColon)
+#        print(timestr+':'+str(showColon))
+        showColon=not showColon 
+        time.sleep(1) 
 
-
+def days_between( ):
+    d1 = datetime.strptime("2022-01-26", "%Y-%m-%d") 
+    return abs((date.today() - d1).days)
 
 
  
