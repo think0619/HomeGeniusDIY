@@ -9,7 +9,7 @@ import ntphelper
 import max7219
 import tm1637
 from umqtt.simple import MQTTClient
-from datetime import datetime
+import micropythonntp
 
 clkPin=13
 dioPin=14 
@@ -19,8 +19,8 @@ showClock=True
 def connectwifi_func():
     ssid=commonhelper.readConfig('ssid');
     pwd=commonhelper.readConfig('password');
-    connectR=True
-    connectR=wifihelper.connectwifi(ssid, pwd)
+    
+    connectR =wifihelper.connectwifi(ssid, pwd)
     print("WiFi conncet stutus:"+str(connectR))
     return connectR
 
@@ -44,10 +44,12 @@ def showTimeOnMax7219():
     index=0
     while True:
         current_time=utime.localtime()
+#         current_time=micropythonntp.Gettime()
         hour=commonhelper.xfill(current_time[3],2)
         minute=commonhelper.xfill(current_time[4],2)  
         display.fill(0)
-        if(showClock):
+        global showClock
+        if( showClock):
             display.text(hour+minute,0,0,1)
             if(index==0): 
 #               display.rect (0, 7, 1, 1,1) 
@@ -71,34 +73,50 @@ def showMsgOnMax7219(msg):
        
 def updatetime_func(): 
     try:
-        ntphelper.settime()
+#        micropythonntp.SyncNTPTime()
+#        print(micropythonntp.Gettime())
+        ntphelper.settime() 
         print("sync time success")
-    except:
-        showMsgOnMax7219('sync time error')
+    except: 
+        showMsgOnMax7219('sync time error')  
+    
 
-def updatetimeTimer_func():
+def updatetimeTimer_func(): 
     updatetime_func()
+    time.sleep(60)  
+    updatetime_func() 
+    time.sleep(60)  
+    updatetime_func() 
+    time.sleep(10)  
     while True:
-        current_time=utime.localtime() 
-        if(current_time[3]==2 and current_time[4]==0):
+        current_time=utime.localtime()
+#         current_time=micropythonntp.Gettime()
+        if(current_time[4]==0):
             updatetime_func()
-            time.sleep(90)
+            time.sleep(60)
         else:
             time.sleep(60)
+      
             
-def mqttsub_cb(topic, msg):
-    if(topic==TOPIC):
-        if(msg=="on"):
-            showClock=True
-        elif(msg=="off"):
-            showClock=False
-            
+TOPIC = b"ShowClockTime"
 
+def mqttsub_cb(topic, msg):
+    global showClock
+    if(topic==TOPIC):
+        if(msg.decode('utf-8')=='on'):
+              showClock=True 
+        elif(msg.decode('utf-8')=='off'):
+              showClock=False 
+        print(str(showClock))
+        
+        
+last_ping = time.time()
+ping_interval = 60
 def connectmqtt():
-    MQTT_BROKER = "hw.hellolinux.cn" 
-    global TOPIC = b"ShowClockTime"
-    User="homediskrelay"
-    Password="@Xiongsen1994!+" 
+    MQTT_BROKER = commonhelper.readConfig('mqttbroker');
+#    global TOPIC = b"ShowClockTime"
+    User=commonhelper.readConfig('mqttuser');
+    Password=commonhelper.readConfig('mqttpwd');
     mqttClient = MQTTClient("esp32_clock", MQTT_BROKER,port=1883,ssl=False,user=User,password =Password,   keepalive=60)
     mqttClient.set_callback(mqttsub_cb)
     mqttClient.connect()
@@ -132,22 +150,32 @@ def connectmqtt():
 #             display.show()
 #             time.sleep(0.10)
 #             display.fill(0)
-     
+
+def days_between(d1, d2):
+    d1 += (1, 0, 0, 0, 0)  # ensure a time past midnight
+    d2 += (1, 0, 0, 0, 0)
+    diffdays=(utime.mktime(d1) // (24*3600) - utime.mktime(d2) // (24*3600))+1
+    return diffdays
+
+      
 def show1637(): 
-    clkPin=16
-    dioPin=19 
+    clkPin=33
+    dioPin=32 
     tm = tm1637.TM1637(clk=Pin(clkPin), dio=Pin(dioPin)) 
     tm.brightness(0) 
     showColon=True
     while True: 
-        tm.show(str(days_between), showColon)
-#        print(timestr+':'+str(showColon))
+        current_time=utime.localtime()
+#         current_time=micropythonntp.Gettime()
+        cursec=current_time[5] % 20  
+        showstr=''
+        if(cursec<10): 
+            diffdays=days_between((current_time[0],current_time[1],current_time[2]), (2022, 1, 26)) 
+            showstr=commonhelper.xfill(diffdays,4)
+        else:
+            showstr=commonhelper.xfill(current_time[1],2)+commonhelper.xfill(current_time[2],2)
+        tm.show(showstr , showColon) 
         showColon=not showColon 
         time.sleep(1) 
 
-def days_between( ):
-    d1 = datetime.strptime("2022-01-26", "%Y-%m-%d") 
-    return abs((date.today() - d1).days)
-
-
- 
+  

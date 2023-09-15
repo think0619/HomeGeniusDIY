@@ -10,12 +10,12 @@ import commonhelper
  
 
  
-if(main.connectwifi_func()):
+if(main.connectwifi_func()): 
      if(commonhelper.needRun()):
          _thread.start_new_thread(main.updatetimeTimer_func, ()) 
+         _thread.start_new_thread(main.connectmqtt, ()) 
          _thread.start_new_thread(main.show1637, ())
          _thread.start_new_thread(main.showTimeOnMax7219, ())
-         _thread.start_new_thread(main.connectmqtt, ()) 
      else:
          main.showMsgOnMax7219("Task deadline") 
 else:
@@ -30,4 +30,5 @@ else:
 #         main.showinfo('stop')
 # else:
 #     main.showinfo('wifi')
+
 
