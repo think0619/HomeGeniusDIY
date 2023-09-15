@@ -8,6 +8,7 @@ using System.IO;
 using System.Data;
 using SqliteHelper;
 using Newtonsoft.Json.Linq;
+using System.Collections;
 
 namespace TextVoiceServer.DBHandler
 {
@@ -125,6 +126,12 @@ namespace TextVoiceServer.DBHandler
             return opsresult;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="_key"></param>
+        /// <param name="_value"></param>
+        /// <returns></returns>
         public static string addConfigValue(string _key, string _value)
         {
             string opsresult = "fail.";
@@ -162,5 +169,42 @@ namespace TextVoiceServer.DBHandler
             }
             return opsresult;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static string getConfigValueList() 
+        {
+            string opsresult = "";
+            try
+            {
+                string dbpath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DB", dbFilename);
+
+                if (File.Exists(dbpath))
+                {
+                    DatabaseClient sql = new DatabaseClient(dbpath);
+                    Expression eRetrieve1 = new Expression("status", Operators.Equals, 1);
+                    DataTable selectResult1 = sql.Select("tb_configresp", 0, null, null, eRetrieve1, null);
+                    var queryResult = selectResult1.Rows;
+                  
+                    if (queryResult?.Count > 0)
+                    {
+                        Dictionary<string, string> resultdic = new Dictionary<string, string>();
+                        for (var i = 0; i < queryResult.Count; i++) 
+                        {
+                            resultdic.Add(queryResult[i]["key"].ToString(), queryResult[i]["value"].ToString());
+                        }
+                        opsresult = string.Join(Environment.NewLine, resultdic);  
+                    } 
+                }
+            }
+            catch (Exception ex)
+            {
+                opsresult = ex.Message;
+            }
+            return opsresult;
+        }
+
     }
 }

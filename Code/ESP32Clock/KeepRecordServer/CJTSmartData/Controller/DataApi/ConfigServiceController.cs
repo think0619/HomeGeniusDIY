@@ -64,7 +64,15 @@ namespace TextVoiceServer.DataApi
                 result = SQLiteHelper.addConfigValue(key, value);
             }
             return result;
-        } 
+        }
+
+        [HttpGet("getlist")]
+        public string GetConfigValue()
+        { 
+            return SQLiteHelper.getConfigValueList();  
+        }
+
+        
 
     }
 }

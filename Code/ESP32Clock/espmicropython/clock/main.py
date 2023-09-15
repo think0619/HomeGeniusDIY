@@ -96,7 +96,8 @@ def mqttsub_cb(topic, msg):
 
 def connectmqtt():
     MQTT_BROKER = "hw.hellolinux.cn" 
-    global TOPIC = b"ShowClockTime"
+    global TOPIC
+    TOPIC  = b"ShowClockTime"
     User="homediskrelay"
     Password="@Xiongsen1994!+" 
     mqttClient = MQTTClient("esp32_clock", MQTT_BROKER,port=1883,ssl=False,user=User,password =Password,   keepalive=60)
