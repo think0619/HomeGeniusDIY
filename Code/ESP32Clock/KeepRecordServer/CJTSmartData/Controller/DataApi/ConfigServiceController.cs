@@ -70,8 +70,6 @@ namespace TextVoiceServer.DataApi
         public string GetConfigValue()
         { 
             return SQLiteHelper.getConfigValueList();  
-
-
         } 
     }
 }
