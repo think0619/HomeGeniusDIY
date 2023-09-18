@@ -85,9 +85,9 @@ def updatetimeTimer_func():
     updatetime_func()
     time.sleep(60)  
     updatetime_func() 
-    time.sleep(60)  
+    time.sleep(60)   
     updatetime_func() 
-    time.sleep(10)  
+    time.sleep(60)   
     while True:
         current_time=utime.localtime()
 #         current_time=micropythonntp.Gettime()
@@ -107,6 +107,8 @@ def mqttsub_cb(topic, msg):
               showClock=True 
         elif(msg.decode('utf-8')=='off'):
               showClock=False 
+        elif(msg.decode('utf-8')=='synctime'):
+              updatetime_func()
         print(str(showClock))
         
         

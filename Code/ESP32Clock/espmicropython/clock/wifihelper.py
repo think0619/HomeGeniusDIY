@@ -24,9 +24,9 @@ def connectwifi(ssid,password):
             pass 
     if(wlan.isconnected()):
         print('network config:', wlan.ifconfig())
-        return True
+        return True;
     else:
-        return False
+        return False;
     _thread.start_new_thread(checkwifi, ())    
 
 def checkwifi():
