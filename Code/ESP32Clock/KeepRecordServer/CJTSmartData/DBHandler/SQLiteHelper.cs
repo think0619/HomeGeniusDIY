@@ -14,9 +14,7 @@ namespace TextVoiceServer.DBHandler
 {
     public class SQLiteHelper
     {
-        static readonly string dbFilename = "sysdata.db";
-
-
+        static readonly string dbFilename = "sysdata.db"; 
 
         public static void InitializeDatabase()
         {
@@ -197,7 +195,7 @@ namespace TextVoiceServer.DBHandler
                         }
                         opsresult = string.Join(Environment.NewLine, resultdic);  
                     } 
-                }
+                }     
             }
             catch (Exception ex)
             {

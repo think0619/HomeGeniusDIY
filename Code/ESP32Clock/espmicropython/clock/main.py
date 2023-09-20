@@ -107,6 +107,8 @@ def mqttsub_cb(topic, msg):
               showClock=True 
         elif(msg.decode('utf-8')=='off'):
               showClock=False 
+        elif(msg.decode('utf-8')=='synctime'):
+              updatetime_func() 
         print(str(showClock))
         
         

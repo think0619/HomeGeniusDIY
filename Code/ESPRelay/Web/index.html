@@ -24,8 +24,16 @@
     <div>
         <h3>系统设置</h3>
         <div style="margin-top: 15px;">
+            <span>时钟</span>
             <button id="on_button" type="button" onclick="clickCmd('on');">打开时钟</button>
             <button id="on_button" type="button" onclick="clickCmd('off');">关闭时钟</button>
+            <button id="on_button" type="button" onclick="clickCmd('synctime');">同步时间</button>
+        </div>
+        <div style="margin-top: 150px;">
+            <span>OPS</span>
+            <button id="on_button" type="button" onclick="clickOpsCMD('poweron');">打开电源</button>
+            <button id="on_button" type="button" onclick="clickOpsCMD('poweroff');">关闭电源</button>
+            <button id="on_button" type="button" onclick="clickOpsCMD('diskpower');">启动硬盘</button>
         </div>
     </div>
     <script>
@@ -39,6 +47,13 @@
         })
         client.on('connect', function() {
             client.subscribe('ShowClockTime', function(err) {
+                if (!err) {
+                    // client.publish('ShowClockTime', 'on')
+                } else {
+                    console.log(err.toString())
+                }
+            })
+            client.subscribe('OPSRelayController', function(err) {
                 if (!err) {
                     // client.publish('ShowClockTime', 'on')
                 } else {
@@ -69,6 +84,22 @@
             })
         }
 
+        function clickOpsCMD(p) {
+            client.publish('OPSRelayController', p, {
+                qos: 0,
+                retain: false
+            }, function(error) {
+                if (error) {
+                    showToast('f', error)
+                    console.log(error)
+                } else {
+                    showToast('s', 'Success!')
+                    console.log('Published')
+                }
+            })
+        }
+
+
         function showToast(flag, msg) {
             let _className = "";
             switch (flag) {
@@ -93,7 +124,7 @@
     </script>
     <style>
         button {
-            margin: 3px 6px;
+            margin: 3px 12px;
             display: inline-block;
             min-width: 80px;
             min-height: 40px;
