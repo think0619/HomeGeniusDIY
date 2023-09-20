@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <script src="mqtt.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+</head>
+
+<body>
+    <div>
+        <h3>系统设置</h3>
+        <div style="margin-top: 15px;">
+            <span>时钟</span>
+            <button id="on_button" type="button" onclick="clickCmd('on');">打开时钟</button>
+            <button id="on_button" type="button" onclick="clickCmd('off');">关闭时钟</button>
+            <button id="on_button" type="button" onclick="clickCmd('synctime');">同步时间</button>
+        </div>
+        <div style="margin-top: 150px;">
+            <span>OPS</span>
+            <button id="on_button" type="button" onclick="clickOpsCMD('poweron');">打开电源</button>
+            <button id="on_button" type="button" onclick="clickOpsCMD('poweroff');">关闭电源</button>
+            <button id="on_button" type="button" onclick="clickOpsCMD('diskpower');">启动硬盘</button>
+        </div>
+        <div style="margin-top: 50px;">
+            <button id="on_button" type="button" onclick="clickCmd('synctime');">同步时间</button>
+        </div>
+    </div>
+    <script>
+        const url = 'ws://hw.hellolinux.cn:8083';
+        const client = mqtt.connect(url, {
+            keepalive: 60,
+            reconnectPeriod: 2000,
+            username: 'homediskrelay',
+            password: '@Xiongsen1994!+'
+        })
+        client.on('connect', function() {
+            client.subscribe('ShowClockTime', function(err) {
+                if (!err) {
+                    // client.publish('ShowClockTime', 'on')
+                } else {
+                    console.log(err.toString())
+                }
+            })
+            client.subscribe('OPSRelayController', function(err) {
+                if (!err) {
+                    // client.publish('ShowClockTime', 'on')
+                } else {
+                    console.log(err.toString())
+                }
+            })
+
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const flag = urlParams.get('flag')
+            const cmd = urlParams.get('cmd')
+            if (flag == "clock") {
+                if (cmd == "on") {
+                    clickCmd('on')
+                } else if (cmd == "off") {
+                    clickCmd('off')
+                }
+            }
+
+
+
+        })
+
+        client.on('message', function(topic, message) {
+            // message is Buffer
+            console.log(topic.toString())
+            console.log(message.toString())
+                // client.end()
+        })
+
+        function clickCmd(p) {
+            client.publish('ShowClockTime', p, {
+                qos: 0,
+                retain: false
+            }, function(error) {
+                if (error) {
+                    //  showToast('f', error)
+                    console.log(error)
+                } else {
+                    //    showToast('s', 'Success!')
+                    console.log('Published')
+                }
+            })
+        }
+
+        function clickOpsCMD(p) {
+            client.publish('OPSRelayController', p, {
+                qos: 0,
+                retain: false
+            }, function(error) {
+                if (error) {
+                    //   showToast('f', error)
+                    console.log(error)
+                } else {
+                    //  showToast('s', 'Success!')
+                    console.log('Published')
+                }
+            })
+        }
+
+
+
+        function showToast(flag, msg) {
+            let _className = "";
+            switch (flag) {
+                case "s":
+                    _className = "successbg";
+                    break;
+                case "f":
+                    _className = "failbg";
+                    break;
+            }
+            Toastify({
+                text: msg,
+                duration: 3000,
+                close: false,
+                className: _className,
+                gravity: "top", // `top` or `bottom`
+                position: "right", // `left`, `center` or `right`
+                stopOnFocus: true, // Prevents dismissing of toast on hover
+
+            }).showToast();
+        }
+    </script>
+    <style>
+        button {
+            margin: 3px 12px;
+            display: inline-block;
+            min-width: 80px;
+            min-height: 40px;
+            background-color: cornflowerblue;
+            border: 0;
+            color: #FFF;
+            border-radius: 5px;
+        }
+        
+        .successbg {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+            ;
+        }
+        
+        .failbg {
+            background: linear-gradient(to right, rgb(255, 95, 109), rgb(255, 195, 113));
+            ;
+        }
+    </style>
+</body>
+
+</html>
