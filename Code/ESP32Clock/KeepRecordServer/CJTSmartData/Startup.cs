@@ -46,12 +46,15 @@ namespace TextVoiceServer
             //applicationLifetime.ApplicationStarted.Register(OnStartup);  
 
             //add cross 
-            services.AddCors();
-           // services.AddControllers() ;  
+            services.AddCors(); 
 
             services.AddHostedService<HandleSQLiteConfigService>();
-            //services.AddHostedService<HandleMQPublishService>();
-            services.AddRazorPages(); 
+           //  services.AddHostedService<HandleMQPublishService>();
+            services.AddRazorPages();
+
+            services.AddSingleton<HandleMQPublishService>();
+             services.AddSingleton<IHostedService, HandleMQPublishService>(
+                                 serviceProvider => serviceProvider.GetService<HandleMQPublishService>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
