@@ -5,28 +5,30 @@
 #webrepl.start()
 import _thread
 import main
-import time
-import commonhelper  
-from machine import Pin
-import mqtthelper
+import time,utime 
+import commonhelper   
+ 
 
  
-def closeRelayAndReset():
-    while True:
-        if(commonhelper.needCloseRelay()):
-            p1 = Pin(13, Pin.OUT)    # create output pin on GPIO4 
-            p1.value(1)             # set pin to low level
-            time.sleep(0.5)
-            p1.value(0)
-            commonhelper.resetRelayApiConfig()
-        else:
-            time.sleep(5*60)
- 
- 
-if(main.connectwifi_func()):
-    if(commonhelper.needRun()): 
-        _thread.start_new_thread(mqtthelper.main(), ()) 
-    else:
-        main.showinfo('stop')
+if(main.connectwifi_func()): 
+     if(commonhelper.needRun()):
+         _thread.start_new_thread(main.updatetimeTimer_func, ()) 
+         _thread.start_new_thread(main.connectmqtt, ()) 
+         _thread.start_new_thread(main.show1637, ())
+         _thread.start_new_thread(main.showTimeOnMax7219, ())
+     else:
+         main.showMsgOnMax7219("Task deadline") 
 else:
-    main.showinfo('wifi')
+    main.showMsgOnMax7219("WiFI error") 
+          
+ 
+# if(main.connectwifi_func()):
+#     if(commonhelper.needRun()): 
+#         _thread.start_new_thread(mqtthelper.main(), ()) 
+#         _thread.start_new_thread(printtest(), ()) 
+#     else:
+#         main.showinfo('stop')
+# else:
+#     main.showinfo('wifi')
+
+

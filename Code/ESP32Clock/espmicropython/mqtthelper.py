@@ -5,7 +5,7 @@ import machine
 
 # Default MQTT MQTT_BROKER to connect to
 # const url = 'ws://hw.hellolinux.cn:8083/';
-MQTT_BROKER = "121.37.160.39"
+MQTT_BROKER = "hw.hellolinux.cn"
 CLIENT_ID = ubinascii.hexlify(machine.unique_id())
 TOPIC = b"RelayCMD"
 User="homediskrelay"
@@ -27,7 +27,7 @@ def reset():
     machine.reset()
     
 def main():
-    mqttClient = MQTTClient("esp32_relay", "hw.hellolinux.cn",port=1883,ssl=False,user="homediskrelay",password ="@Xiongsen1994!+",   keepalive=60)
+    mqttClient = MQTTClient("esp32_relay", MQTT_BROKER,port=1883,ssl=False,user="homediskrelay",password ="@Xiongsen1994!+",   keepalive=60)
     mqttClient.set_callback(sub_cb)
     mqttClient.connect()
     mqttClient.subscribe(TOPIC)

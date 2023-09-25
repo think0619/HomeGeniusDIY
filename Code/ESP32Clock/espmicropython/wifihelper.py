@@ -1,24 +1,51 @@
 import network
+import _thread
+import time
 
-def connectwifi(ssid,password):    
-    wlan = network.WLAN(network.STA_IF)
+_ssid=""
+_password=""
+wlan=network.WLAN(network.STA_IF)
+
+def connectwifi(ssid,password):
+    global wlan
+    global _ssid
+    global _password 
+    wlan=network.WLAN(network.STA_IF)
+    _ssid=ssid
+    _password=password 
     wlan.active(True)
+    time.sleep(3)
     if(wlan.isconnected()):
-        print('has connected wifi')
-    else: 
-        if not wlan.isconnected():
-            print('connecting to network...')
-            try:
-                wlan.connect(ssid,password) 
-                while not wlan.isconnected():
-                    pass 
-            except:
-                print('connect error')
+        print('ESP32 has connected wifi.')
+    else:
+        wlan.connect(ssid,password)
+        print('connecting to network...')
+        while wlan.isconnected()==False:
+            pass 
     if(wlan.isconnected()):
         print('network config:', wlan.ifconfig())
         return True;
     else:
         return False;
+    _thread.start_new_thread(checkwifi, ())    
+
+def checkwifi():
+    time.sleep(60)
+    global _ssid
+    global _password 
+    global wlan 
+    while True:
+        if not wlan.isconnected(): 
+            try: 
+                wlan.connect(_ssid,_password) 
+                while not wlan.isconnected():
+                    pass 
+            except:
+                print('connect error')
+    time.sleep(60)
+#
+ 
+
 
 #do_connect()
 
