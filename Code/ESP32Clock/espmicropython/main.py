@@ -119,10 +119,10 @@ def connectmqtt():
     User=commonhelper.readConfig('mqttuser')
     Password=commonhelper.readConfig('mqttpwd')
 
-    nowt=time.localtime()
-    timestr= commonhelper.xfill(nowt[1],2)+ commonhelper.xfill(nowt[2],2)+ commonhelper.xfill(nowt[3],2)+ commonhelper.xfill(nowt[4],2)+ commonhelper.xfill(nowt[5],2) 
+    # nowt=time.localtime()
+    # timestr= commonhelper.xfill(nowt[1],2)+ commonhelper.xfill(nowt[2],2)+ commonhelper.xfill(nowt[3],2)+ commonhelper.xfill(nowt[4],2)+ commonhelper.xfill(nowt[5],2) 
 
-    mqttClient = MQTTClient("esp32_clock_"+timestr , MQTT_BROKER,port=1883,ssl=False,user=User,password =Password,   keepalive=60)
+    mqttClient = MQTTClient("esp32_clock" , MQTT_BROKER,port=1883,ssl=False,user=User,password =Password,   keepalive=60)
     mqttClient.set_callback(mqttsub_cb)
     mqttClient.connect()
     mqttClient.subscribe(TOPIC)
@@ -145,9 +145,9 @@ def connectmqtt():
                     # print(f"Pinging MQTT Broker, last ping :: {now[0]}/{now[1]}/{now[2]} {now[3]}:{now[4]}:{now[5]}")
                 time.sleep(1)
         except OSError as e:   
-            nowt=time.localtime()
-            timestr= commonhelper.xfill(nowt[1],2)+ commonhelper.xfill(nowt[2],2)+ commonhelper.xfill(nowt[3],2)+ commonhelper.xfill(nowt[4],2)+ commonhelper.xfill(nowt[5],2) 
-            mqttClient.client_id="esp32_clock_"+timestr 
+            # nowt=time.localtime()
+            # timestr= commonhelper.xfill(nowt[1],2)+ commonhelper.xfill(nowt[2],2)+ commonhelper.xfill(nowt[3],2)+ commonhelper.xfill(nowt[4],2)+ commonhelper.xfill(nowt[5],2) 
+            mqttClient.client_id="esp32_clock" 
             mqttClient.connect(False) 
 
             

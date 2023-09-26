@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controller\Auth\UserInfoController.cs" />
     <Compile Remove="DataHandler\GetOPCConfigController.cs" />
     <Compile Remove="DBContext\MSSQLDataConfigContext.cs" />
     <Compile Remove="DBContext\SXMSSQLDataConfigContext.cs" />
@@ -15,6 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.22" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.27" />
     <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="6.1.0" />
@@ -32,6 +34,7 @@
     <Folder Include="Controller\ContentMgmt\" />
     <Folder Include="DataHandler\" />
     <Folder Include="Hubs\" />
+    <Folder Include="Auth\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -14,7 +14,9 @@
     <link rel="stylesheet" href="">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <script src="mqtt.min.js"></script>
+    <script src="js/mqtt.min.js"></script>
+    <script src="js/axios.min.js"></script>
+    <script src="js/handler.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
@@ -40,66 +42,98 @@
         </div>
     </div>
     <script>
-        const url = 'ws://hw.hellolinux.cn:8083';
-
-        const client = mqtt.connect(url, {
-            keepalive: 60,
-            reconnectPeriod: 2000,
-            username: 'homediskrelay',
-            password: '@Xiongsen1994!+'
-        })
-        client.on('connect', function() {
-            client.subscribe('ShowClockTime', function(err) {
-                if (!err) {
-                    // client.publish('ShowClockTime', 'on')
+        //check authority
+        const urlParams = new URLSearchParams(window.location.search);
+        const idcode = urlParams.get('idcode');
+        if (idcode != null) {
+            login(idcode).then((result) => {
+                if (result.Status == 1) {
+                    var token = result.Token;
+                    //get mqtt info 
+                    if (token != null) {
+                        getMQTTInfo(token).then((mqttr) => {
+                            if (mqttr != null && mqttr.Status == 1) {
+                                let mqttdata = mqttr.Data;
+                                let mqtt_username = mqttdata.username;
+                                let mqtt_password = mqttdata.password;
+                                let mqtt_wsurl = mqttdata.wsurl;
+                                connectmqtt(mqtt_wsurl, mqtt_username, mqtt_password)
+                            }
+                        });
+                    }
                 } else {
-                    console.log(err.toString())
+
                 }
+
+
+                // (async() => {
+                //     var loginresult = await login(idcode) 
+                // })() 
             })
-            client.subscribe('OPSRelayController', function(err) {
-                if (!err) {
-                    // client.publish('ShowClockTime', 'on')
-                } else {
-                    console.log(err.toString())
-                }
+        }
+        var client;
+
+        function connectmqtt(_url, _username, _password) {
+            client = mqtt.connect(_url, {
+                keepalive: 60,
+                reconnectPeriod: 2000,
+                username: _username,
+                password: _password
             })
-        })
-
-        client.on('message', function(topic, message) {
-            // message is Buffer
-            console.log(topic.toString())
-            console.log(message.toString())
-                // client.end()
-        })
-
-        function clickCmd(p) {
-            client.publish('ShowClockTime', p, {
-                qos: 0,
-                retain: false
-            }, function(error) {
-                if (error) {
-                    showToast('f', error)
-                    console.log(error)
-                } else {
-                    showToast('s', 'Success!')
-                    console.log('Published')
-                }
+            client.on('connect', function() {
+                client.subscribe('ShowClockTime', function(err) {
+                    if (!err) {} else {
+                        console.log(err.toString())
+                    }
+                })
+                client.subscribe('OPSRelayController', function(err) {
+                    if (!err) {} else {
+                        console.log(err.toString())
+                    }
+                })
+            })
+            client.on('message', function(topic, message) {
+                console.log(topic.toString())
+                console.log(message.toString())
             })
         }
 
+
+
+        function clickCmd(p) {
+            if (client != null) {
+                client.publish('ShowClockTime', p, {
+                    qos: 0,
+                    retain: false
+                }, function(error) {
+                    if (error) {
+                        showToast('f', error)
+                        console.log(error)
+                    } else {
+                        showToast('s', 'Success!')
+                        console.log('Published')
+                    }
+                })
+            } else {
+                showToast('f', 'not connect')
+            }
+        }
+
         function clickOpsCMD(p) {
-            client.publish('OPSRelayController', p, {
-                qos: 0,
-                retain: false
-            }, function(error) {
-                if (error) {
-                    showToast('f', error)
-                    console.log(error)
-                } else {
-                    showToast('s', 'Success!')
-                    console.log('Published')
-                }
-            })
+            if (client != null) {
+                client.publish('OPSRelayController', p, {
+                    qos: 0,
+                    retain: false
+                }, function(error) {
+                    if (error) {
+                        showToast('f', error)
+                        console.log(error)
+                    } else {
+                        showToast('s', 'Success!')
+                        console.log('Published')
+                    }
+                })
+            }
         }
 
 

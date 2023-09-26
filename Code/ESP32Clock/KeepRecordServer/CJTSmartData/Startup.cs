@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -5,6 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
 using System.Text.Json;
 using TextVoiceServer.DBContext;
 using TextVoiceServer.Serivices;
@@ -24,6 +28,7 @@ namespace TextVoiceServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             _services = services;
             ////add websocket client
             //WebsocketClient wsClient = InitWebSocketClient(); 
@@ -50,11 +55,28 @@ namespace TextVoiceServer
 
             services.AddHostedService<HandleSQLiteConfigService>();
            //  services.AddHostedService<HandleMQPublishService>();
-            services.AddRazorPages();
+          
 
             services.AddSingleton<HandleMQPublishService>();
-             services.AddSingleton<IHostedService, HandleMQPublishService>(
+            services.AddSingleton<IHostedService, HandleMQPublishService>(
                                  serviceProvider => serviceProvider.GetService<HandleMQPublishService>());
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+              .AddJwtBearer(options =>
+              {
+                  options.TokenValidationParameters = new TokenValidationParameters
+                  {
+                      ValidateIssuer = true,
+                      ValidateAudience = true,
+                      ValidateLifetime = true,
+                      ValidateIssuerSigningKey = true,
+                      ValidIssuer = Configuration["Jwt:Issuer"],
+                      ValidAudience = Configuration["Jwt:Audience"],
+                      IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                  };
+              });
+            services.AddRazorPages();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,14 +100,9 @@ namespace TextVoiceServer
                 .AllowAnyHeader()
                 .WithMethods("GET", "POST")
                 .SetIsOriginAllowed(origin => true) // allow any origin
-                .AllowCredentials()); // allow credentials
-
-            //// global cors policy
-            //app.UseCors(x => x
-            //    .AllowAnyMethod()
-            //    .AllowAnyHeader()
-            //    .SetIsOriginAllowed(origin => true) // allow any origin
-            //    .AllowCredentials()); // allow credentials
+                .AllowCredentials()); // allow credentials 
+        
+            app.UseMiddleware<JwtMiddleware>();
 
             app.UseAuthorization();
 
@@ -97,6 +114,8 @@ namespace TextVoiceServer
                 endpoints.MapRazorPages();
                 // endpoints.MapHub<DataProviderHub>("/DataProvider");
             });
+ 
+
 
         }
     }

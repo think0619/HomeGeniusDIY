@@ -14,6 +14,7 @@ using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using TextVoiceServer.DBHandler;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TextVoiceServer.DataApi
 {
@@ -31,8 +32,8 @@ namespace TextVoiceServer.DataApi
         public string Get()
         {
             return "hah";
-        }
-
+        } 
+       
         [HttpGet("get")]
         public string GetConfigValue([FromQuery]string key) 
         {

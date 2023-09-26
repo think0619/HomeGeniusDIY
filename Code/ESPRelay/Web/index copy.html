@@ -25,14 +25,19 @@
          * EMQX 的 ws 连接默认端口为 8083，wss 为 8084
          * 注意需要在连接地址后加上一个 path, 例如 /mqtt
          */
-        const url = 'ws://hw.hellolinux.cn:8083/mqtt';
+        const url = 'ws://hw.hellolinux.cn:8083';
         //   const url = 'ws://127.0.0.1:8083/mqtt';
-        const client = mqtt.connect(url)
+        client = mqtt.connect(url, {
+            keepalive: 60,
+            reconnectPeriod: 2000,
+            username: "homediskrelay",
+            password: "@Xiongsen1994!+"
+        })
 
         client.on('connect', function() {
-            client.subscribe('presence', function(err) {
+            client.subscribe('ShowClockTime', function(err) {
                 if (!err) {
-                    client.publish('presence', 'Hello mqtt')
+                    // client.publish('presence', 'Hello mqtt')
                 }
             })
         })

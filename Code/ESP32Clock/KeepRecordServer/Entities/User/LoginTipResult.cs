@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Entities.User
 {
     [Serializable]
-    public class TipResult
+    public class LoginTipResult
     {
         /// <summary>
         /// 0 error
@@ -16,7 +16,6 @@ namespace Entities
         public int Status { get; set; }
 
         public string Msg { get; set; }
-
-        public Object Data { get; set; }
+        public string Token { get; set; }
     }
 }
