@@ -108,8 +108,18 @@ def mqttsub_cb(topic, msg):
               showClock=False 
         elif(msg.decode('utf-8')=='synctime'):
               updatetime_func() 
-        # print(str(showClock))
-        
+        # print(str(showClock)) 
+
+def autoconnectmqtt(mqttclient,clearsession):
+    while True:
+        try:
+            mqttclient.set_callback(mqttsub_cb) 
+            mqttclient.connect()
+            mqttclient.subscribe(TOPIC)
+            break
+        except OSError as e:
+            print(e)
+            time.sleep(30)
         
 last_ping = time.time()
 ping_interval = 60
@@ -118,15 +128,17 @@ def connectmqtt():
 #    global TOPIC = b"ShowClockTime"
     User=commonhelper.readConfig('mqttuser')
     Password=commonhelper.readConfig('mqttpwd')
+    mqttClient = MQTTClient("esp32_clock", MQTT_BROKER,port=1883,ssl=False,user=User,password =Password,   keepalive=60)
+    autoconnectmqtt(mqttClient,True)
 
     # nowt=time.localtime()
     # timestr= commonhelper.xfill(nowt[1],2)+ commonhelper.xfill(nowt[2],2)+ commonhelper.xfill(nowt[3],2)+ commonhelper.xfill(nowt[4],2)+ commonhelper.xfill(nowt[5],2) 
 
-    mqttClient = MQTTClient("esp32_clock" , MQTT_BROKER,port=1883,ssl=False,user=User,password =Password,   keepalive=60)
-    mqttClient.set_callback(mqttsub_cb)
-    mqttClient.connect()
-    mqttClient.subscribe(TOPIC)
-    print(f"Connected to MQTT  Broker :: {MQTT_BROKER}, and waiting for callback function to be called!")
+#     mqttClient = MQTTClient("esp32_clock" , MQTT_BROKER,port=1883,ssl=False,user=User,password =Password,   keepalive=60)
+#     mqttClient.set_callback(mqttsub_cb)
+#     mqttClient.connect()
+#     mqttClient.subscribe(TOPIC)
+#     print(f"Connected to MQTT  Broker :: {MQTT_BROKER}, and waiting for callback function to be called!")
     while True:
         try:
             if False: 
@@ -144,11 +156,12 @@ def connectmqtt():
                     now = time.localtime()
                     # print(f"Pinging MQTT Broker, last ping :: {now[0]}/{now[1]}/{now[2]} {now[3]}:{now[4]}:{now[5]}")
                 time.sleep(1)
-        except OSError as e:   
+        except OSError as e: 
+            autoconnectmqtt(mqttClient,False)   
             # nowt=time.localtime()
             # timestr= commonhelper.xfill(nowt[1],2)+ commonhelper.xfill(nowt[2],2)+ commonhelper.xfill(nowt[3],2)+ commonhelper.xfill(nowt[4],2)+ commonhelper.xfill(nowt[5],2) 
-            mqttClient.client_id="esp32_clock" 
-            mqttClient.connect(False) 
+#             mqttClient.client_id="esp32_clock" 
+#             mqttClient.connect(False) 
 
             
 #    print("Disconnecting...")
