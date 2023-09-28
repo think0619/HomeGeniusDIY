@@ -8,8 +8,8 @@
 import './assets/css/index.css'
 import './assets/css/font.css'
 </script>
-<script>
-
+ 
+<script> 
 (function() {
            if (typeof WeixinJSBridge == "object" && typeof WeixinJSBridge.invoke == "function") {
                handleFontSize();
