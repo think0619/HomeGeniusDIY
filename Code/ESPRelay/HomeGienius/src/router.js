@@ -11,8 +11,7 @@ const tab3 = () =>
     import ('@/view/main/tab3/index.vue')
 const tab4 = () =>
     import ('@/view/main/tab4/index.vue')
-const goods = () =>
-    import ('@/view/goods/index.vue')
+
 
 const keepadd = () =>
     import ('@/view/keep/index.vue')
@@ -54,26 +53,6 @@ const routes = [{
         component: espcontrol,
     },
 
-
-
-
-
-    // {
-    //     name: 'keepview',
-    //     path: '/keep/view',
-    //     component: keepview,
-    //     meta: {
-    //         title: '购物车',
-    //     },
-    // },
-    // {
-    //     name: 'keepadd',
-    //     path: '/keep/add',
-    //     component: keepadd,
-    //     meta: {
-    //         title: '购物车',
-    //     },
-    // },
 
 ];
 

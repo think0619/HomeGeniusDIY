@@ -45,8 +45,7 @@ namespace TextVoiceServer.Controller.Auth
                 Status = 0,
                 Msg = "",
                Data = new APiConfig()
-            };
-
+            }; 
            
             var loginusername = HttpContext.Items[nameof(LoginUser.username)];
             if (!String.IsNullOrWhiteSpace(flag) && loginusername != null && !String.IsNullOrWhiteSpace(loginusername.ToString()))
