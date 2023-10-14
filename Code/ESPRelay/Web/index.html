@@ -33,7 +33,7 @@
         </div>
         <div style="margin-top: 150px;">
             <span>OPS</span>
-            <button id="on_button" type="button" onclick="clickOpsCMD('poweron');">打开电源</button>
+            <button id="on_button" type="button" onclick="clickOpsCMD('LOCKPC_PCLockDY');">打开电源</button>
             <button id="on_button" type="button" onclick="clickOpsCMD('poweroff');">关闭电源</button>
             <button id="on_button" type="button" onclick="clickOpsCMD('diskpower');">启动硬盘</button>
         </div>
@@ -122,7 +122,8 @@
 
         function clickOpsCMD(p) {
             if (client != null) {
-                client.publish('OPSRelayController', p, {
+                // OPSRelayController
+                client.publish('LockPC', p, {
                     qos: 0,
                     retain: false
                 }, function(error) {

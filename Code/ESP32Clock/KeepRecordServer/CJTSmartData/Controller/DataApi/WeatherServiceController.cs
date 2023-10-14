@@ -83,8 +83,8 @@ namespace TextVoiceServer.DataApi
             return Ok(tipResult);
         }
 
-        private void FilterWeather(WeatherModel weatherModel) 
-        {
-        }
+
+
+        
     }
 }
