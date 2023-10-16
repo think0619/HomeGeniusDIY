@@ -10,6 +10,7 @@ import { Toast } from 'vant';
 import { Space } from 'vant';
 import { Image as VanImage } from 'vant';
 import { Form, Card, List, } from 'vant';
+import { Cell, CellGroup } from 'vant';
 
 const app = createApp(App);
 app.use(router);
@@ -23,6 +24,8 @@ app.use(Space);
 app.use(VanImage);
 app.use(Card);
 app.use(List);
+app.use(Cell);
+app.use(CellGroup);
 //app.use(showConfirmDialog);
 
 

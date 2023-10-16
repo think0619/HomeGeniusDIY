@@ -15,8 +15,11 @@ namespace Entities
         {
             // Unix timestamp is seconds past epoch
             DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            dateTime = dateTime.AddMilliseconds(unixTimeStamp).ToLocalTime();
+            dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
             return dateTime;
+
+            //DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(timestamp);
+            //DateTime dateTime = dateTimeOffset.LocalDateTime;
         }
     }
 }

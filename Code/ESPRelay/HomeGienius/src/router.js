@@ -20,6 +20,8 @@ const keepview = () =>
 
 const espcontrol = () =>
     import ('@/view/espcontroller/index.vue')
+const weathershow = () =>
+    import ('@/view/weather/index.vue')
 
 const routes = [{
         path: '/',
@@ -51,6 +53,11 @@ const routes = [{
         name: 'espcontrol',
         path: '/esp',
         component: espcontrol,
+    },
+    {
+        name: 'weather',
+        path: '/weather',
+        component: weathershow,
     },
 
 
