@@ -9,7 +9,7 @@ export async function getWeather(token) {
     await axios({
         method: 'post',
         timeout: 3000,
-        url: host + '/api/weather/getall',
+        url: host + '/api/weather/getall/filter',
         async: false,
         headers: {
             'Content-Type': 'application/json',

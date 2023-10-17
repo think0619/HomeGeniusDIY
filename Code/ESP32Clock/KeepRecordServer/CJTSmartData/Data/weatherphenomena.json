@@ -1,0 +1,102 @@
+[
+  {
+    "Phenomena": "晴（白天）",
+    "Code": "CLEAR_DAY",
+    "Remark": "cloudrate < 0.2"
+  },
+  {
+    "Phenomena": "晴（夜间）",
+    "Code": "CLEAR_NIGHT",
+    "Remark": "cloudrate < 0.2"
+  },
+  {
+    "Phenomena": "多云（白天）",
+    "Code": "PARTLY_CLOUDY_DAY",
+    "Remark": "0.8 >= cloudrate > 0.2"
+  },
+  {
+    "Phenomena": "多云（夜间）",
+    "Code": "PARTLY_CLOUDY_NIGHT",
+    "Remark": "0.8 >= cloudrate > 0.2"
+  },
+  {
+    "Phenomena": "阴",
+    "Code": "CLOUDY",
+    "Remark": "cloudrate > 0.8"
+  },
+  {
+    "Phenomena": "轻度雾霾",
+    "Code": "LIGHT_HAZE",
+    "Remark": "PM2.5 100~150"
+  },
+  {
+    "Phenomena": "中度雾霾",
+    "Code": "MODERATE_HAZE",
+    "Remark": "PM2.5 150~200"
+  },
+  {
+    "Phenomena": "重度雾霾",
+    "Code": "HEAVY_HAZE",
+    "Remark": "PM2.5 > 200"
+  },
+  {
+    "Phenomena": "小雨",
+    "Code": "LIGHT_RAIN",
+    "Remark": "见 降水强度"
+  },
+  {
+    "Phenomena": "中雨",
+    "Code": "MODERATE_RAIN",
+    "Remark": "见 降水强度"
+  },
+  {
+    "Phenomena": "大雨",
+    "Code": "HEAVY_RAIN",
+    "Remark": "见 降水强度"
+  },
+  {
+    "Phenomena": "暴雨",
+    "Code": "STORM_RAIN",
+    "Remark": "见 降水强度"
+  },
+  {
+    "Phenomena": "雾",
+    "Code": "FOG",
+    "Remark": "能见度低，湿度高，风速低，温度低"
+  },
+  {
+    "Phenomena": "小雪",
+    "Code": "LIGHT_SNOW",
+    "Remark": "见 降水强度"
+  },
+  {
+    "Phenomena": "中雪",
+    "Code": "MODERATE_SNOW",
+    "Remark": "见 降水强度"
+  },
+  {
+    "Phenomena": "大雪",
+    "Code": "HEAVY_SNOW",
+    "Remark": "见 降水强度"
+  },
+  {
+    "Phenomena": "暴雪",
+    "Code": "STORM_SNOW",
+    "Remark": "见 降水强度"
+  },
+  {
+    "Phenomena": "浮尘",
+    "Code": "DUST",
+    "Remark": "AQI > 150, PM10 > 150，湿度 < 30%，风速 < 6 m/s"
+  },
+  {
+    "Phenomena": "沙尘",
+    "Code": "SAND",
+    "Remark": "AQI > 150, PM10> 150，湿度 < 30%，风速 > 6 m/s"
+  },
+  {
+    "Phenomena": "大风",
+    "Code": "WIND",
+    "Remark": ""
+  }
+]

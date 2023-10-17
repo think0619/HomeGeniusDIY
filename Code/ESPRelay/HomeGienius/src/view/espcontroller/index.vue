@@ -77,7 +77,11 @@ export default {
                             });
                         }
                     } else {
-
+                        showSuccessToast({
+                            "wordBreak": "break-word",
+                            "message": "Identity expired."+result.Msg,
+                            "duration": 800
+                        });
                     }
                 } else {
                     showFailToast('login error')

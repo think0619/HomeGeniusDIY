@@ -39,6 +39,7 @@ body {
   -webkit-font-smoothing: antialiased;
   margin: 0;
   padding: 0;
-  border: 0
+  border: 0;
+ 
 }
 </style>

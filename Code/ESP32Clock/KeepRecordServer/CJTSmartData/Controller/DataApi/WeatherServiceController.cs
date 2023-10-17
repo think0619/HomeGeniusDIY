@@ -18,6 +18,7 @@ using TextVoiceServer.Serivices;
 using RestSharp;
 using Entities.User; 
 using Entities.Weather;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace TextVoiceServer.DataApi
 {
@@ -61,6 +62,17 @@ namespace TextVoiceServer.DataApi
                     if ("filter".Equals(type))
                     {
                         WeatherInfo weatherInfo = new WeatherInfo(response);
+                        string weathernameFilePath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Data", "weatherphenomena.json");
+                        string resultMsg = System.IO.File.ReadAllText(weathernameFilePath);
+                        if(resultMsg != null)
+                        {
+                            List<PhenomenaCode> codelist = JsonHelper.DeserializeJsonToList<PhenomenaCode>(resultMsg);
+                            weatherInfo.hourlyInfo.SkyconInfo.ForEach(sky =>
+                            {
+                                var sameCode = codelist.Where(c => c.Code.Equals(sky.Value, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                                sky._Value = sameCode?.Phenomena;
+                            });
+                        } 
                         tipResult.Data = weatherInfo;
                     }
                     else

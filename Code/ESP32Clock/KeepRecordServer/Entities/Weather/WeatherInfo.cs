@@ -7,6 +7,20 @@ namespace Entities.Weather
     public class WeatherInfo
     {
         public DateTime ServerTime { get; set; }
+        public string _ServerTime
+        {
+            get
+            {
+                if (ServerTime != null)
+                {
+                    return ServerTime.ToString("yyyy-MM-dd HH:mm:ss");
+                }
+                else
+                {
+                    return "";
+                }
+            }
+        }
         public string LatLong { get; set; }//经纬度
         public RealtimeInfo realtimeInfo { get; set; }
         public HourlyInfo hourlyInfo { get; set; }
@@ -63,7 +77,7 @@ namespace Entities.Weather
                 {
                     hourlyInfo.Precipitations.Add(new PrecipitationInfo()
                     {
-                        Datetime = pre.datetime,
+                        DatetimeT = pre.datetime,
                         Value= pre.value,   
                         Probability= pre.probability,
                     });
@@ -74,7 +88,7 @@ namespace Entities.Weather
                 {
                     hourlyInfo.Temperature.Add(new TempInfo()
                     {
-                        Datetime = temp.datetime,
+                        DatetimeT = temp.datetime,
                         Value = temp.value, 
                     });
                 }
@@ -84,7 +98,7 @@ namespace Entities.Weather
                 {
                     hourlyInfo.ApparentTemperature.Add(new TempInfo()
                     {
-                        Datetime = temp.datetime,
+                        DatetimeT = temp.datetime,
                         Value = temp.value,
                     });
                 }
@@ -94,7 +108,7 @@ namespace Entities.Weather
                 {
                     hourlyInfo.SkyconInfo.Add(new SkyconInfo()
                     {
-                        Datetime = sky.datetime,
+                        DatetimeT = sky.datetime,
                         Value = sky.value,
                     });
                 } 
@@ -103,16 +117,27 @@ namespace Entities.Weather
             if (weathermodel.result.daily != null)
             {
                 var dailydata = weathermodel.result.daily;
+                //dailyInfo = new DailyInfo()
+                //{
+                //    SunriseSunsetDesc = (dailydata.astro.Count > 0) ? String.Format($"Sunrise:{dailydata.astro[0].sunrise.time} Sunset:{dailydata.astro[0].sunset.time}") : "",
+                //    PrecipitationDesc = (dailydata.precipitation.Count > 0) ? String.Format($"降水概率：{dailydata.precipitation[0].probability}") : "",
+                //    TemperatureDesc = (dailydata.temperature.Count > 0) ? String.Format($"气温：{dailydata.temperature[0].min}-{dailydata.temperature[0].max}") : "",
+                //    UltravioletDesc = (dailydata.life_index?.ultraviolet.Count > 0) ? $"紫外线：{dailydata.life_index.ultraviolet[0].desc}" : "",
+                //    CarWashingDesc = (dailydata.life_index?.carWashing.Count > 0) ? $"洗车：{dailydata.life_index.carWashing[0].desc}" : "",
+                //    DressingDesc = (dailydata.life_index?.dressing.Count > 0) ? $"穿衣指数：{dailydata.life_index.dressing[0].desc}" : "",
+                //    ComfortDesc = (dailydata.life_index?.comfort.Count > 0) ? $"舒适度指数：{dailydata.life_index.comfort[0].desc}" : "",
+                //    ColdRiskDesc = (dailydata.life_index?.coldRisk.Count > 0) ? $"感冒指数：{dailydata.life_index.coldRisk[0].desc}" : "",
+                //};
                 dailyInfo = new DailyInfo()
                 {
-                    SunriseSunsetDesc = (dailydata.astro.Count > 0) ? String.Format($"{dailydata.astro[0].date.ToString("yyyy-MM-dd")} Sunrise:{dailydata.astro[0].sunrise.time} Sunset:{dailydata.astro[0].sunset.time}") : "",
-                    PrecipitationDesc = (dailydata.precipitation.Count > 0) ? String.Format($"降水概率：{dailydata.precipitation[0].probability}") : "",
-                    TemperatureDesc = (dailydata.temperature.Count > 0) ? String.Format($"气温：{dailydata.temperature[0].min}-{dailydata.temperature[0].max}") : "",
-                    UltravioletDesc = (dailydata.life_index?.ultraviolet.Count > 0) ? $"紫外线：{dailydata.life_index.ultraviolet[0].desc}" : "",
-                    CarWashingDesc = (dailydata.life_index?.carWashing.Count > 0) ? $"洗车：{dailydata.life_index.carWashing[0].desc}" : "",
-                    DressingDesc = (dailydata.life_index?.dressing.Count > 0) ? $"穿衣指数：{dailydata.life_index.dressing[0].desc}" : "",
-                    ComfortDesc = (dailydata.life_index?.comfort.Count > 0) ? $"舒适度指数：{dailydata.life_index.comfort[0].desc}" : "",
-                    ColdRiskDesc = (dailydata.life_index?.coldRisk.Count > 0) ? $"感冒指数：{dailydata.life_index.coldRisk[0].desc}" : "",
+                    SunriseSunsetDesc = (dailydata.astro.Count > 0) ? String.Format($"{dailydata.astro[0].sunrise.time}-{dailydata.astro[0].sunset.time}") : "",
+                    PrecipitationDesc = (dailydata.precipitation.Count > 0) ? String.Format($"{dailydata.precipitation[0].probability}") : "",
+                    TemperatureDesc = (dailydata.temperature.Count > 0) ? String.Format($"{dailydata.temperature[0].min}-{dailydata.temperature[0].max}") : "",
+                    UltravioletDesc = (dailydata.life_index?.ultraviolet.Count > 0) ? $"{dailydata.life_index.ultraviolet[0].desc}" : "",
+                    CarWashingDesc = (dailydata.life_index?.carWashing.Count > 0) ? $"{dailydata.life_index.carWashing[0].desc}" : "",
+                    DressingDesc = (dailydata.life_index?.dressing.Count > 0) ? $"{dailydata.life_index.dressing[0].desc}" : "",
+                    ComfortDesc = (dailydata.life_index?.comfort.Count > 0) ? $"{dailydata.life_index.comfort[0].desc}" : "",
+                    ColdRiskDesc = (dailydata.life_index?.coldRisk.Count > 0) ? $"{dailydata.life_index.coldRisk[0].desc}" : "",
                 };
             }
 
@@ -167,19 +192,62 @@ namespace Entities.Weather
 
     public class PrecipitationInfo
     {
-        public DateTime Datetime { get; set; }
+        public DateTime DatetimeT { get; set; }
+        public string Time 
+        {
+            get 
+            {
+                if (DatetimeT != null)
+                {
+                    return DatetimeT.ToString("HH:mm");
+                }
+                else 
+                {
+                    return "";
+                }
+            }
+        }
         public float Value { get; set; }
         public float Probability { get; set; }
     }
     public class TempInfo
     {
-        public DateTime Datetime { get; set; }
+        public DateTime DatetimeT { get; set; }
+        public string Time
+        {
+            get
+            {
+                if (DatetimeT != null)
+                {
+                    return DatetimeT.ToString("HH:mm");
+                }
+                else
+                {
+                    return "";
+                }
+            }
+        }
         public float Value { get; set; }
     }
     public class SkyconInfo
     {
-        public DateTime Datetime { get; set; }
+        public DateTime DatetimeT { get; set; }
+        public string Time
+        {
+            get
+            {
+                if (DatetimeT != null)
+                {
+                    return DatetimeT.ToString("HH:mm");
+                }
+                else
+                {
+                    return "";
+                }
+            }
+        }
         public string Value { get; set; }
+        public string _Value { get; set; }
     }
      
 
