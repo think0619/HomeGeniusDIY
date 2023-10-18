@@ -1,8 +1,9 @@
 //  esp.js
 import axios from 'axios'
+import { serverUrl } from '@/api/config'
 
 export function addkeeprecord(_params) {
-    var url = host + "/api/HandleKeepRecord/Add";
+    var url = serverUrl + "/api/HandleKeepRecord/Add";
     return axios({
         url: url,
         method: "post",

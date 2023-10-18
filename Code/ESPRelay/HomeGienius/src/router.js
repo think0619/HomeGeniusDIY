@@ -13,6 +13,9 @@ const tab4 = () =>
     import ('@/view/main/tab4/index.vue')
 
 
+const login = () =>
+    import ('@/view/login/index.vue')
+
 const keepadd = () =>
     import ('@/view/keep/index.vue')
 const keepview = () =>
@@ -25,16 +28,16 @@ const weathershow = () =>
 
 const routes = [{
         path: '/',
-        redirect: '/main'
+        redirect: '/login'
     },
-    {
-        path: '/home',
-        name: '首页',
-        component: home,
-        meta: {
-            title: '新技术、新工艺、新装备',
-        },
-    },
+    // {
+    //     path: '/home',
+    //     name: '首页',
+    //     component: home,
+    //     meta: {
+    //         title: '新技术、新工艺、新装备',
+    //     },
+    // },
     {
         name: 'keepadd',
         path: '/keep',
@@ -44,11 +47,11 @@ const routes = [{
             { name: 'view', path: 'view', component: keepview },
         ]
     },
-    {
-        name: 'main',
-        path: '/main',
-        component: main,
-    },
+    // {
+    //     name: 'main',
+    //     path: '/main',
+    //     component: main,
+    // },
     {
         name: 'espcontrol',
         path: '/esp',
@@ -59,7 +62,11 @@ const routes = [{
         path: '/weather',
         component: weathershow,
     },
-
+    {
+        name: 'loginpage',
+        path: '/login',
+        component: login,
+    },
 
 ];
 

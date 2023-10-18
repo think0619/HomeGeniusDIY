@@ -72,6 +72,9 @@ namespace TextVoiceServer.DataApi
                                 var sameCode = codelist.Where(c => c.Code.Equals(sky.Value, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
                                 sky._Value = sameCode?.Phenomena;
                             });
+
+                            var sameCode2 = codelist.Where(c => c.Code.Equals(weatherInfo.realtimeInfo.Skycon, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                            weatherInfo.realtimeInfo._Skycon=sameCode2?.Phenomena;
                         } 
                         tipResult.Data = weatherInfo;
                     }

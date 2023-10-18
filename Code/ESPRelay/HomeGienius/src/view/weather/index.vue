@@ -1,16 +1,18 @@
 <template>
     <div class="title">
-        <van-nav-bar :title="contentTitle"></van-nav-bar>
+        <van-nav-bar :title="contentTitle" left-text="" left-arrow  @click-left="onClickLeft"  ></van-nav-bar>
     </div>
     <div class="control" title="Location">
         <van-cell-group>
             <van-cell title="南京·浦口" :value="weatherDatetime" :label="weatherlonglat" />
         </van-cell-group>
         <van-cell-group title="Realtime">
-            <van-cell v-for="(item, index) in realtimeInfoItems" :key="index" :title="item.title" :value="item.value" ></van-cell>
+            <van-cell v-for="(item, index) in realtimeInfoItems" :key="index" :title="item.title"
+                :value="item.value"></van-cell>
         </van-cell-group>
         <van-cell-group title="Daily">
-            <van-cell v-for="(item, index) in dailyInfoItems" :key="index" :title="item.title" :value="item.value" ></van-cell>
+            <van-cell v-for="(item, index) in dailyInfoItems" :key="index" :title="item.title"
+                :value="item.value"></van-cell>
         </van-cell-group>
         <van-cell-group title="Hourly">
             <van-cell title="温度变化趋势" :value="hourlyInfo" />
@@ -18,8 +20,9 @@
             <van-cell title="降水概率趋势" />
             <div id="precipitationcharts" style="width: 100%;height: 300px;"></div>
         </van-cell-group>
-        <van-cell-group title="小时天气预报">
-            <van-cell v-for="(item, index) in hoursForecast" :key="index" :title="item.time" :label="item.value" :value="item.alias" ></van-cell>
+        <van-cell-group title="Hourly Sky Condition">
+            <van-cell v-for="(item, index) in hoursForecast" :key="index" :title="item.time" :label="item.value"
+                :value="item.alias"></van-cell>
         </van-cell-group>
     </div>
 </template>    
@@ -29,8 +32,7 @@ import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 const router = useRouter();
 const route = useRoute();
-const active = ref(route.path);
-
+const active = ref(route.path); 
 </script>
 
 <script lang="jsx">
@@ -65,7 +67,7 @@ export default {
                 { property: 'ApparentTemperature', title: '体感气温', value: '' },
                 { property: 'Humidity', title: '相对湿度(%)', value: '' },
                 { property: 'CloudRate', title: '总云量(0.0-1.0)', value: '' },
-                { property: 'Skycon', title: '天气现象', value: '' },
+                { property: '_Skycon', title: '天气现象', value: '' },
                 { property: 'WindSpeed', title: '地表10米风速', value: '' },
                 { property: 'Pressure', title: '地面气压', value: '' },
                 { property: 'PrecipitationIntensityLocal', title: '	本地降水强度', value: '' },
@@ -81,7 +83,7 @@ export default {
                 { property: 'Life_Ultraviolet', title: '紫外线', value: '' },
                 { property: 'Life_Comfort', title: '生活指数', value: '' },
             ],
-            hoursForecast:[] 
+            hoursForecast: []
         };
     },
     computed: {
@@ -92,102 +94,92 @@ export default {
     mounted() {
         this.setTitle();
         this.chartTemp();
-        const idcode = this.$route.query.idcode;
-        if (idcode != null) {
-            login(idcode).then((reqresult) => {
-                if (reqresult.data) {
-                    let result = reqresult.data; //Msg Token 
-                    if (result.Status == 1) {
-                        var token = result.Token;
-                        if (token != null) {
-                            getWeather(token).then((weatherResult) => {
-                                if (weatherResult != null && weatherResult.Status == 1) {
-                                    let weatherdata = weatherResult.Data;
+        let token = this.$store.state.token; 
+        if (token ) {
+            getWeather(token).then((weatherResult) => {
+                if (weatherResult != null && weatherResult.Status == 1) {
+                    let weatherdata = weatherResult.Data;
 
-                                    let that = this;
+                    let that = this;
 
-                                    that.weatherDatetime = weatherdata._ServerTime;
-                                    that.weatherlonglat = weatherdata.LatLong;
+                    that.weatherDatetime = 'Server：' + weatherdata._ServerTime;
+                    that.weatherlonglat = weatherdata.LatLong;
 
-                                    let dailyInfos = weatherdata.dailyInfo;
-                                    for (let key in dailyInfos) {
-                                        if (dailyInfos.hasOwnProperty(key)) {
-                                            const dailyValue = dailyInfos[key];
-                                            that.dailyInfoItems.forEach((ele) => {
-                                                if (ele.property === key) {
-                                                    ele.value = dailyValue;
-                                                    return;
-                                                }
-                                            });
-                                        }
-                                    }
-
-                                    let realtimeInfos = weatherdata.realtimeInfo;
-                                    for (let key in realtimeInfos) {
-                                        if (realtimeInfos.hasOwnProperty(key)) {
-                                            const realtimeValue = realtimeInfos[key];
-                                            that.realtimeInfoItems.forEach((ele) => {
-                                                if (ele.property === key) {
-                                                    ele.value = realtimeValue;
-                                                    return;
-                                                }
-                                            });
-                                        }
-                                    }
-
-                                    let hourlyInfos = weatherdata.hourlyInfo;
-                                    that.hourlyInfo = hourlyInfos.Description;
-                                    let timeArray = [];
-                                    let tempArray = [];
-                                    let apparentTemp = [];
-                                    hourlyInfos.Temperature.forEach((temp) => {
-                                        timeArray.push(temp.Time);
-                                        tempArray.push(temp.Value);
-                                    });
-                                    hourlyInfos.ApparentTemperature.forEach((temp) => {
-                                        apparentTemp.push(temp.Value);
-                                    });
-                                    that.chartTemp(timeArray, tempArray, apparentTemp);
-
-                                    let precipTimeArray = [];
-                                    let precipValueArray = [];
-                                    hourlyInfos.Precipitations.forEach((prec) => {
-                                        precipTimeArray.push(prec.Time);
-                                        precipValueArray.push(prec.Probability);
-                                    });
-                                    that.echartPrecipitation(precipTimeArray, precipValueArray);
-
-                                    that.hoursForecast=[]
-                                    hourlyInfos.SkyconInfo.forEach((skycon) => {
-                                        that.hoursForecast.push({
-                                            "time":skycon.Time,
-                                            "value":skycon.Value,
-                                            "alias":skycon._Value
-                                        });
-                                    }); 
-                                } else {
-                                    showSuccessToast({
-                                        "wordBreak": "break-word",
-                                        "message": "Identity expired.",
-                                        "duration": 800
-                                    });
+                    let dailyInfos = weatherdata.dailyInfo;
+                    for (let key in dailyInfos) {
+                        if (dailyInfos.hasOwnProperty(key)) {
+                            const dailyValue = dailyInfos[key];
+                            that.dailyInfoItems.forEach((ele) => {
+                                if (ele.property === key) {
+                                    ele.value = dailyValue;
+                                    return;
                                 }
                             });
                         }
-                    } else {
-                        showFailToast('Authentication error.' + result.Msg)
                     }
+
+                    let realtimeInfos = weatherdata.realtimeInfo;
+                    for (let key in realtimeInfos) {
+                        if (realtimeInfos.hasOwnProperty(key)) {
+                            const realtimeValue = realtimeInfos[key];
+                            that.realtimeInfoItems.forEach((ele) => {
+                                if (ele.property === key) {
+                                    ele.value = realtimeValue;
+                                    return;
+                                }
+                            });
+                        }
+                    }
+
+                    let hourlyInfos = weatherdata.hourlyInfo;
+                    that.hourlyInfo = hourlyInfos.Description;
+                    let timeArray = [];
+                    let tempArray = [];
+                    let apparentTemp = [];
+                    hourlyInfos.Temperature.forEach((temp) => {
+                        timeArray.push(temp.Time);
+                        tempArray.push(temp.Value);
+                    });
+                    hourlyInfos.ApparentTemperature.forEach((temp) => {
+                        apparentTemp.push(temp.Value);
+                    });
+                    that.chartTemp(timeArray, tempArray, apparentTemp);
+
+                    let precipTimeArray = [];
+                    let precipValueArray = [];
+                    hourlyInfos.Precipitations.forEach((prec) => {
+                        precipTimeArray.push(prec.Time);
+                        precipValueArray.push(prec.Probability);
+                    });
+                    that.echartPrecipitation(precipTimeArray, precipValueArray);
+
+                    that.hoursForecast = []
+                    hourlyInfos.SkyconInfo.forEach((skycon) => {
+                        that.hoursForecast.push({
+                            "time": skycon.Time,
+                            "value": skycon.Value,
+                            "alias": skycon._Value
+                        });
+                    });
                 } else {
-                    showFailToast('login error')
+                    showFailToast({
+                        "wordBreak": "break-word",
+                        "message": "Identity expired.",
+                        "duration": 800
+                    });
                 }
-            })
+            });
+
         } else {
-            showFailToast('url error')
+            showFailToast('need login')
         }
     },
     methods: {
         setTitle() {
             this.contentTitle = "Weather Info";
+        },
+        onClickLeft(){
+            history.back();
         },
         chartTemp(xData, y1Data, y2Data) {
             var chartDom = document.getElementById('tempcharts');
@@ -247,25 +239,25 @@ export default {
                         type: 'line'
                     }
                 ]
-            }; 
-            option && myChart.setOption(option); 
-        }, 
+            };
+            option && myChart.setOption(option);
+        },
     }
 }; 
 </script>
 
 <style>
 :root {
-    --van-cell-group-title-font-size:20px;
-    --van-cell-group-title-color:rgb(0, 102, 255);
-    --van-cell-value-color: #000000; 
+    --van-cell-group-title-font-size: 20px;
+    --van-cell-group-title-color: rgb(0, 102, 255);
+    --van-cell-value-color: #000000;
 }
 </style>
 
 <style scoped>
 .control {
     margin: 0 10px;
-   
+
 }
 
 .sysname {
@@ -276,6 +268,5 @@ export default {
     display: block;
     font-size: 24px;
 }
- 
 </style>
  

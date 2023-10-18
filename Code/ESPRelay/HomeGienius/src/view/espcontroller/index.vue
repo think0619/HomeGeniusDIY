@@ -1,6 +1,6 @@
 <template>
     <div class="title">
-        <van-nav-bar :title="contentTitle"></van-nav-bar> 
+        <van-nav-bar :title="contentTitle" left-text="" left-arrow  @click-left="onClickLeft"  ></van-nav-bar>
     </div>
     <div class="control"> 
         <div style="margin-top: 15px;">
@@ -20,8 +20,12 @@
                 <van-button type="primary" @click="sendmsg('ops','diskpower');">启动硬盘</van-button>
             </van-space>
         </div>
-        <div style="margin-top: 50px;">
-        
+        <div style="margin-top: 30px;">
+            <div class="sysname"><span>锁屏</span></div> 
+            <van-space size="1rem">
+                <van-button type="primary" @click="sendmsg('lock','LOCKPC_PCLockEmma');">锁屏Emma</van-button>
+                <van-button type="primary" @click="sendmsg('lock','LOCKPC_PCLockThink');">锁屏XS</van-button> 
+            </van-space>
         </div>
     </div>
 </template>    
@@ -52,48 +56,37 @@ export default {
     },
     computed: {
     },
-    setup() {
-
+    setup() { 
     },
     mounted() {
-        this.setTitle();
-        const idcode = this.$route.query.idcode;
-        if (idcode != null) {
-            login(idcode).then((reqresult) => {
-                if (reqresult.data) {
-                    let result = reqresult.data; //Msg Token 
-                    if (result.Status == 1) {
-                        var token = result.Token;
-                        //get mqtt info 
-                        if (token != null) {
-                            getMQTTInfo(token).then((mqttr) => {
-                                if (mqttr != null && mqttr.Status == 1) {
-                                    let mqttdata = mqttr.Data;
-                                    let mqtt_wsurl = mqttdata.wsurl;
-                                    let mqtt_username = mqttdata.username;
-                                    let mqtt_password = mqttdata.password;
-                                    this.connectMQTT(mqtt_wsurl, mqtt_username, mqtt_password)
-                                }
-                            });
-                        }
-                    } else {
-                        showSuccessToast({
+        this.setTitle(); 
+        let token = this.$store.state.token;
+        if (token ) {
+            getMQTTInfo(token).then((mqttr) => {
+                if (mqttr != null && mqttr.Status == 1) {
+                    let mqttdata = mqttr.Data;
+                    let mqtt_wsurl = mqttdata.wsurl;
+                    let mqtt_username = mqttdata.username;
+                    let mqtt_password = mqttdata.password;
+                    this.connectMQTT(mqtt_wsurl, mqtt_username, mqtt_password)
+                }else{
+                    showFailToast({
                             "wordBreak": "break-word",
                             "message": "Identity expired."+result.Msg,
                             "duration": 800
                         });
-                    }
-                } else {
-                    showFailToast('login error')
                 }
-            })
+            });
         } else {
-            showFailToast('url error')
+            showFailToast('need login')
         }
     },
     methods: {
         setTitle() {
             this.contentTitle = "ESP32 Controller";
+        },
+        onClickLeft(){
+            history.back();
         },
         connectMQTT(_url, _username, _password) {
             let that = this;
@@ -126,7 +119,8 @@ export default {
             var topic = ""
             switch (topicflag) {
                 case "clock": topic = "ShowClockTime"; break;
-                case "ops1": topic = "OPSRelayController"; break;
+                case "ops": topic = "OPSRelayController"; break;
+                case "lock": topic = "LockPC"; break;
             }
             if (topic != '') {
                 let that = this;

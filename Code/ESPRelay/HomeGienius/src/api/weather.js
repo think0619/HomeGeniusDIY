@@ -1,15 +1,17 @@
 import axios from 'axios'
+import { serverUrl } from '@/api/config'
+
+
 export async function getWeather(token) {
     var result = {
         "username": "",
         "password": "",
         "wsurl": "",
     }
-    var host = "http://localhost:34172";
     await axios({
         method: 'post',
         timeout: 3000,
-        url: host + '/api/weather/getall/filter',
+        url: serverUrl + '/api/weather/getall/filter',
         async: false,
         headers: {
             'Content-Type': 'application/json',

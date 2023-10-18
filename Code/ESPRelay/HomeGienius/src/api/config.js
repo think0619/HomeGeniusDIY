@@ -1,12 +1,14 @@
-var serverUrl = 'http://localhost:34172';
+const serverUrl = 'http://hw.hellolinux.cn:8888';
+// const serverUrl = 'http://localhost:34172';
 
-var host = 'http://localhost:34172';
+
+export {
+    serverUrl
+}
 
 import axios from 'axios'
-
-
 export function login(authcode) {
-    var url = host + "/api/login";
+    var url = serverUrl + "/api/login";
     return axios({
         url: url,
         method: "post",

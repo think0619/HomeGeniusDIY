@@ -1,10 +1,9 @@
 //  index.js
 import axios from 'axios'
-
-var host = 'http://localhost:34172';
+import { serverUrl } from '@/api/config'
 
 export function addkeeprecord(_params) {
-    var url = host + "/api/HandleKeepRecord/Add";
+    var url = serverUrl + "/api/HandleKeepRecord/Add";
     return axios({
         url: url,
         method: "post",
@@ -13,7 +12,7 @@ export function addkeeprecord(_params) {
 }
 
 export function querykeeprecord(_params) {
-    var url = host + "/api/HandleKeepRecord/Query";
+    var url = serverUrl + "/api/HandleKeepRecord/Query";
     return axios({
         url: url,
         method: "post",
@@ -22,7 +21,7 @@ export function querykeeprecord(_params) {
 }
 
 export function deletekeeprecord(_params) {
-    var url = host + "/api/HandleKeepRecord/Del";
+    var url = serverUrl + "/api/HandleKeepRecord/Del";
     return axios({
         url: url,
         method: "post",

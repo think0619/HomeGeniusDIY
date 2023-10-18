@@ -152,6 +152,7 @@ namespace Entities.Weather
         public float Humidity { get; set; }
         public float CloudRate { get; set; }
         public string Skycon { get; set; }
+        public string _Skycon { get; set; }
         public float WindSpeed { get; set; }
         public float Pressure { get; set; }
         public float? PrecipitationIntensityLocal { get; set; } //强度
