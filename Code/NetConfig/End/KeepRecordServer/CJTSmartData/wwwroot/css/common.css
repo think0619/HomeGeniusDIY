@@ -1,0 +1,11 @@
+﻿html, body {
+    height: 100%;
+}
+
+table tr td {
+    font-size: 15px !important
+}
+.w2ui-head, .w2ui-col-header {
+    background: #44546a !important;
+    color: #ffffff !important;
+}

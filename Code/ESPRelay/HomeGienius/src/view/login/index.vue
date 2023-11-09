@@ -85,6 +85,8 @@ export default {
                 path: route,   
                 query: {   }
             })
+          //  this.$router.replace(route)
+
             }else{
                 showFailToast({
                             "wordBreak": "break-word",

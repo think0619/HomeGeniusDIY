@@ -26,6 +26,15 @@
                 <van-button type="primary" @click="sendmsg('lock','LOCKPC_PCLockEmma');">锁屏Emma</van-button>
                 <van-button type="primary" @click="sendmsg('lock','LOCKPC_PCLockThink');">锁屏XS</van-button> 
             </van-space>
+        </div> 
+        <div style="margin-top: 10px;">
+            <div class="sysname"><span>锁屏</span></div> 
+            <van-space size="1rem" direction="vertical" fill>
+            <van-cell-group inset><van-field v-model="msgcontent" label="内容" placeholder="请输入消息" clearable /></van-cell-group>
+            <van-space size="1rem" >
+            <van-button type="primary" @click="sendmsg('msg','Msg_PCLockEmma');" >to Emma</van-button>
+            <van-button type="primary" @click="sendmsg('msg','Msg_PCLockThink');">to Think</van-button> </van-space>
+        </van-space>
         </div>
     </div>
 </template>    
@@ -43,7 +52,8 @@ const active = ref(route.path);
 import { showSuccessToast, showFailToast, showToast } from 'vant';
 import { login } from "@/api/config";
 import { getMQTTInfo } from "@/api/mqtthelper";
-import * as mqtt from "mqtt/dist/mqtt.min";
+import * as mqtt from "mqtt/dist/mqtt.min"; 
+
 export default {
     components: {
     },
@@ -52,6 +62,7 @@ export default {
             contentTitle: '', //  
             currentdate: '', //  
             mqttclient: null,
+            msgcontent:''
         };
     },
     computed: {
@@ -86,6 +97,7 @@ export default {
             this.contentTitle = "ESP32 Controller";
         },
         onClickLeft(){
+            
             history.back();
         },
         connectMQTT(_url, _username, _password) {
@@ -121,9 +133,14 @@ export default {
                 case "clock": topic = "ShowClockTime"; break;
                 case "ops": topic = "OPSRelayController"; break;
                 case "lock": topic = "LockPC"; break;
-            }
-            if (topic != '') {
-                let that = this;
+                case "msg": topic = "Msg"; break;
+            } 
+            if (topic != '') { 
+                let that = this; 
+                if(topic=="Msg"){
+                    msg=`${msg}_${that.msgcontent}`
+                    console.log(msg)
+                }
                 if (that.mqttclient != null) {
                     that.mqttclient.publish(topic, msg, {
                         qos: 0,

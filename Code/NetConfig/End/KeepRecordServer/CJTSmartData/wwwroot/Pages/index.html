@@ -1,0 +1,159 @@
+﻿
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script src="../js/w2ui-1.5.js"></script>
+    <script src="../js/commonHandler.js"></script>
+    <link href="../css/w2ui-1.5.css" rel="stylesheet" />
+    <link href="../css/common.css" rel="stylesheet" />
+    <link href="../css/spin.css" rel="stylesheet" />
+    <style>
+        .bg_red {
+            background-color: red
+        }
+
+        .w2ui-head, .w2ui-col-header {
+            background: #44546a !important;
+            color: #ffffff !important;
+        }
+
+        .w2ui-group-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: black
+        } 
+    </style>
+</head>
+<body> 
+    <!--<div id="grid" style="width: 100%; height: calc(100% - 20px);"></div>
+    <div id="overlay">
+        <div class="cv-spinner">
+            <span class="spinner"></span>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var roomId = 1;
+        var gridData = getGridData(roomId); 
+        $(function () {
+            $('#grid').w2grid({
+                name: 'grid',
+                show: {
+                    toolbar: true,
+                    footer: true,
+                    toolbarSave: false,
+                    toolbarSearch: false,
+                    toolbarReload: false,
+                    toolbarInput: false,
+                    expandColumn: false,
+                    lineNumbers: true,
+                    toolbarColumns: false,
+                },
+                columns: [
+                    { field: 'recid', caption: 'recid', size: '50px', hidden: true, resizable: false },
+                    { field: 'RoomName', caption: '展厅名称', size: '250px', style: '', resizable: true, },
+                    { field: 'ModuleName', caption: '展项', size: '300px', style: '', resizable: true, },
+                    { field: 'Commentary', caption: '解说词 [可修改]', size: '400px', style: '', resizable: true, editable: { type: 'text', } },
+                    { field: 'Remark', caption: '备注 [可修改]', size: '200px', style: '', resizable: true, editable: { type: 'text', } },
+                    { field: 'RelativeFilePath', caption: '文件位置', size: '300px', style: '', resizable: true, },
+                ],
+                toolbar: {
+                    items: [
+                        { id: 'refresh', type: 'button', caption: '刷新', icon: 'w2ui-icon-reload' },
+                        { id: 'save', type: 'button', caption: '保存', icon: 'w2ui-icon-check' },
+                        { id: 'regenerate', type: 'button', caption: '全部重新生成', icon: 'w2ui-icon-settings' },
+                    ],
+                    onClick: function (event) {
+                        if (event.target == 'save') {
+                            var changedRecords = w2ui.grid.getChanges();
+                            if (changedRecords != null && changedRecords.length > 0) {
+                                $("#overlay").fadeIn(function () {
+                                    $.ajax({
+                                        url: '/api/HandleVoiceCfgData/SaveInfo',
+                                        async: false,
+                                        data: { records: JSON.stringify(changedRecords) },
+                                        type: 'POST',
+                                        dataType: "JSON",
+                                        beforeSend: function (xhr) {
+                                        },
+                                        success: function (result) {
+                                            $("#overlay").fadeOut(300);
+                                            let bodyContent = '<div style="font-size:20px" class="w2ui-centered">' + result.Msg + '</div>';
+                                            w2popup.open({
+                                                title: '提示',
+                                                body: bodyContent,
+                                                buttons: '<button class="w2ui-btn" onclick="w2popup.close();">关闭</button> ',
+                                                width: 400,
+                                                height: 250,
+                                                overflow: 'hidden',
+                                                color: '#333',
+                                                speed: '0.3',
+                                                opacity: '0.8',
+                                                modal: true,
+                                                showClose: false,
+                                                showMax: false,
+                                            });
+                                            if (result.Status == 1) {
+                                                w2ui.grid.load('/api/HandleVoiceCfgData/GetInfo?RoomId=' + roomId);
+                                            }
+                                        },
+                                        error: function () {
+                                            $("#overlay").fadeOut(300);
+                                        }
+                                    });
+                                });
+                            }
+                        }
+                        else if (event.target == 'refresh') {
+                            w2ui.grid.load('/api/HandleVoiceCfgData/GetInfo?RoomId=' + roomId);
+                        }
+                        else if (event.target == 'regenerate') {
+                            $("#overlay").fadeIn(function () {
+                                $.ajax({
+                                    url: '/api/HandleVoice/GenerateAllVoideFromTextAsync?RoomId=' + roomId,
+                                    async: false,
+                                    data: {},
+                                    type: 'POST',
+                                    dataType: "JSON",
+                                    timeout: 15000,
+                                    success: function (result) {
+                                        $("#overlay").fadeOut(300);
+                                        let bodyContent = '<div style="font-size:20px" class="w2ui-centered">' + result.Msg + '</div>';
+                                        w2popup.open({
+                                            title: '提示',
+                                            body: bodyContent,
+                                            buttons: '<button class="w2ui-btn" onclick="w2popup.close();">关闭</button> ',
+                                            width: 400,
+                                            height: 250,
+                                            overflow: 'hidden',
+                                            color: '#333',
+                                            speed: '0.3',
+                                            opacity: '0.8',
+                                            modal: true,
+                                            showClose: false,
+                                            showMax: false,
+                                        });
+                                        if (result.Status == 1) {
+                                            w2ui.grid.load('/api/HandleVoiceCfgData/GetInfo?RoomId=' + roomId);
+                                        }
+                                    },
+                                    error: function () {
+                                        $("#overlay").fadeOut(300);
+                                    }
+                                });
+                            });
+                        }
+                    }
+                },
+                records: gridData,
+                onRender: function (event) {
+                },
+            });
+        });
+
+    </script>-->
+</body>
+</html>

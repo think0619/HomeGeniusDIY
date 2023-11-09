@@ -179,7 +179,8 @@ export default {
             this.contentTitle = "Weather Info";
         },
         onClickLeft(){
-            history.back();
+            this.$router.back(-1)
+           // history.back();
         },
         chartTemp(xData, y1Data, y2Data) {
             var chartDom = document.getElementById('tempcharts');
