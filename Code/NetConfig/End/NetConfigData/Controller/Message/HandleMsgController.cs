@@ -15,6 +15,7 @@ using Entities.Voice;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using NetMQ;
+using NetConfigServer.Controller.Message;
 
 namespace TextVoiceServer.Message
 {
@@ -31,6 +32,7 @@ namespace TextVoiceServer.Message
         [HttpGet]
         public string Get()
         {
+           DateTime dt= NTPHelper.GetNetworkTime();
             return "hah";
         }
 

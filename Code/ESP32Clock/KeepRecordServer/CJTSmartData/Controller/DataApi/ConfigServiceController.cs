@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using TextVoiceServer.DBHandler;
 using Microsoft.AspNetCore.Authorization;
+using MsgMiddleServer.ComHandler;
 
 namespace TextVoiceServer.DataApi
 {
@@ -32,8 +33,36 @@ namespace TextVoiceServer.DataApi
         public string Get()
         {
             return "hah";
-        } 
-       
+        }
+
+        [HttpGet("timenow")]
+        public string GetTime([FromQuery]int zonehour)
+        {
+            //(year, month, day[, hour[, minute[, second[, microsecond[ ]]]]])
+            DateTime dt=DateTime.Now;
+            try
+            {
+                dt = NTPHelper.GetNetworkTime();
+            }
+            catch(Exception ex) 
+            {
+            } 
+            int year=dt.Year;
+            int month=dt.Month;
+            int day=dt.Day;
+            int hour=dt.Hour+ zonehour;
+            int minute=dt.Minute;
+            int second=dt.Second;
+            int microsecond=dt.Millisecond;
+
+           
+            int[] times = { year, month, day, hour, minute, second, microsecond, (int)dt.DayOfWeek };
+            
+
+            return string.Join(',', times);
+        }
+
+
         [HttpGet("get")]
         public string GetConfigValue([FromQuery]string key) 
         {

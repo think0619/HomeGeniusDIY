@@ -9,6 +9,7 @@
                 <van-button type="primary" @click="sendmsg('clock', 'on');">打开时钟</van-button>
                 <van-button type="primary" @click="sendmsg('clock', 'off');">关闭时钟</van-button>
                 <van-button type="primary" @click="sendmsg('clock', 'synctime');">同步时间</van-button> 
+                <van-button type="primary" @click="sendmsg('clock', 'reset');">Reset</van-button> 
             </van-space>
         </div>
 

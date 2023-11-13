@@ -37,7 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controller\ContentMgmt\" />
     <Folder Include="DataHandler\" />
     <Folder Include="Hubs\" />
   </ItemGroup>
