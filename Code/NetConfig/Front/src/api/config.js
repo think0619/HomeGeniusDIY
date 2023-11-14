@@ -1,4 +1,4 @@
-const serverUrl = 'https://hw.hellolinux.cn:8888';
+const serverUrl = 'http://localhost:34172';
 // const serverUrl = 'http://localhost:34172';
 
 export {
