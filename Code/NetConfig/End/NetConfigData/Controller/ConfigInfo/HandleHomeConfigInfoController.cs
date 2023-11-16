@@ -42,12 +42,12 @@ namespace TextVoiceServer.ContentMgmt
         [HttpGet]
         public string Get()
         {
-            return "hah"; 
+            return "hah";
         }
 
         [HttpGet("query")]
         [HttpPost("query")]
-        public async Task<IActionResult> GetAllRecord() 
+        public async Task<IActionResult> GetAllRecord()
         {
             NetInfoView datatip = new NetInfoView()
             {
@@ -57,8 +57,8 @@ namespace TextVoiceServer.ContentMgmt
             try
             {
                 using (var dbcontext = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>())
-                { 
-                    datatip.Data = await dbcontext.tb_config.Where(s=>s.Status==1).ToListAsync();
+                {
+                    datatip.Data = await dbcontext.tb_config.Where(s => s.Status == 1).ToListAsync();
                     datatip.Total = dbcontext.tb_config.Where(s => s.Status == 1).Count();
                     datatip.Status = 1;
                     datatip.Msg = "Success";
@@ -68,8 +68,8 @@ namespace TextVoiceServer.ContentMgmt
             {
                 datatip.Msg = $"Exception:{ex.Message}";
             }
-            return Ok(datatip); 
-        } 
+            return Ok(datatip);
+        }
 
         [HttpPost("add")]
         public async Task<IActionResult> InsertRecord([FromBody] NetInfo newrecord)
@@ -98,7 +98,8 @@ namespace TextVoiceServer.ContentMgmt
                         Remark3 = newrecord.Remark3,
                         Status = 1,
                         MachineName = newrecord.MachineName,
-                        TextRecord = newrecord.TextRecord, 
+                        TextRecord = newrecord.TextRecord,
+                        LastUpdateTime = DateTime.Now
                     });
                     await context.SaveChangesAsync();
                     transaction.Commit();
@@ -129,7 +130,7 @@ namespace TextVoiceServer.ContentMgmt
                 Status = 0,
                 Msg = ""
             };
-            if (updateItem != null && updateItem.RecId>0)
+            if (updateItem != null && updateItem.RecId > 0)
             {
                 using var context = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>();
                 var transaction = context.Database.BeginTransaction();
@@ -145,11 +146,13 @@ namespace TextVoiceServer.ContentMgmt
                         if (updateItem.Username != null) { updateObj.Username = updateItem.Username; }
                         if (updateItem.Userpassword != null) { updateObj.Userpassword = updateItem.Userpassword; }
                         if (updateItem.Token != null) { updateObj.Token = updateItem.Token; }
-                        if (updateItem.Remark != null) { updateObj.Remark = updateItem.Remark; } 
-                        if (updateItem.Remark2 != null) { updateObj.Remark2 = updateItem.Remark2; } 
-                        if (updateItem.Remark3 != null) { updateObj.Remark3 = updateItem.Remark3; } 
+                        if (updateItem.Remark != null) { updateObj.Remark = updateItem.Remark; }
+                        if (updateItem.Remark2 != null) { updateObj.Remark2 = updateItem.Remark2; }
+                        if (updateItem.Remark3 != null) { updateObj.Remark3 = updateItem.Remark3; }
                         if (updateItem.MachineName != null) { updateObj.MachineName = updateItem.MachineName; }
-                        if (updateItem.TextRecord != null) { updateObj.TextRecord = updateItem.TextRecord; } 
+                        if (updateItem.TextRecord != null) { updateObj.TextRecord = updateItem.TextRecord; }
+
+                        updateObj.LastUpdateTime = DateTime.Now;
                     }
                     context.SaveChanges();
                     await transaction.CommitAsync();
@@ -187,7 +190,7 @@ namespace TextVoiceServer.ContentMgmt
                 try
                 {
                     var deleteItem = context.tb_config.Find(delItem.RecId);
-                    if (deleteItem != null)
+                    if (deleteItem != null && deleteItem.Status == 1)
                     {
                         deleteItem.Status = 0;
                         context.SaveChanges();
@@ -196,10 +199,10 @@ namespace TextVoiceServer.ContentMgmt
                     }
                     else
                     {
-                        tip.Status = 1;
+                        tip.Status = 0;
                         tip.Msg = "Record not found.";
-                    } 
-                    await transaction.CommitAsync(); 
+                    }
+                    await transaction.CommitAsync();
                 }
                 catch (Exception ex)
                 {
@@ -215,5 +218,45 @@ namespace TextVoiceServer.ContentMgmt
             }
             return Ok(tip);
         }
+
+        [HttpPost("bulkdel")]
+        public async Task<IActionResult> DeleteBulkRecord([FromBody] int[] IdArray)
+        {
+            TipResult tip = new TipResult()
+            {
+                Status = 0,
+                Msg = ""
+            };
+            if (IdArray?.Length > 0)
+            {
+                using var context = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>();
+                var transaction = context.Database.BeginTransaction();
+                try
+                {
+                   // List<int> validIdList = IdArray.Where(x => x > 0).ToList();
+                    var deleteItems = context.tb_config.Where(x => IdArray.Contains(x.RecId));
+                    foreach (var item in deleteItems)
+                    {
+                        item.Status = 0;
+                    }
+                    context.SaveChanges();
+                    tip.Status = 1;
+                    tip.Msg = "Successfully deleted.";
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    tip.Status = 0;
+                    tip.Msg = $"Exception:{ex.Message}.";
+                }
+            }
+            else
+            {
+                tip.Status = 0;
+                tip.Msg = "Invalid argument.";
+            }
+            return Ok(tip);
+        } 
     }
 }

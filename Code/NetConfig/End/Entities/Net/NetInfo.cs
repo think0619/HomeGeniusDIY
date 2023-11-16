@@ -20,6 +20,6 @@ namespace Entities.Net
         public string Remark3 { get; set; }
         public string TextRecord { get; set; }
         public int Status { get; set; }
-
-    } 
+        public DateTime? LastUpdateTime{ get; set; }
+} 
 }

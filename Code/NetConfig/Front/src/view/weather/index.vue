@@ -13,15 +13,14 @@
                                     <div class="grid-content" /><el-button :icon="Plus" plain @click="showdialog('add')">Create</el-button>
                                 </el-col>
                                 <el-col :span="1.5" class=" ">
-                                    <div class="grid-content " /><el-button type="success" :icon="Delete">Delete</el-button>
+                                    <div class="grid-content " /><el-button type="Info" :icon="Delete" @click="deleteMutipleRecord()">Delete</el-button>
                                 </el-col>
                                 <el-col :span="1.5" class=" ">
                                     <div class="grid-content" /><el-button type="success" :icon="Delete">Delete</el-button>
                                 </el-col>
                             </el-row>
                         </div>
-                        <el-table :data="configList" stripe border height="calc(100% - 52px)"
-                            header-cell-class-name="tableheader">
+                        <el-table ref="tableref" :data="configList" stripe border height="calc(100% - 52px)"  header-cell-class-name="tableheader">
                             <el-table-column type="selection" width="55" />
                             <el-table-column fixed type="index" :index="indexMethod" />
                             <el-table-column fixed prop="ServerName" label="Server Name" width="120" />
@@ -55,12 +54,26 @@
 
                             <el-table-column label="Operations" width="240">
                                 <template #default="scope">
-                                    <el-button-group class="ml-4">
-                                        <el-button type="primary" :icon="DocumentCopy"
-                                            @click="copyclip(scope.$index, scope.row)" />
-                                        <el-button type="primary" :icon="Edit"
-                                            @click="handleEdit(scope.$index, scope.row)" />
-                                        <el-button type="primary" :icon="Share" />
+                                    <el-button-group class="ml-4"> 
+                                        <el-tooltip content="Copy" placement="top-start">
+                                            <el-button type="primary" :icon="DocumentCopy"  @click="copyclip(scope.$index, scope.row)" />
+                                        </el-tooltip>
+
+                                        <el-tooltip content="Update" placement="top-start">
+                                            <el-button type="primary" :icon="Edit" @click="handleEdit(scope.$index, scope.row)" />
+                                        </el-tooltip>  
+
+                                        <el-popconfirm confirm-button-text="Yes" cancel-button-text="No" :icon="InfoFilled" icon-color="#626AEF" title="Are you sure to delete this?"
+                                                @confirm="handleDeleteOne(scope.$index, scope.row)">
+                                                <template #reference> 
+                                                        <div style="float: left;">
+                                                            <el-tooltip content="Delete" placement="top-start">    
+                                                                <el-button type="primary" :icon="Delete"> </el-button>
+                                                            </el-tooltip>                     
+                                                        </div>
+                                                    </template>
+                                        </el-popconfirm>     
+                                  
                                     </el-button-group>
                                 </template>
                             </el-table-column>
@@ -70,10 +83,9 @@
                 </el-main>
 
                 <!-- the form of updating-->
-                <el-dialog v-model="dialogFormVisible" title="Shipping address" :show-close="true">
-                  
-                    <el-scrollbar height="400px"> 
-                     <el-form :model="form" label-width="120px" style="">
+                <el-dialog v-model="dialogFormVisible" :title="editdialogname" :show-close="true" @close="editformscoll2top"> 
+                    <el-scrollbar height="400px" ref="editFormScollbar"> 
+                     <el-form :model="editform" label-width="120px" style="">
                         <el-form-item label="Server Name"><el-input v-model="editform.ServerName"/> </el-form-item> 
                         <el-form-item label="Machine Name"><el-input v-model="editform.MachineName"/> </el-form-item> 
                         <el-form-item label="Inner IP"><el-input v-model="editform.InnerIP"/> </el-form-item> 
@@ -89,9 +101,9 @@
                     </el-scrollbar>
 
                     <template #footer>
-                        <span class="dialog-footer">
+                        <span class="dialog-footer"> 
                             <el-button @click="dialogFormVisible = false">Cancel</el-button>
-                            <el-button type="primary" @click="dialogFormVisible = false">Save</el-button>
+                            <el-button type="primary" @click="saveEditForm()">Save</el-button>
                         </span>
                     </template> 
                     
@@ -109,16 +121,16 @@ import { useRouter, useRoute } from 'vue-router';
 const router = useRouter();
 const route = useRoute();
 const active = ref(route.path);
-import {Plus, Check, Delete, Edit, Message, Search, Star, Share, Upload, DocumentCopy,CircleCloseFilled } from '@element-plus/icons-vue'  
+ 
+import { ElMessage, ElMessageBox  } from 'element-plus' 
+import {Plus,Check, Delete, Edit,InfoFilled, Message, Search, Star, Share, Upload, DocumentCopy,CircleCloseFilled } from '@element-plus/icons-vue'  
 function indexMethod(index) {
     return index * 1
 }
 </script>
 
-<script lang="jsx">
-import * as echarts from 'echarts';
-import { login } from "@/api/config";
-import { getConfigList } from "@/api/netcfg"
+<script lang="jsx"> 
+import { getConfigList,addConfigInfo,updateConfigInfo,deleteConfigInfos } from "@/api/netcfg"
 
 export default {
     components: {
@@ -141,7 +153,9 @@ export default {
                 MachineName: '',
                 TextRecord: '',
                 RecId: 0,
-            }
+            },
+            editdialogname:'',
+            eidtdialogType:''
 
         };
     },
@@ -166,14 +180,33 @@ export default {
             });
         },
         handleEdit(index, row) {
-            console.log(index, row.date)
+            let that = this;
+            that.editform.RecId = row.RecId;
+            that.editform.ServerName = row.ServerName;
+            that.editform.InnerIP = row.InnerIP;
+            that.editform.OuterIP = row.OuterIP;;
+            that.editform.Username = row.Username;
+            that.editform.Userpassword = row.Userpassword;
+            that.editform.Token = row.Token;
+            that.editform.Remark = row.Remark;
+            that.editform.Remark2 = row.Remark2;
+            that.editform.Remark3 = row.Remark3;
+            that.editform.MachineName = row.MachineName;
+            that.editform.TextRecord = row.TextRecord;
+
+            this.showdialog("update");
         },
         copyclip(index, row) {
             navigator.clipboard.writeText(JSON.stringify(row));
         },
-        showdialog(type) {
+        editformscoll2top(){
+            this.$refs.editFormScollbar.scrollTo({ top: 0, behavior: 'smooth' });  
+        },
+        showdialog(type) {  
             let that = this;
+            that.eidtdialogType=type;
             if(type=='add'){
+                that.editdialogname="Create a new configuration record";  
                 that.editform.ServerName="";
                 that.editform.InnerIP="";
                 that.editform.OuterIP="";
@@ -185,30 +218,176 @@ export default {
                 that.editform.Remark3="";
                 that.editform.MachineName="";
                 that.editform.TextRecord="";
-                that.editform.RecId="";  
+                that.editform.RecId=0;  
+            }else if(type=='update'){
+                that.editdialogname="Update configuration information"; 
             }
             that.dialogFormVisible = true;
-        }
+        },
+        saveEditForm() {
+            let that = this;
+            if (that.eidtdialogType == "add") {
+                addConfigInfo(that.editform).then((resultTip) => {
+                    ElMessageBox.alert(resultTip.Msg, 'Tip', {
+                        confirmButtonText: 'OK',
+                        callback: (action) => {
+                            if (resultTip.Status == 1) {
+                                ElMessage({
+                                    showClose: true,
+                                    message: "New configuration record created successfully.",
+                                    type: 'success',
+                                });
+                                this.getAllConfigList();
+                                setTimeout(function () { that.dialogFormVisible = false; }, 1500);
+                            } else {
+                                ElMessage({
+                                    showClose: true,
+                                    message: 'Fail.' + resultTip.Msg,
+                                    type: 'error',
+                                });
+                            }
+                        },
+                    })
+                })
+            }else if (that.eidtdialogType == "update") {
+                updateConfigInfo(that.editform).then((resultTip) => {
+                    ElMessageBox.alert(resultTip.Msg, 'Tip', {
+                        confirmButtonText: 'OK',
+                        callback: (action) => {
+                            if (resultTip.Status == 1) {
+                                //that.editform
+                                //that.configList
+                                that.configList.forEach((element) => {
+                                    if (element.RecId == that.editform.RecId) {
+                                        element.ServerName = that.editform.ServerName;
+                                        element.InnerIP = that.editform.InnerIP;
+                                        element.OuterIP = that.editform.OuterIP;;
+                                        element.Username = that.editform.Username;
+                                        element.Userpassword = that.editform.Userpassword;
+                                        element.Token = that.editform.Token;
+                                        element.Remark = that.editform.Remark;
+                                        element.Remark2 = that.editform.Remark2;
+                                        element.Remark3 = that.editform.Remark3;
+                                        element.MachineName = that.editform.MachineName;
+                                        element.TextRecord = that.editform.TextRecord; 
+                                    }
+                                }); 
 
+                                ElMessage({
+                                    showClose: true,
+                                    message: "The configuration record has been successfully updated.",
+                                    type: 'success',
+                                });
+                                setTimeout(function () { that.dialogFormVisible = false; }, 1500);
+                            } else {
+                                ElMessage({
+                                    showClose: true,
+                                    message: 'Fail.' + resultTip.Msg,
+                                    type: 'error',
+                                });
+                            }
+                        },
+                    })
+                })
+            }
+        },
+        handleDeleteOne(index, row){
+            let deleteId=row.RecId;
+            let idarray=[deleteId]; 
+            deleteConfigInfos(idarray).then((resultTip) => {
+                ElMessageBox.alert(resultTip.Msg, 'Tip', {
+                        confirmButtonText: 'OK',
+                        callback: (action) => {
+                            if (resultTip.Status == 1) {
+                                ElMessage({
+                                    showClose: true,
+                                    message: "The configuration record has been successfully deleted.",
+                                    type: 'success',
+                                });
+                                this.getAllConfigList();
+                                setTimeout(function () { that.dialogFormVisible = false; }, 1500);
+                            } else {
+                                ElMessage({
+                                    showClose: true,
+                                    message: 'Fail.' + resultTip.Msg,
+                                    type: 'error',
+                                });
+                            }
+                        },
+                    })
+            });
+        },
+        deleteMutipleRecord(){
+           var selectRows= this.$refs.tableref.getSelectionRows();
+           console.log(selectRows);
+
+            if (selectRows.length == 0) {
+                ElMessage({
+                    showClose: true,
+                    message: 'Please select at least one record.',
+                    type: 'error',
+                });
+            } else {
+                ElMessageBox.confirm(
+                    `${selectRows.length} record${selectRows.length>1?'s':''} will be deleted. Continue?`,
+                    'Warning',
+                    {
+                        confirmButtonText: 'OK',
+                        cancelButtonText: 'Cancel',
+                        type: 'warning',
+                    }
+                ).then(() => {
+                    let idArray = [];
+                    for (let index = 0; index < selectRows.length; index++) {
+                        idArray.push(selectRows[index].RecId);
+                    }
+                    deleteConfigInfos(idArray).then((resultTip) => {
+                        ElMessageBox.alert(resultTip.Msg, 'Tip', {
+                            confirmButtonText: 'OK',
+                            callback: (action) => {
+                                if (resultTip.Status == 1) {
+                                    ElMessage({
+                                        showClose: true,
+                                        message: `The configuration ${idArray.length>1?'record has':'records have'}been successfully deleted.`,
+                                        type: 'success', 
+                                    });
+                                    this.getAllConfigList();
+                                    setTimeout(function () { that.dialogFormVisible = false; }, 1500);
+                                } else {
+                                    ElMessage({
+                                        showClose: true,
+                                        message: 'Fail.' + resultTip.Msg,
+                                        type: 'error',
+                                    });
+                                }
+                            },
+                        })
+                    }); 
+                }).catch(() => {
+                    ElMessage({
+                        type: 'info',
+                        message: 'Delete canceled',
+                    })
+                })
+            } 
+        } 
     }
 };
-</script>
+</script> 
+<style lang="scss">
+.el-dialog__header {
+    padding: 10px 10px 0 20px
+}
 
-<style>
 .tableheader {
     background-color: rgb(50, 83, 220) !important;
     color: #FFF;
 }
 </style>
 
-<style lang="scss">
-.el-dialog__header {
-    padding: 10px 10px 0 20px
-}
-</style>
-
 
 <style scoped lang="less" >
+
 .header {
     width: 100%;
     height: 64px;
