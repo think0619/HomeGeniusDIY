@@ -1,5 +1,5 @@
-const serverUrl = 'http://localhost:34172';
 // const serverUrl = 'http://localhost:34172';
+const serverUrl = 'http://192.168.2.100:47081';
 
 export {
     serverUrl

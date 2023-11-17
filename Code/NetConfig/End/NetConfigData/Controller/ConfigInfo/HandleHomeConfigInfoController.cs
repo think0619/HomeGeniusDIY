@@ -90,6 +90,8 @@ namespace TextVoiceServer.ContentMgmt
                         ServerName = newrecord.ServerName,
                         InnerIP = newrecord.InnerIP,
                         OuterIP = newrecord.OuterIP,
+                        WebUrl = newrecord.WebUrl,
+                        WebBindMail = newrecord.WebBindMail,
                         Username = newrecord.Username,
                         Userpassword = newrecord.Userpassword,
                         Token = newrecord.Token,
@@ -143,6 +145,8 @@ namespace TextVoiceServer.ContentMgmt
                         if (updateItem.ServerName != null) { updateObj.ServerName = updateItem.ServerName; }
                         if (updateItem.InnerIP != null) { updateObj.InnerIP = updateItem.InnerIP; }
                         if (updateItem.OuterIP != null) { updateObj.OuterIP = updateItem.OuterIP; }
+                        if (updateItem.WebUrl != null) { updateObj.WebUrl = updateItem.WebUrl; }
+                        if (updateItem.WebBindMail != null) { updateObj.WebBindMail = updateItem.WebBindMail; }
                         if (updateItem.Username != null) { updateObj.Username = updateItem.Username; }
                         if (updateItem.Userpassword != null) { updateObj.Userpassword = updateItem.Userpassword; }
                         if (updateItem.Token != null) { updateObj.Token = updateItem.Token; }

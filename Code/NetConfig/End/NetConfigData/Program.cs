@@ -20,7 +20,7 @@ namespace TextVoiceServer
             Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseUrls("http://localhost:6000");
+                    webBuilder.UseUrls("http://localhost:6001");
                 })
             .ConfigureLogging(logging =>
                 {

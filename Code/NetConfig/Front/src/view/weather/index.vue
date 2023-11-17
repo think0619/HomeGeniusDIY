@@ -6,6 +6,7 @@
                 <el-aside width="200px" style="">Aside</el-aside>
                 <el-main>
                     <div class="container">
+                      
                         <!--  -->
                         <div class="menubar">
                             <el-row :gutter="0">
@@ -13,21 +14,59 @@
                                     <div class="grid-content" /><el-button :icon="Plus" plain @click="showdialog('add')">Create</el-button>
                                 </el-col>
                                 <el-col :span="1.5" class=" ">
-                                    <div class="grid-content " /><el-button type="Info" :icon="Delete" @click="deleteMutipleRecord()">Delete</el-button>
+                                    <div class="grid-content " /><el-button plain :icon="Delete" @click="deleteMutipleRecord()">Delete</el-button>
                                 </el-col>
                                 <el-col :span="1.5" class=" ">
-                                    <div class="grid-content" /><el-button type="success" :icon="Delete">Delete</el-button>
+                                    <div class="grid-content" /><el-button plain :icon="Refresh" @click="refreshpage()">Refresh</el-button>
+                                </el-col>
+                                <el-col :span="1.5" class=" ">
+                                    <div class="grid-content" /><el-button plain :icon="Refresh" @click="refreshpage()">Export</el-button>
                                 </el-col>
                             </el-row>
                         </div>
-                        <el-table ref="tableref" :data="configList" stripe border height="calc(100% - 52px)"  header-cell-class-name="tableheader">
+                        <el-table ref="tableref" v-loading="loadingdata"  :data="configList" stripe border height="calc(100% - 52px)"
+                        element-loading-background="rgba(122, 122, 122, 0.8)"
+                        
+                        header-cell-class-name="tableheader">
+                         
                             <el-table-column type="selection" width="55" />
-                            <el-table-column fixed type="index" :index="indexMethod" />
+                            <el-table-column fixed type="index"  label="NO." :index="indexMethod" width="60" />
                             <el-table-column fixed prop="ServerName" label="Server Name" width="120" />
+                            
+                            <el-table-column fixed label="Operations" width="170">
+                                <template #default="scope">
+                                    <el-button-group class="ml-4"> 
+                                        <el-tooltip content="Copy" placement="top-start">
+                                            <el-button type="primary" :icon="DocumentCopy"  @click="copyclip(scope.$index, scope.row)" />
+                                        </el-tooltip>
+
+                                        <el-tooltip content="Update" placement="top-start">
+                                            <el-button type="primary" :icon="Edit" @click="handleEdit(scope.$index, scope.row)" />
+                                        </el-tooltip>  
+
+                                        <el-popconfirm confirm-button-text="Yes" cancel-button-text="No" :icon="InfoFilled" icon-color="#626AEF" title="Are you sure to delete this?"
+                                                @confirm="handleDeleteOne(scope.$index, scope.row)">
+                                                <template #reference> 
+                                                        <div style="float: left;">
+                                                            <el-tooltip content="Delete" placement="top-start">    
+                                                                <el-button type="primary" :icon="Delete"> </el-button>
+                                                            </el-tooltip>                     
+                                                        </div>
+                                                    </template>
+                                        </el-popconfirm>   
+                                    </el-button-group>
+                                </template>
+                            </el-table-column>  
+
                             <el-table-column prop="MachineName" label="MachineName" width="150" />
                             <el-table-column label="IP Info">
                                 <el-table-column prop="InnerIP" label="Inner IP" width="130" />
                                 <el-table-column prop="OuterIP" label="Outer IP" width="130" />
+                            </el-table-column> 
+                            
+                            <el-table-column label="Web Info">
+                                <el-table-column prop="WebUrl" label="Url" width="130" />
+                                <el-table-column prop="WebBindMail" label="Bind Mail" width="130" />
                             </el-table-column>
 
                             <el-table-column label="Count Info">
@@ -50,34 +89,7 @@
                                     <el-button type="primary" @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
                                     <el-button type="danger" @click="handleEdit(scope.$index, scope.row)">Del</el-button>
                                 </template>
-                            </el-table-column> -->
-
-                            <el-table-column label="Operations" width="240">
-                                <template #default="scope">
-                                    <el-button-group class="ml-4"> 
-                                        <el-tooltip content="Copy" placement="top-start">
-                                            <el-button type="primary" :icon="DocumentCopy"  @click="copyclip(scope.$index, scope.row)" />
-                                        </el-tooltip>
-
-                                        <el-tooltip content="Update" placement="top-start">
-                                            <el-button type="primary" :icon="Edit" @click="handleEdit(scope.$index, scope.row)" />
-                                        </el-tooltip>  
-
-                                        <el-popconfirm confirm-button-text="Yes" cancel-button-text="No" :icon="InfoFilled" icon-color="#626AEF" title="Are you sure to delete this?"
-                                                @confirm="handleDeleteOne(scope.$index, scope.row)">
-                                                <template #reference> 
-                                                        <div style="float: left;">
-                                                            <el-tooltip content="Delete" placement="top-start">    
-                                                                <el-button type="primary" :icon="Delete"> </el-button>
-                                                            </el-tooltip>                     
-                                                        </div>
-                                                    </template>
-                                        </el-popconfirm>     
-                                  
-                                    </el-button-group>
-                                </template>
-                            </el-table-column>
-
+                            </el-table-column> --> 
                         </el-table>
                     </div>
                 </el-main>
@@ -88,8 +100,10 @@
                      <el-form :model="editform" label-width="120px" style="">
                         <el-form-item label="Server Name"><el-input v-model="editform.ServerName"/> </el-form-item> 
                         <el-form-item label="Machine Name"><el-input v-model="editform.MachineName"/> </el-form-item> 
-                        <el-form-item label="Inner IP"><el-input v-model="editform.InnerIP"/> </el-form-item> 
-                        <el-form-item label="Outer IP"><el-input v-model="editform.OuterIP"/> </el-form-item> 
+                        <el-form-item label="Inner IP/Port"><el-input v-model="editform.InnerIP"/> </el-form-item> 
+                        <el-form-item label="Outer IP/Port"><el-input v-model="editform.OuterIP"/> </el-form-item> 
+                        <el-form-item label="Web Url"><el-input v-model="editform.WebUrl"/> </el-form-item>  
+                        <el-form-item label="Web Bind Mail"><el-input v-model="editform.WebBindMail"/> </el-form-item> 
                         <el-form-item label="User Name"><el-input v-model="editform.Username"/> </el-form-item> 
                         <el-form-item label="User Password"><el-input v-model="editform.Userpassword"/> </el-form-item> 
                         <el-form-item label="Text Record"><el-input v-model="editform.TextRecord"/> </el-form-item>  
@@ -123,9 +137,9 @@ const route = useRoute();
 const active = ref(route.path);
  
 import { ElMessage, ElMessageBox  } from 'element-plus' 
-import {Plus,Check, Delete, Edit,InfoFilled, Message, Search, Star, Share, Upload, DocumentCopy,CircleCloseFilled } from '@element-plus/icons-vue'  
+import {Plus,Check, Delete, Edit,InfoFilled, Refresh,Message, Search, Star, Share, Upload, DocumentCopy,CircleCloseFilled } from '@element-plus/icons-vue'  
 function indexMethod(index) {
-    return index * 1
+    return index +1
 }
 </script>
 
@@ -144,6 +158,8 @@ export default {
                 ServerName: '',
                 InnerIP: '',
                 OuterIP: '',
+                WebUrl: '',
+                WebBindMail: '',
                 Username: '',
                 Userpassword: '',
                 Token: '',
@@ -154,9 +170,9 @@ export default {
                 TextRecord: '',
                 RecId: 0,
             },
-            editdialogname:'',
-            eidtdialogType:''
-
+            editdialogname: '',
+            eidtdialogType: '',
+            loadingdata: false, 
         };
     },
     computed: {
@@ -175,8 +191,10 @@ export default {
         },
         getAllConfigList() {
             let that = this;
+            that.loadingdata = true;
             getConfigList().then((data) => {
-                that.configList = data.Data
+                that.configList = data.Data;
+                that.loadingdata = false
             });
         },
         handleEdit(index, row) {
@@ -185,6 +203,8 @@ export default {
             that.editform.ServerName = row.ServerName;
             that.editform.InnerIP = row.InnerIP;
             that.editform.OuterIP = row.OuterIP;;
+            that.editform.WebUrl = row.WebUrl;
+            that.editform.WebBindMail = row.WebBindMail;;
             that.editform.Username = row.Username;
             that.editform.Userpassword = row.Userpassword;
             that.editform.Token = row.Token;
@@ -262,6 +282,8 @@ export default {
                                         element.ServerName = that.editform.ServerName;
                                         element.InnerIP = that.editform.InnerIP;
                                         element.OuterIP = that.editform.OuterIP;;
+                                        element.WebUrl = that.editform.WebUrl;
+                                        element.WebBindMail = that.editform.WebBindMail;;
                                         element.Username = that.editform.Username;
                                         element.Userpassword = that.editform.Userpassword;
                                         element.Token = that.editform.Token;
@@ -370,7 +392,20 @@ export default {
                     })
                 })
             } 
-        } 
+        } , 
+        async refreshpage() {
+            let that = this;
+            console.log(1)
+            this.loadingdata = true;
+            console.log(2)
+            await getConfigList().then((data) => {
+                that.configList = data.Data;
+                this.$refs.tableref.scrollTo({ top: 0, left: 0, })
+                that.$refs.tableref.clearSelection();
+                that.loadingdata = false
+            }); 
+            console.log(3)
+        }
     }
 };
 </script> 

@@ -21,5 +21,9 @@ namespace Entities.Net
         public string TextRecord { get; set; }
         public int Status { get; set; }
         public DateTime? LastUpdateTime{ get; set; }
-} 
+
+        public string WebUrl { get; set; }
+        public string WebName { get; set; }
+        public string WebBindMail { get; set; }
+    } 
 }
