@@ -25,6 +25,8 @@ using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Crypto.Tls;
 using Org.BouncyCastle.Ocsp;
 using System.Reflection.PortableExecutable;
+using Aspose.Cells;
+using System.Text;
 
 namespace TextVoiceServer.ContentMgmt
 {
@@ -261,6 +263,79 @@ namespace TextVoiceServer.ContentMgmt
                 tip.Msg = "Invalid argument.";
             }
             return Ok(tip);
-        } 
+        }
+
+        [HttpGet("export")]
+        public async Task<IActionResult> exportRecordAsync() 
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            //Create an Excel workbook from the scratch
+            Workbook ExcelFileWorkbook = new Workbook();
+
+            //Get the first worksheet (0 indexed position) in the workbook, the default worksheet
+            Worksheet ExcelFileSheet = ExcelFileWorkbook.Worksheets[0];
+
+            //Get the cells collection in the default worksheet
+            Cells SheetCells = ExcelFileSheet.Cells;
+
+            using (var dbcontext = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>())
+            {
+                var exportDataList= dbcontext.tb_config.Where(s => s.Status == 1).ToList();
+                ImportTableOptions imp = new ImportTableOptions();
+                imp.InsertRows = true;
+
+                // We pick a few columns not all to import to the worksheet 
+                SheetCells.ImportCustomObjects(
+                    (System.Collections.ICollection)exportDataList,
+                    new string[] { "ServerName", "InnerIP", "OuterIP", "Username", "Userpassword", "Token", "Remark", "Remark2", "Remark3 ", "MachineName", "TextRecord", "WebUrl", "WebBindMail", "WebName" },
+                    true,
+                    0,
+                    0,
+                    exportDataList.Count,
+                    true,
+                    "YYYY-MM-DD",
+                    false); 
+            }
+            // SheetCells.AutoFitColumns();
+
+            ////Insert data into the cells of the sheet
+            //SheetCells["A1"].PutValue("Customers Report");
+            //SheetCells["A2"].PutValue("C_ID");
+            //SheetCells["B2"].PutValue("C_Name");
+            //SheetCells["A3"].PutValue("C001");
+            //SheetCells["B3"].PutValue("Customer1");
+            //SheetCells["A4"].PutValue("C002");
+            //SheetCells["B4"].PutValue("Customer2");
+            //SheetCells["A5"].PutValue("C003");
+            //SheetCells["B5"].PutValue("Customer3");
+            //SheetCells["A6"].PutValue("C004");
+            //SheetCells["B6"].PutValue("Customer4");
+            //return File(imageBytes, "image/jpeg");
+            //Save to Excel file (XLSX)
+
+            
+            var stream = new MemoryStream();
+            ExcelFileWorkbook.Save(stream, SaveFormat.Xlsx);
+
+            // Reset the position of the stream to 0
+            stream.Position = 0;
+
+            // Set the content type and file name
+            var contentType = "application/octet-stream";
+            var fileName = "output.xlsx";
+
+            // Set the response headers
+            Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{fileName}\"");
+            Response.ContentType = contentType;
+
+            // Write the file contents to the response body stream
+            await stream.CopyToAsync(Response.Body);
+
+            // Close the file stream
+            stream.Dispose();
+
+            // Return the response
+            return new EmptyResult();
+        }
     }
 }
