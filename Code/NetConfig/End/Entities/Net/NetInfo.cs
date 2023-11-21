@@ -25,5 +25,6 @@ namespace Entities.Net
         public string WebUrl { get; set; }
         public string WebName { get; set; }
         public string WebBindMail { get; set; }
+        public string ConfigType { get; set; }
     } 
 }

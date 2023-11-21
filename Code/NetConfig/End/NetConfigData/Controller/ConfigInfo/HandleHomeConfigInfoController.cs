@@ -27,6 +27,8 @@ using Org.BouncyCastle.Ocsp;
 using System.Reflection.PortableExecutable;
 using Aspose.Cells;
 using System.Text;
+using Ubiety.Dns.Core;
+using System.Drawing;
 
 namespace TextVoiceServer.ContentMgmt
 {
@@ -103,6 +105,7 @@ namespace TextVoiceServer.ContentMgmt
                         Status = 1,
                         MachineName = newrecord.MachineName,
                         TextRecord = newrecord.TextRecord,
+                        ConfigType = newrecord.ConfigType,
                         LastUpdateTime = DateTime.Now
                     });
                     await context.SaveChangesAsync();
@@ -157,6 +160,7 @@ namespace TextVoiceServer.ContentMgmt
                         if (updateItem.Remark3 != null) { updateObj.Remark3 = updateItem.Remark3; }
                         if (updateItem.MachineName != null) { updateObj.MachineName = updateItem.MachineName; }
                         if (updateItem.TextRecord != null) { updateObj.TextRecord = updateItem.TextRecord; }
+                        if (updateItem.ConfigType != null) { updateObj.ConfigType = updateItem.ConfigType; }
 
                         updateObj.LastUpdateTime = DateTime.Now;
                     }
@@ -265,76 +269,74 @@ namespace TextVoiceServer.ContentMgmt
             return Ok(tip);
         }
 
-        [HttpGet("export")]
-        public async Task<IActionResult> exportRecordAsync() 
+        [HttpPost("export")]
+        public async Task<IActionResult> exportRecordAsync([FromBody] int[] IdArray) 
         {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            //Create an Excel workbook from the scratch
-            Workbook ExcelFileWorkbook = new Workbook();
-
-            //Get the first worksheet (0 indexed position) in the workbook, the default worksheet
-            Worksheet ExcelFileSheet = ExcelFileWorkbook.Worksheets[0];
-
-            //Get the cells collection in the default worksheet
-            Cells SheetCells = ExcelFileSheet.Cells;
-
-            using (var dbcontext = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>())
+            //var IdArray =new int[] { 1, 2, 3 };
+            if (IdArray?.Length > 0)
             {
-                var exportDataList= dbcontext.tb_config.Where(s => s.Status == 1).ToList();
-                ImportTableOptions imp = new ImportTableOptions();
-                imp.InsertRows = true;
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                Workbook ExcelFileWorkbook = new Workbook();
+                Worksheet ExcelFileSheet = ExcelFileWorkbook.Worksheets[0];
+                Cells SheetCells = ExcelFileSheet.Cells;
 
-                // We pick a few columns not all to import to the worksheet 
-                SheetCells.ImportCustomObjects(
-                    (System.Collections.ICollection)exportDataList,
-                    new string[] { "ServerName", "InnerIP", "OuterIP", "Username", "Userpassword", "Token", "Remark", "Remark2", "Remark3 ", "MachineName", "TextRecord", "WebUrl", "WebBindMail", "WebName" },
-                    true,
-                    0,
-                    0,
-                    exportDataList.Count,
-                    true,
-                    "YYYY-MM-DD",
-                    false); 
-            }
-            // SheetCells.AutoFitColumns();
+                using (var dbcontext = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>())
+                {
+                    var exportDataList = dbcontext.tb_config.Where(s => s.Status == 1 && IdArray.Contains(s.RecId)).ToList();
 
-            ////Insert data into the cells of the sheet
-            //SheetCells["A1"].PutValue("Customers Report");
-            //SheetCells["A2"].PutValue("C_ID");
-            //SheetCells["B2"].PutValue("C_Name");
-            //SheetCells["A3"].PutValue("C001");
-            //SheetCells["B3"].PutValue("Customer1");
-            //SheetCells["A4"].PutValue("C002");
-            //SheetCells["B4"].PutValue("Customer2");
-            //SheetCells["A5"].PutValue("C003");
-            //SheetCells["B5"].PutValue("Customer3");
-            //SheetCells["A6"].PutValue("C004");
-            //SheetCells["B6"].PutValue("Customer4");
-            //return File(imageBytes, "image/jpeg");
-            //Save to Excel file (XLSX)
+                    ImportTableOptions imp = new ImportTableOptions();
+                    imp.InsertRows = true;
+                    SheetCells.ImportCustomObjects(
+                        (System.Collections.ICollection)exportDataList,
+                        new string[] { "ServerName", "InnerIP", "OuterIP", "Username", "Userpassword", "Token", "Remark", "Remark2", "Remark3 ", "MachineName", "TextRecord", "WebUrl", "WebBindMail", "WebName", "ConfigType" },
+                        true,
+                        0,
+                        0,
+                        exportDataList.Count,
+                        true,
+                        "yyyy-MM-dd",
+                        false);
+                }
+                 
+                Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition"); 
+                Response.Headers.Add("Content-Disposition", $"attachment; Filename=\"{$"ConfigData_{DateTime.Now.ToString("yyyyMMdd")}.xlsx"}\"");
+                Response.ContentType = "application/octet-stream"; 
 
-            
-            var stream = new MemoryStream();
-            ExcelFileWorkbook.Save(stream, SaveFormat.Xlsx);
+                //Create a named range
+                Aspose.Cells.Range range = ExcelFileSheet.Cells.CreateRange("A1", "E1");
+                //Set the name of the named range
+                range.Name = "Range1";
+                Aspose.Cells.Style style = ExcelFileWorkbook.CreateStyle();
+                style.ForegroundColor = System.Drawing.Color.FromArgb(50, 83, 220);
+                style.Pattern = BackgroundType.Solid;
+                style.Font.Color = Color.White;
+                style.Font.Size = 12;
 
-            // Reset the position of the stream to 0
-            stream.Position = 0;
+                // Adding a thick top border with blue line
+                range.SetOutlineBorder(BorderType.TopBorder, CellBorderType.Thick, Color.Blue);
 
-            // Set the content type and file name
-            var contentType = "application/octet-stream";
-            var fileName = "output.xlsx";
+                // Adding a thick bottom border with blue line
+                range.SetOutlineBorder(BorderType.BottomBorder, CellBorderType.Thick, Color.Blue);
 
-            // Set the response headers
-            Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{fileName}\"");
-            Response.ContentType = contentType;
+                // Adding a thick left border with blue line
+                range.SetOutlineBorder(BorderType.LeftBorder, CellBorderType.Thick, Color.Blue);
 
-            // Write the file contents to the response body stream
-            await stream.CopyToAsync(Response.Body);
+                // Adding a thick right border with blue line
+                range.SetOutlineBorder(BorderType.RightBorder, CellBorderType.Thick, Color.Blue);
 
-            // Close the file stream
-            stream.Dispose();
+                StyleFlag styleFlag = new StyleFlag();
+                styleFlag.All = true;
+                range.ApplyStyle(style, styleFlag);
 
-            // Return the response
+                ExcelFileSheet.AutoFitColumns(0, 0, 0, 5); 
+
+                var stream = new MemoryStream();
+                ExcelFileWorkbook.Save(stream, SaveFormat.Xlsx);
+                stream.Position = 0;
+
+                await stream.CopyToAsync(Response.Body); 
+                stream.Dispose(); 
+            } 
             return new EmptyResult();
         }
     }

@@ -109,3 +109,27 @@ export async function deleteConfigInfos(IdArray) {
     });
     return result;
 }
+
+
+
+//export
+export async function exportConfigInfos(IdArray) {
+    var result = null
+    await axios({
+        method: 'post',
+        timeout: 30000,
+        url: serverUrl + '/api/netcfg/export',
+        responseType: 'arraybuffer',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: IdArray,
+    }).then(function(response) {
+        if (response != null && response.data != null) {
+            result = response
+        }
+    }).catch(function(error) {
+        console.log(error);
+    });
+    return result;
+}

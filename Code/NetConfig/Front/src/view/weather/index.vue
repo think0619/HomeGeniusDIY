@@ -20,7 +20,7 @@
                                     <div class="grid-content" /><el-button plain :icon="Refresh" @click="refreshpage()">Refresh</el-button>
                                 </el-col>
                                 <el-col :span="1.5" class=" ">
-                                    <div class="grid-content" /><el-button plain :icon="Refresh" @click="refreshpage()">Export</el-button>
+                                    <div class="grid-content" /><el-button plain :icon="Memo" @click="exportdata()">Export</el-button>
                                 </el-col>
                             </el-row>
                         </div>
@@ -31,8 +31,7 @@
                          
                             <el-table-column type="selection" width="55" />
                             <el-table-column fixed type="index"  label="NO." :index="indexMethod" width="60" />
-                            <el-table-column fixed prop="ServerName" label="Server Name" width="120" />
-                            
+                            <el-table-column fixed prop="ServerName" label="Server Name" width="150" /> 
                             <el-table-column fixed label="Operations" width="170">
                                 <template #default="scope">
                                     <el-button-group class="ml-4"> 
@@ -58,29 +57,30 @@
                                 </template>
                             </el-table-column>  
 
+                            <el-table-column prop="ConfigType" label="Config Type" width="150" />
                             <el-table-column prop="MachineName" label="MachineName" width="150" />
                             <el-table-column label="IP Info">
-                                <el-table-column prop="InnerIP" label="Inner IP" width="130" />
-                                <el-table-column prop="OuterIP" label="Outer IP" width="130" />
+                                <el-table-column prop="InnerIP" label="Inner IP" width="150" />
+                                <el-table-column prop="OuterIP" label="Outer IP" width="200" />
                             </el-table-column> 
                             
                             <el-table-column label="Web Info">
-                                <el-table-column prop="WebUrl" label="Url" width="130" />
-                                <el-table-column prop="WebBindMail" label="Bind Mail" width="130" />
+                                <el-table-column prop="WebUrl" label="Url" width="200" />
+                                <el-table-column prop="WebBindMail" label="Bind Mail" width="200" />
                             </el-table-column>
 
                             <el-table-column label="Count Info">
-                                <el-table-column prop="Username" label="User Name" width="100" />
+                                <el-table-column prop="Username" label="User Name" width="150" />
                                 <el-table-column prop="Userpassword" label="User Password" width="130" />
                             </el-table-column>
 
                             <el-table-column label="Misc.">
                                 <el-table-column prop="TextRecord" label="Text Record" width="150" />
-                                <el-table-column prop="Remark" label="Remark" width="150" />
-                                <el-table-column prop="Token" label="Token" width="120" />
+                                <el-table-column prop="Remark" label="Remark" width="240" />
+                                <el-table-column prop="Token" label="Token" width="200" />
                             </el-table-column>
 
-                            <el-table-column prop="Remark2" label="Remark 2" width="120" />
+                            <el-table-column prop="Remark2" label="Remark 2" width="200" />
                             <el-table-column prop="Remark3" label="Remark 3" width="120" />
 
                             <!-- <el-table-column fixed="right" label="Operations" width="240">
@@ -99,6 +99,12 @@
                     <el-scrollbar height="400px" ref="editFormScollbar"> 
                      <el-form :model="editform" label-width="120px" style="">
                         <el-form-item label="Server Name"><el-input v-model="editform.ServerName"/> </el-form-item> 
+                        <!-- <el-form-item label="Config Type"><el-input v-model="editform.ConfigType"/> </el-form-item>  -->
+                            <el-form-item label="Config Type">
+                                <el-select v-model="editform.ConfigType" placeholder="Select" clearable  style="width:100%">
+                                    <el-option v-for="item in cfgTypeOps" :key="item.value" :label="item.label" :value="item.value"  />
+                                </el-select> 
+                         </el-form-item>  
                         <el-form-item label="Machine Name"><el-input v-model="editform.MachineName"/> </el-form-item> 
                         <el-form-item label="Inner IP/Port"><el-input v-model="editform.InnerIP"/> </el-form-item> 
                         <el-form-item label="Outer IP/Port"><el-input v-model="editform.OuterIP"/> </el-form-item> 
@@ -137,14 +143,14 @@ const route = useRoute();
 const active = ref(route.path);
  
 import { ElMessage, ElMessageBox  } from 'element-plus' 
-import {Plus,Check, Delete, Edit,InfoFilled, Refresh,Message, Search, Star, Share, Upload, DocumentCopy,CircleCloseFilled } from '@element-plus/icons-vue'  
+import {Plus,Check, Delete, Edit,InfoFilled, Refresh,Memo,Message, Search, Star, Share, Upload, DocumentCopy,CircleCloseFilled } from '@element-plus/icons-vue'  
 function indexMethod(index) {
     return index +1
 }
 </script>
 
 <script lang="jsx"> 
-import { getConfigList,addConfigInfo,updateConfigInfo,deleteConfigInfos } from "@/api/netcfg"
+import { getConfigList,addConfigInfo,updateConfigInfo,deleteConfigInfos,exportConfigInfos } from "@/api/netcfg"
 
 export default {
     components: {
@@ -168,11 +174,16 @@ export default {
                 Remark3: '',
                 MachineName: '',
                 TextRecord: '',
+                ConfigType: '',
                 RecId: 0,
             },
             editdialogname: '',
             eidtdialogType: '',
-            loadingdata: false, 
+            loadingdata: false,
+            cfgTypeOps: [
+                {  value: 'Config', label: 'Config', },
+                {  value: 'Web', label: 'Web', },
+            ]
         };
     },
     computed: {
@@ -213,6 +224,7 @@ export default {
             that.editform.Remark3 = row.Remark3;
             that.editform.MachineName = row.MachineName;
             that.editform.TextRecord = row.TextRecord;
+            that.editform.ConfigType = row.ConfigType;
 
             this.showdialog("update");
         },
@@ -239,6 +251,9 @@ export default {
                 that.editform.MachineName="";
                 that.editform.TextRecord="";
                 that.editform.RecId=0;  
+                that.editform.WebUrl ="";
+                that.editform.WebBindMail="";
+                that.editform.ConfigType="";
             }else if(type=='update'){
                 that.editdialogname="Update configuration information"; 
             }
@@ -292,6 +307,7 @@ export default {
                                         element.Remark3 = that.editform.Remark3;
                                         element.MachineName = that.editform.MachineName;
                                         element.TextRecord = that.editform.TextRecord; 
+                                        element.ConfigType = that.editform.ConfigType; 
                                     }
                                 }); 
 
@@ -341,7 +357,7 @@ export default {
         },
         deleteMutipleRecord(){
            var selectRows= this.$refs.tableref.getSelectionRows();
-           console.log(selectRows);
+          // console.log(selectRows);
 
             if (selectRows.length == 0) {
                 ElMessage({
@@ -405,6 +421,42 @@ export default {
                 that.loadingdata = false
             }); 
             console.log(3)
+        },
+        exportdata(){ 
+            var selectRows = this.$refs.tableref.getSelectionRows(); 
+            if (selectRows.length == 0) {
+                ElMessage({
+                    showClose: true,
+                    message: 'Please select at least one record.',
+                    type: 'error',
+                });
+            } else {
+                let idArray = [];
+                    for (let index = 0; index < selectRows.length; index++) {
+                        idArray.push(selectRows[index].RecId);
+                    }
+                    exportConfigInfos(idArray).then((result) => {
+                        //接口请求成功之后完成以下操作
+                        let blob = new Blob([result.data], { type: 'application/vnd.ms-excel' });
+                        // 获取 获取响应头 heads 中的 filename 文件名          
+                        let temp = result.headers["content-disposition"].split(";")[1].split("Filename=")[1];
+                        // 把 %E9%AB%98%E6%84%8F%E5%90%91%E5%AD%A6%E5%91%98303.xlsx 转化成文字
+                        var fileName = decodeURIComponent(temp.slice(1).slice(0, -1));
+                        //创建一个 a 标签
+                        const link = document.createElement('a')
+                        //不显示a标签
+                        link.style.display = 'none'
+                        // 给a 标签的href属性赋值
+                        link.href = URL.createObjectURL(blob);
+                        link.setAttribute('download', fileName)
+                        //把a标签插入页面中
+                        document.body.appendChild(link)
+                        link.click()
+                        //点击之后移除a标签
+                        document.body.removeChild(link)
+                })
+             }
+
         }
     }
 };
