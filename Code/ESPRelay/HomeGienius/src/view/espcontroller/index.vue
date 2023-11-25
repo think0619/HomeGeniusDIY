@@ -16,9 +16,17 @@
         <div style="margin-top: 30px;">
             <div class="sysname"><span>OPS</span></div> 
             <van-space size="1rem">
-                <van-button type="primary" @click="sendmsg('ops','poweron');">打开电源</van-button>
-                <van-button type="primary" @click="sendmsg('ops','poweroff');">关闭电源</van-button>
+                <van-button type="primary" @click="sendmsg('ops','p');">打开电源</van-button>
+                <van-button type="primary" @click="sendmsg('ops','r');">关闭电源</van-button>
                 <van-button type="primary" @click="sendmsg('ops','diskpower');">启动硬盘</van-button>
+            </van-space>
+        </div>
+        <div style="margin-top: 30px;">
+            <div class="sysname"><span>OPS</span></div> 
+            <van-space size="1rem">
+                <van-button type="primary" @click="sendmsg('ops','play');">开始</van-button>
+                <van-button type="primary" @click="sendmsg('ops','stop');">关闭</van-button>
+                <van-button type="primary" @click="sendmsg('ops','pause');">暂停</van-button>
             </van-space>
         </div>
         <div style="margin-top: 30px;">
