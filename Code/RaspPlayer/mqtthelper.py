@@ -3,6 +3,7 @@ import time
 import cfghelper
 from paho.mqtt import client as mqtt_client
 from vlcplayer import Player as VlcPlayer
+import relayhandler
  
 broker = cfghelper.readConfig("mqttbroker")
 port = 1883
@@ -45,8 +46,10 @@ def subscribe(client: mqtt_client,player:VlcPlayer):
         # msg.topic msg.payload.decode()
         cmdmsg=msg.payload.decode()
         if(cmdmsg=="play"):
+            relayhandler.controlrelay(5,1)
             player.play()
         elif(cmdmsg=="stop"):
+            relayhandler.controlrelay(5,0)
             player.stop() 
         if(cmdmsg=="pause"):
             player.pause()

@@ -27,6 +27,23 @@
                 <van-button type="primary" @click="sendmsg('rasp','play');">开始</van-button>
                 <van-button type="primary" @click="sendmsg('rasp','stop');">关闭</van-button>
                 <van-button type="primary" @click="sendmsg('rasp','pause');">暂停</van-button>
+                <van-field
+  v-model="vlcUrl"
+  is-link
+  readonly
+  name="picker"
+  label="Picker"
+  placeholder="Select city"
+  @click="showVlcPicker = true"
+/>
+<van-popup v-model:show="showVlcPicker" position="bottom">
+  <van-picker
+    :columns="vlcUrlCols"
+    @confirm="onConfirm"
+    @cancel="showVlcPicker = false"
+  />
+</van-popup>
+
             </van-space>
         </div>
         <div style="margin-top: 30px;">
@@ -58,7 +75,7 @@ const active = ref(route.path);
 </script>
 
 <script lang="jsx">
-import { showSuccessToast, showFailToast, showToast } from 'vant';
+import { showSuccessToast, showFailToast, showToast,  } from 'vant';
 import { login } from "@/api/config";
 import { getMQTTInfo } from "@/api/mqtthelper";
 import * as mqtt from "mqtt/dist/mqtt.min"; 
@@ -71,7 +88,16 @@ export default {
             contentTitle: '', //  
             currentdate: '', //  
             mqttclient: null,
-            msgcontent:''
+            msgcontent:'',
+            vlcUrl:'',
+showVlcPicker:false,
+vlcUrlCols:[
+      { text: 'Delaware', value: 'Delaware' },
+      { text: 'Florida', value: 'Florida' },
+      { text: 'Georgia', value: 'Georgia' },
+      { text: 'Indiana', value: 'Indiana' },
+      { text: 'Maine', value: 'Maine' },
+    ]
         };
     },
     computed: {
@@ -143,6 +169,7 @@ export default {
                 case "ops": topic = "OPSRelayController"; break;
                 case "lock": topic = "LockPC"; break;
                 case "msg": topic = "Msg"; break;
+                case "rasp": topic = "RaspController"; break;
             } 
             if (topic != '') { 
                 let that = this; 
@@ -187,7 +214,14 @@ export default {
                     'icon': 'fail'
                 })
             }
+        },
+        onConfirm(selectResult){
+            console.log(selectResult.selectedOptions[0]?.text)
+            this.vlcUrl = selectResult.selectedOptions[0]?.text;
+       this.showVlcPicker= false;
+
         }
+
     }
 }; 
 </script>

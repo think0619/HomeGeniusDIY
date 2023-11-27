@@ -8,7 +8,7 @@ def xfill(number, width):
     return '{:0>{w}}'.format(numbers, w=width)
 
 def needRun():
-    response = urequests.get("http://hw.hellolinux.cn:8888/api/configservice/get?key=espclockrun")
+    response = urequests.get("https://hw.hellolinux.cn:8888/api/configservice/get?key=espclockrun")
     result=response.text
     response.close()
     return  result=="11111"  
