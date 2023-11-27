@@ -1,29 +1,34 @@
-# import os
-# os.environ['PYTHON_VLC_MODULE_PATH'] = "./vlc"
+import os
+os.environ['PYTHON_VLC_MODULE_PATH'] = "./vlc"
 
 import vlc
 from datetime import datetime
 from vlcplayer import Player 
 import mqtthelper
+from datetime import datetime
+from apscheduler.schedulers.blocking import BlockingScheduler 
+from apscheduler.schedulers.background import BackgroundScheduler  
+from threading import Thread 
 
 def my_call_back(event):
-    print("call:", player.get_time())
-
+    pass
+    # print("call:", player.get_time()) 
 
 if "__main__" == __name__:
     player = Player()
     player.add_callback(vlc.EventType.MediaPlayerTimeChanged, my_call_back)
-    # 在线播放流媒体视频
-    player.play("http://satellitepull.cnr.cn/live/wx32jsyygb/playlist.m3u8")
-    mqtthelper.run(player)
-
-    # 播放本地mp3
-    # player.play("D:/abc.mp3")
-
-    # 防止当前进程退出
+    player.set_uri("http://satellitepull.cnr.cn/live/wx32jsyygb/playlist.m3u8") 
+    player.set_uri("http://ngcdn001.cnr.cn/live/zgzs/index.m3u8") 
+    player.set_uri("http://play-radio-stream3.hndt.com/now/JxkyN5mR/playlist.m3u8")  
+    
+    thread=Thread(target=mqtthelper.run,args=(player,)) 
+    thread.start()
+    # mqtthelper.run(player) 
+    #player run
+    clockPlayScheduler = BackgroundScheduler()
+    # trigger_cron = '0 30 10 * * *'  # 设置为每天的10:30:00执行任务
+    clockPlayScheduler.add_job(player.play, 'cron',  hour=16,minute=40, second=59, ) 
+    clockPlayScheduler.add_job(player.stop, 'cron', hour=16,minute=38, second=35,) 
+    clockPlayScheduler.start()  
     while True:
-        nowtime=datetime.now()
-        if  nowtime.minute%2==0:
-            player.stop()
-            
         pass

@@ -6,7 +6,7 @@ from vlcplayer import Player as VlcPlayer
  
 broker = cfghelper.readConfig("mqttbroker")
 port = 1883
-topic = "OPSRelayController" 
+topic = "RaspController" 
 client_id = f'publish-{random.randint(0, 1000)}'
 username = cfghelper.readConfig("mqttuser")
 password =  cfghelper.readConfig("mqttpwd") 

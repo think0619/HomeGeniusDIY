@@ -22,11 +22,11 @@
             </van-space>
         </div>
         <div style="margin-top: 30px;">
-            <div class="sysname"><span>OPS</span></div> 
+            <div class="sysname"><span>Raspberry Pi Clock</span></div> 
             <van-space size="1rem">
-                <van-button type="primary" @click="sendmsg('ops','play');">开始</van-button>
-                <van-button type="primary" @click="sendmsg('ops','stop');">关闭</van-button>
-                <van-button type="primary" @click="sendmsg('ops','pause');">暂停</van-button>
+                <van-button type="primary" @click="sendmsg('rasp','play');">开始</van-button>
+                <van-button type="primary" @click="sendmsg('rasp','stop');">关闭</van-button>
+                <van-button type="primary" @click="sendmsg('rasp','pause');">暂停</van-button>
             </van-space>
         </div>
         <div style="margin-top: 30px;">
