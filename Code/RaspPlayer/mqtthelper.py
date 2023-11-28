@@ -3,7 +3,7 @@ import time
 import cfghelper
 from paho.mqtt import client as mqtt_client
 from vlcplayer import Player as VlcPlayer
-# import relayhandler
+import relayhandler
  
 broker = cfghelper.readConfig("mqttbroker")
 port = 1883
@@ -41,32 +41,41 @@ def connect_mqtt() -> mqtt_client:
     client.connect(broker, port)
     return client 
 
-def subscribe(client: mqtt_client,player:VlcPlayer):
+def subscribe(client: mqtt_client,player:VlcPlayer,pinnum):
     def on_message(client, userdata, msg): 
         cmdmsg=msg.payload.decode()
         if(cmdmsg=="play"):
-            # relayhandler.controlrelay(5,1)
+            relayhandler.controlrelay(pinnum,1)
             player.play()
         elif(cmdmsg=="stop"):
-            # relayhandler.controlrelay(5,0)
+            relayhandler.controlrelay(pinnum,0)
             player.stop() 
         elif(cmdmsg=="pause"):
-            player.pause()
+            player.pause() 
         else:
             if(cmdmsg.find('changesrc')==0):
                 #`changesrc|${that.vlcSrcResultValue}`
                src=cmdmsg.split("|")[1]
                if src!=None:
-                   # relayhandler.controlrelay(5,1)
+                   relayhandler.controlrelay(5,1)
                    player.set_uri(src) 
                    player.play()  
+            elif(cmdmsg.find('volume')==0):
+                #`volume|up` `volume|down`
+               action=cmdmsg.split("|")[1]
+               if action!=None: 
+                   if(action=="up"):
+                       player.set_volume(player.get_volume()+5)  
+                   elif(action=="down"):
+                       player.set_volume(player.get_volume()-5)   
+                   
        
     client.subscribe(topic)
     client.on_message = on_message 
 
 
-def run(vlcplayer:VlcPlayer):
+def run(vlcplayer:VlcPlayer,pinnum):
     client = connect_mqtt()
-    subscribe(client,vlcplayer)
+    subscribe(client,vlcplayer,pinnum)
     client.loop_forever() 
  

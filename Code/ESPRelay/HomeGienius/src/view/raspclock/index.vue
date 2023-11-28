@@ -12,6 +12,12 @@
                 </van-space>
             </div>
             <div style="margin-top: 20px;">
+                <van-space size="1rem">
+                    <van-button type="primary" @click="volumectrl( 'up'); "  >Volume +</van-button>
+                    <van-button type="primary" @click="volumectrl('down');" >Volume -</van-button> 
+                </van-space>
+            </div>
+            <div style="margin-top: 20px;">
                 <van-space>
                     <van-field v-model="vlcresult" is-link readonly name="picker" label="Source" placeholder="Select source" @click="colShowPicker = true" />
                     <van-popup v-model:show="colShowPicker" position="bottom">
@@ -165,6 +171,12 @@ export default {
             if(that.vlcSrcResultValue){
                 this.sendmsg('rasp',`changesrc|${that.vlcSrcResultValue}`); 
             } 
+        },
+        volumectrl(ctrl){
+            if(ctrl){
+                 this.sendmsg('rasp',`volume|${ctrl}`); 
+            }
+
         },
         onconfirmvlc(result) {
             var selectOption = result.selectedOptions[0];

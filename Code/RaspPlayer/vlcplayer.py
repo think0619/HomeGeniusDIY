@@ -1,5 +1,5 @@
 import os
-os.environ['PYTHON_VLC_MODULE_PATH'] = "./vlc"
+# os.environ['PYTHON_VLC_MODULE_PATH'] = "./vlc"
 
 import vlc
 
