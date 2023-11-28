@@ -45,6 +45,7 @@ def subscribe(client: mqtt_client,player:VlcPlayer,pinnum):
     def on_message(client, userdata, msg): 
         cmdmsg=msg.payload.decode()
         if(cmdmsg=="play"):
+            # player.set_volume(50)
             relayhandler.controlrelay(pinnum,1)
             player.play()
         elif(cmdmsg=="stop"):
@@ -68,6 +69,8 @@ def subscribe(client: mqtt_client,player:VlcPlayer,pinnum):
                        player.set_volume(player.get_volume()+5)  
                    elif(action=="down"):
                        player.set_volume(player.get_volume()-5)   
+                   elif(action=="half"):
+                       player.set_volume(50)   
                    
        
     client.subscribe(topic)

@@ -15,6 +15,7 @@
                 <van-space size="1rem">
                     <van-button type="primary" @click="volumectrl( 'up'); "  >Volume +</van-button>
                     <van-button type="primary" @click="volumectrl('down');" >Volume -</van-button> 
+                    <van-button type="primary" @click="volumectrl('half');" >Volume 50%</van-button> 
                 </van-space>
             </div>
             <div style="margin-top: 20px;">

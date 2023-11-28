@@ -52,7 +52,7 @@ if "__main__" == __name__:
     #player run
     clockPlayScheduler = BackgroundScheduler()
     # trigger_cron = '0 30 10 * * *'  # 设置为每天的10:30:00执行任务
-    clockPlayScheduler.add_job(playPlayer, 'cron',day_of_week ="0-5", hour=7,minute='10,20,40,50'  ) 
+    clockPlayScheduler.add_job(playPlayer, 'cron',day_of_week ="0-5", hour=7,minute='20,30,40,50'  ) 
     clockPlayScheduler.add_job(playPlayer, 'cron',day_of_week ="0-5", hour=8,minute='0'  )  
     clockPlayScheduler.add_job(stopPlayer, 'cron',day_of_week ="0-5", hour=8,minute=20 )   
     clockPlayScheduler.add_job(checkNetwork, 'interval', minutes =15) 
