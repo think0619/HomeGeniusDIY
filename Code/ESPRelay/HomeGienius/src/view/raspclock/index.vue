@@ -1,41 +1,23 @@
 <template>
     <div class="title">
-        <van-nav-bar :title="contentTitle" left-text="" left-arrow  @click-left="onClickLeft"  ></van-nav-bar>
+        <van-nav-bar :title="contentTitle" left-text="" left-arrow @click-left="onClickLeft"></van-nav-bar>
     </div>
-    <div class="control"> 
-        <div style="margin-top: 15px;">
-            <div class="sysname"><span>ESP32 时钟</span></div>
-            <van-space size="1rem">
-                <van-button type="primary" @click="sendmsg('clock', 'on');">打开时钟</van-button>
-                <van-button type="primary" @click="sendmsg('clock', 'off');">关闭时钟</van-button>
-                <van-button type="primary" @click="sendmsg('clock', 'synctime');">同步时间</van-button> 
-                <van-button type="primary" @click="sendmsg('clock', 'reset');">Reset</van-button> 
-            </van-space>
-        </div>
-
+    <div class="control">
         <div style="margin-top: 30px;">
-            <div class="sysname"><span>OPS</span></div> 
-            <van-space size="1rem">
-                <van-button type="primary" @click="sendmsg('ops','p');">打开电源</van-button>
-                <van-button type="primary" @click="sendmsg('ops','r');">关闭电源</van-button>
-                <van-button type="primary" @click="sendmsg('ops','diskpower');">启动硬盘</van-button>
-            </van-space>
-        </div> 
-        <div style="margin-top: 30px;">
-            <div class="sysname"><span>锁屏</span></div> 
-            <van-space size="1rem">
-                <van-button type="primary" @click="sendmsg('lock','LOCKPC_PCLockEmma');">锁屏Emma</van-button>
-                <van-button type="primary" @click="sendmsg('lock','LOCKPC_PCLockThink');">锁屏XS</van-button> 
-            </van-space>
-        </div> 
-        <div style="margin-top: 10px;">
-            <div class="sysname"><span>锁屏</span></div> 
-            <van-space size="1rem" direction="vertical" fill>
-            <van-cell-group inset><van-field v-model="msgcontent" label="内容" placeholder="请输入消息" clearable /></van-cell-group>
-            <van-space size="1rem" >
-            <van-button type="primary" @click="sendmsg('msg','Msg_PCLockEmma');" >to Emma</van-button>
-            <van-button type="primary" @click="sendmsg('msg','Msg_PCLockThink');">to Think</van-button> </van-space>
-        </van-space>
+            <div>
+                <van-space size="1rem">
+                    <van-button type="primary" @click="sendmsg('rasp', 'play'); "  block style="width: 80px;">Start</van-button>
+                    <van-button type="primary" @click="sendmsg('rasp', 'stop');" block style="width: 80px;">Stop</van-button>
+                    <van-button type="primary" @click="sendmsg('rasp', 'pause');"  block style="width: 80px;">Pause</van-button>
+                </van-space>
+            </div>
+            <div style="margin-top: 20px;">
+                <van-space>
+                    <van-field v-model="vlcresult" is-link readonly name="picker" label="Source" placeholder="Select source" @click="colShowPicker = true" />
+                    <van-popup v-model:show="colShowPicker" position="bottom">
+                        <van-picker :columns="vlccolumns" @confirm="onconfirmvlc" @cancel="colShowPicker = false" />
+                    </van-popup> <van-button type="primary" @click="changevlcsrc();" >Change</van-button></van-space>
+            </div>
         </div>
     </div>
 </template>    
@@ -50,10 +32,9 @@ const active = ref(route.path);
 </script>
 
 <script lang="jsx">
-import { showSuccessToast, showFailToast, showToast,  } from 'vant';
-import { login } from "@/api/config";
+import { showSuccessToast, showFailToast, showToast } from 'vant';
 import { getMQTTInfo } from "@/api/mqtthelper";
-import * as mqtt from "mqtt/dist/mqtt.min"; 
+import * as mqtt from "mqtt/dist/mqtt.min";
 
 export default {
     components: {
@@ -63,17 +44,31 @@ export default {
             contentTitle: '', //  
             currentdate: '', //  
             mqttclient: null,
-            msgcontent:'', 
+            msgcontent: '',
+            vlcresult: '',
+            vlcSrcResultValue: '',
+            colShowPicker: false,
+            vlccolumns: [
+                { text: '中国之声', value: 'http://ngcdn001.cnr.cn/live/zgzs/index.m3u8' },
+                { text: '江苏音乐台', value: 'http://satellitepull.cnr.cn/live/wx32jsjdlxyy/playlist.m3u8' },
+                { text: '天籁之音 Hi-Fi Radio', value: 'http://play-radio-stream3.hndt.com/now/WUBA5hW2/playlist.m3u8' },
+                { text: '亚洲音乐', value: 'http://asiafm.hk:8000/asiafm' },
+                { text: '江苏交通广播', value: 'http://satellitepull.cnr.cn/live/wx32jsjtgb/playlist.m3u8' },
+                { text: 'CNR经典音乐广播', value: 'http://liveop.cctv.cn/hls/jdyygb192/playlist.m3u8' },
+                { text: '南京音乐广播', value: 'http://live.njgb.com:10588/show.mp3' },
+
+                //,
+            ]
         };
     },
     computed: {
     },
-    setup() { 
+    setup() {
     },
     mounted() {
-        this.setTitle(); 
+        this.setTitle();
         let token = this.$store.state.token;
-        if (token ) {
+        if (token) {
             getMQTTInfo(token).then((mqttr) => {
                 if (mqttr != null && mqttr.Status == 1) {
                     let mqttdata = mqttr.Data;
@@ -81,12 +76,12 @@ export default {
                     let mqtt_username = mqttdata.username;
                     let mqtt_password = mqttdata.password;
                     this.connectMQTT(mqtt_wsurl, mqtt_username, mqtt_password)
-                }else{
+                } else {
                     showFailToast({
-                            "wordBreak": "break-word",
-                            "message": "Identity expired."+result.Msg,
-                            "duration": 800
-                        });
+                        "wordBreak": "break-word",
+                        "message": "Identity expired." + result.Msg,
+                        "duration": 800
+                    });
                 }
             });
         } else {
@@ -95,10 +90,9 @@ export default {
     },
     methods: {
         setTitle() {
-            this.contentTitle = "ESP32 Controller";
+            this.contentTitle = "Raspberry Pi Clock";
         },
-        onClickLeft(){
-            
+        onClickLeft() {
             history.back();
         },
         connectMQTT(_url, _username, _password) {
@@ -115,13 +109,6 @@ export default {
                     "message": "The mqtt client has connected.",
                     "duration": 800
                 });
-                that.mqttclient.subscribe('ShowClockTime', function (err) {
-                    if (!err) { } else { }
-                })
-                that.mqttclient.subscribe('OPSRelayController', function (err) {
-                    if (!err) { } else {
-                    }
-                })
             })
             that.mqttclient.on('message', function (topic, message) {
                 // console.log(topic.toString())
@@ -131,17 +118,10 @@ export default {
         sendmsg(topicflag, msg) {
             var topic = ""
             switch (topicflag) {
-                case "clock": topic = "ShowClockTime"; break;
-                case "ops": topic = "OPSRelayController"; break;
-                case "lock": topic = "LockPC"; break;
-                case "msg": topic = "Msg"; break; 
-            } 
-            if (topic != '') { 
-                let that = this; 
-                if(topic=="Msg"){
-                    msg=`${msg}_${that.msgcontent}`
-                    console.log(msg)
-                }
+                case "rasp": topic = "RaspController"; break;
+            }
+            if (topic != '') {
+                let that = this;
                 if (that.mqttclient != null) {
                     that.mqttclient.publish(topic, msg, {
                         qos: 0,
@@ -179,16 +159,29 @@ export default {
                     'icon': 'fail'
                 })
             }
-        }, 
+        },
+        changevlcsrc(){
+            let that=this;
+            if(that.vlcSrcResultValue){
+                this.sendmsg('rasp',`changesrc|${that.vlcSrcResultValue}`); 
+            } 
+        },
+        onconfirmvlc(result) {
+            var selectOption = result.selectedOptions[0];
+            this.vlcresult = selectOption?.text;
+            this.vlcSrcResultValue = selectOption?.value;
+            this.colShowPicker = false; 
+        }
     }
 }; 
 </script>
 
 <style scoped>
-.control{
+.control {
     margin: 0 20px;
 }
-.sysname{
+
+.sysname {
     margin: 5px 0;
 }
 

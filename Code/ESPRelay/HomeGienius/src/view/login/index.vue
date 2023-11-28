@@ -6,6 +6,7 @@
             <van-space direction="vertical" fill size="15px">
                 <van-button type="primary" block @click="change('weather');">天气</van-button> 
                 <van-button type="primary" block @click="change('control');">控制</van-button> 
+                <van-button type="primary" block @click="change('raspclock');">闹钟</van-button> 
     </van-space> 
         </div>
 </template>    
@@ -80,6 +81,7 @@ export default {
             {
                 case 'control':route='/esp';break;
                 case 'weather':route='/weather';break;
+                case 'raspclock':route='/raspclock';break;
             }
             this.$router.push({  
                 path: route,   

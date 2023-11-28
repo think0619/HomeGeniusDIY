@@ -25,6 +25,8 @@ const espcontrol = () =>
     import ('@/view/espcontroller/index.vue')
 const weathershow = () =>
     import ('@/view/weather/index.vue')
+const raspclock = () =>
+    import ('@/view/raspclock/index.vue')
 
 const routes = [{
         path: '/',
@@ -61,6 +63,11 @@ const routes = [{
         name: 'weather',
         path: '/weather',
         component: weathershow,
+    },
+    {
+        name: 'raspclock',
+        path: '/raspclock',
+        component: raspclock,
     },
     {
         name: 'loginpage',
