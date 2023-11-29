@@ -3,27 +3,53 @@
         <van-nav-bar :title="contentTitle" left-text="" left-arrow @click-left="onClickLeft"></van-nav-bar>
     </div>
     <div class="control">
-        <div style="margin-top: 30px;">
+        <div style="margin-top: 20px;">
             <div>
                 <van-space size="1rem">
-                    <van-button type="primary" @click="sendmsg('rasp', 'play'); "  block style="width: 80px;">Start</van-button>
-                    <van-button type="primary" @click="sendmsg('rasp', 'stop');" block style="width: 80px;">Stop</van-button>
-                    <van-button type="primary" @click="sendmsg('rasp', 'pause');"  block style="width: 80px;">Pause</van-button>
+                    <van-button type="primary" @click="sendmsg('rasp', 'play');" block
+                        style="width: 80px;">Start</van-button>
+                    <van-button type="primary" @click="sendmsg('rasp', 'stop');" block
+                        style="width: 80px;">Stop</van-button>
+                    <van-button type="primary" @click="sendmsg('rasp', 'pause');" block
+                        style="width: 80px;">Pause</van-button>
                 </van-space>
             </div>
-            <div style="margin-top: 20px;">
+            <div style="margin-top: 15px;">
                 <van-space size="1rem">
-                    <van-button type="primary" @click="volumectrl( 'up'); "  >Volume +</van-button>
-                    <van-button type="primary" @click="volumectrl('down');" >Volume -</van-button> 
-                    <van-button type="primary" @click="volumectrl('half');" >Volume 50%</van-button> 
+                    <van-button type="primary" @click="volumectrl('up');">Volume +</van-button>
+                    <van-button type="primary" @click="volumectrl('down');">Volume -</van-button>
+                    <van-button type="primary" @click="volumectrl('half');">Volume 50%</van-button>
                 </van-space>
             </div>
-            <div style="margin-top: 20px;">
+            <div style="margin-top: 15px;">
                 <van-space>
-                    <van-field v-model="vlcresult" is-link readonly name="picker" label="Source" placeholder="Select source" @click="colShowPicker = true" />
-                    <van-popup v-model:show="colShowPicker" position="bottom">
-                        <van-picker :columns="vlccolumns" @confirm="onconfirmvlc" @cancel="colShowPicker = false" />
-                    </van-popup> <van-button type="primary" @click="changevlcsrc();" >Change</van-button></van-space>
+                    <div>
+                        <van-field v-model="vlcresult" is-link  readonly name="picker" label="Source" placeholder="Select source" @click="colShowPicker = true" />
+                        <van-popup v-model:show="colShowPicker" position="bottom">
+                            <van-picker :columns="vlccolumns" @confirm="onconfirmvlc" @cancel="colShowPicker = false" />
+                        </van-popup>
+                    </div>
+                    <van-button type="primary" @click="changevlcsrc();">Change</van-button>
+                </van-space>
+            </div>
+            <div style="margin-top: 15px;">
+                <van-space>
+                    <van-field v-model="vlcinputsrc" label="Source" placeholder="Input source" />
+                    <van-button type="primary" @click="changevlcsrcmanual();">Change</van-button>
+                </van-space> 
+            </div>
+            <div style="margin-top: 15px;background-color: #FFF;padding: 5px 0 5px 10px;border-radius: 5px;"> 
+                <span style="font-size: var(--van-cell-font-size)">Stop Shedule(min):</span>
+                <van-space > 
+                    <van-radio-group v-model="scheduleCheck" direction="horizontal">
+                        <van-radio name="1">30</van-radio>
+                        <van-radio name="2">60</van-radio>
+                        <van-radio name="3">90</van-radio>
+                        <van-radio name="4">120</van-radio> 
+                    </van-radio-group>
+                    <van-button type="primary" @click="setScheduleTask();">Confirm</van-button>
+                </van-space>
+              
             </div>
         </div>
     </div>
@@ -53,6 +79,7 @@ export default {
             mqttclient: null,
             msgcontent: '',
             vlcresult: '',
+            vlcinputsrc:'',
             vlcSrcResultValue: '',
             colShowPicker: false,
             vlccolumns: [
@@ -60,12 +87,13 @@ export default {
                 { text: '江苏音乐台', value: 'http://satellitepull.cnr.cn/live/wx32jsjdlxyy/playlist.m3u8' },
                 { text: '天籁之音 Hi-Fi Radio', value: 'http://play-radio-stream3.hndt.com/now/WUBA5hW2/playlist.m3u8' },
                 { text: '亚洲音乐', value: 'http://asiafm.hk:8000/asiafm' },
+                { text: '亚洲经典', value: 'http://goldfm.cn:8000/goldfm' }, 
+                
                 { text: '江苏交通广播', value: 'http://satellitepull.cnr.cn/live/wx32jsjtgb/playlist.m3u8' },
                 { text: 'CNR经典音乐广播', value: 'http://liveop.cctv.cn/hls/jdyygb192/playlist.m3u8' },
-                { text: '南京音乐广播', value: 'http://live.njgb.com:10588/show.mp3' },
-
-                //,
-            ]
+                { text: '南京音乐广播', value: 'http://live.njgb.com:10588/show.mp3' }, 
+            ], 
+            scheduleCheck: '0',
         };
     },
     computed: {
@@ -167,23 +195,43 @@ export default {
                 })
             }
         },
-        changevlcsrc(){
-            let that=this;
-            if(that.vlcSrcResultValue){
-                this.sendmsg('rasp',`changesrc|${that.vlcSrcResultValue}`); 
-            } 
-        },
-        volumectrl(ctrl){
-            if(ctrl){
-                 this.sendmsg('rasp',`volume|${ctrl}`); 
+        changevlcsrc() {
+            let that = this;
+            if (that.vlcSrcResultValue) {
+                this.sendmsg('rasp', `changesrc|${that.vlcSrcResultValue}`);
             }
-
+        },
+        changevlcsrcmanual(){ 
+            let that = this;
+            if (that.vlcinputsrc) {
+                this.sendmsg('rasp', `changesrc|${that.vlcinputsrc}`);
+            }
+        },
+        volumectrl(ctrl) {
+            if (ctrl) {
+                this.sendmsg('rasp', `volume|${ctrl}`);
+            } 
         },
         onconfirmvlc(result) {
             var selectOption = result.selectedOptions[0];
             this.vlcresult = selectOption?.text;
             this.vlcSrcResultValue = selectOption?.value;
-            this.colShowPicker = false; 
+            this.colShowPicker = false;
+        },
+        setScheduleTask(){
+            // scheduleCheck: '0',
+            let scheduleSelect=this.scheduleCheck
+            let scheduleTime=0 //mins
+            switch(scheduleSelect){
+                case "1":scheduleTime=30;break;
+                case "2":scheduleTime=60;break;
+                case "3":scheduleTime=90;break;
+                case "4":scheduleTime=120;break;
+                case "5":scheduleTime=0.1;break;
+            }
+            if(scheduleTime>0){
+                this.sendmsg('rasp', `schedule|${scheduleTime}`); 
+            }
         }
     }
 }; 
@@ -201,5 +249,4 @@ export default {
 .title>span {
     display: block;
     font-size: 24px;
-}
-</style>
+}</style>

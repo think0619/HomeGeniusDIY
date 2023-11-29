@@ -90,7 +90,7 @@ export default {
                 }
             });
         } else {
-            showFailToast('need login')
+            showFailToast('need to login') 
         }
     },
     methods: {

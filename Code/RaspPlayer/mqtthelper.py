@@ -2,7 +2,9 @@ import random
 import time 
 import cfghelper
 from paho.mqtt import client as mqtt_client
-from vlcplayer import Player as VlcPlayer
+from vlcplayer import Player as VlcPlayer 
+from apscheduler.schedulers.background import BackgroundScheduler  
+from datetime import datetime, timedelta
 import relayhandler
  
 broker = cfghelper.readConfig("mqttbroker")
@@ -11,6 +13,7 @@ topic = "RaspController"
 client_id = f'publish-{random.randint(0, 1000)}'
 username = cfghelper.readConfig("mqttuser")
 password =  cfghelper.readConfig("mqttpwd") 
+stopPlayerScheduler = BackgroundScheduler() 
 
 def publish(client):
     msg_count = 1
@@ -42,6 +45,10 @@ def connect_mqtt() -> mqtt_client:
     return client 
 
 def subscribe(client: mqtt_client,player:VlcPlayer,pinnum):
+    def stopPlay():
+        relayhandler.controlrelay(pinnum,0)
+        player.stop()  
+
     def on_message(client, userdata, msg): 
         cmdmsg=msg.payload.decode()
         if(cmdmsg=="play"):
@@ -71,13 +78,27 @@ def subscribe(client: mqtt_client,player:VlcPlayer,pinnum):
                        player.set_volume(player.get_volume()-5)   
                    elif(action=="half"):
                        player.set_volume(50)   
-                   
+            elif(cmdmsg.find('schedule')==0):
+                scheduleTime=cmdmsg.split("|")[1]
+                if scheduleTime!=None:
+                    scheduleTime=eval(scheduleTime) 
+                    jobs=stopPlayerScheduler.get_jobs()
+                    for job in jobs:
+                        if(job.id=="stopsheduleid"):
+                            stopPlayerScheduler.remove_job('stopsheduleid') 
+                    # if(stopPlayerScheduler.running):
+                    #     stopPlayerScheduler.shutdown()
+                    executetime = datetime.now()+timedelta(minutes=scheduleTime) 
+                    stopPlayerScheduler.add_job(stopPlay, 'date', run_date=executetime,id='stopsheduleid') 
+                    if stopPlayerScheduler.running!=True :
+                      stopPlayerScheduler.start()
        
     client.subscribe(topic)
-    client.on_message = on_message 
-
+    client.on_message = on_message  
 
 def run(vlcplayer:VlcPlayer,pinnum):
+    stopPlayerScheduler = BackgroundScheduler() 
+    
     client = connect_mqtt()
     subscribe(client,vlcplayer,pinnum)
     client.loop_forever() 
