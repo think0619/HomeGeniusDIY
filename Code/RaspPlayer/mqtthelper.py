@@ -78,6 +78,12 @@ def subscribe(client: mqtt_client,player:VlcPlayer,pinnum):
                        player.set_volume(player.get_volume()-5)   
                    elif(action=="half"):
                        player.set_volume(50)   
+                   else:
+                       if action.isdigit():
+                           newVolume=eval(action)
+                           if(newVolume<=100 and newVolume>=0):
+                               player.set_volume(newVolume)   
+
             elif(cmdmsg.find('schedule')==0):
                 scheduleTime=cmdmsg.split("|")[1]
                 if scheduleTime!=None:

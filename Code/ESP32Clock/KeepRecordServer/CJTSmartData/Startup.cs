@@ -35,8 +35,8 @@ namespace TextVoiceServer
             //services.AddSingleton<IWebsocketClient>(wsClient); 
 
             //config MySQL
-          //  string mysqlConnectionString = ConfigurationHelper.AppSetting["DBServer:MySQLConnectionString"].ToString();
-          //  services.AddDbContext<DataConfigContext>(x => x.UseMySql(mysqlConnectionString, ServerVersion.AutoDetect(mysqlConnectionString)));
+            string mysqlConnectionString = ConfigurationHelper.AppSetting["DBServer:MySQLConnectionString"].ToString();
+            services.AddDbContext<DataConfigContext>(x => x.UseMySql(mysqlConnectionString, ServerVersion.AutoDetect(mysqlConnectionString)));
 
             //init redis 
             //InitRedis();

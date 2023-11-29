@@ -54,7 +54,6 @@ import { showSuccessToast, showFailToast, showToast,  } from 'vant';
 import { login } from "@/api/config";
 import { getMQTTInfo } from "@/api/mqtthelper";
 import * as mqtt from "mqtt/dist/mqtt.min"; 
-
 export default {
     components: {
     },
@@ -80,7 +79,7 @@ export default {
                     let mqtt_wsurl = mqttdata.wsurl;
                     let mqtt_username = mqttdata.username;
                     let mqtt_password = mqttdata.password;
-                    this.connectMQTT(mqtt_wsurl, mqtt_username, mqtt_password)
+                    this.connectMQTT(mqtt_wsurl, mqtt_username, mqtt_password) 
                 }else{
                     showFailToast({
                             "wordBreak": "break-word",

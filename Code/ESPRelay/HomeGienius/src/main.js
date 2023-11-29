@@ -13,7 +13,7 @@ import { Space } from 'vant';
 import { Image as VanImage } from 'vant';
 import { Form, Card, List, } from 'vant';
 import { Field, Cell, CellGroup } from 'vant';
-import { Picker, Popup, RadioGroup, Radio } from 'vant';
+import { Picker, Popup, RadioGroup, Radio, Slider } from 'vant';
 
 const app = createApp(App);
 app.use(router);
@@ -34,6 +34,7 @@ app.use(Picker);
 app.use(Popup);
 app.use(RadioGroup);
 app.use(Radio);
+app.use(Slider);
 
 //app.use(showConfirmDialog);
 
