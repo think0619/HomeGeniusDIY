@@ -32,6 +32,7 @@ def checkNetwork():
     except IOError:  
         result1 = subprocess.run("sudo ip link set wlan0 down", shell=True, capture_output=False, text=False)
         result2 = subprocess.run("sudo ip link set wlan0 up", shell=True, capture_output=False, text=False) 
+      
     else: 
         pass
 
