@@ -18,6 +18,14 @@ class Player:
     def set_uri(self, uri):
         self.media.set_mrl(uri)
 
+    def get_stream_uri(self) -> str:
+        url=''
+        if(self.media is not None):
+            q=self.media
+            if(self.media.get_media() is not None): 
+                url=self.media.get_media().get_mrl()
+        return url
+
     # 播放 成功返回0，失败返回-1
     def play(self, path=None):
         if path:

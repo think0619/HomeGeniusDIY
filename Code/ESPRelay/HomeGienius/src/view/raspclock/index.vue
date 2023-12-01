@@ -5,15 +5,22 @@
     <div class="control">
         <div style="margin-top: 20px;">
             <div>
+                <van-cell center title="Is running">
+                    <template #right-icon>
+                        <van-switch v-model="vlcrunning"   @change="onRunningChanged"/>
+                    </template>
+                </van-cell> 
+            </div>
+            <!-- <div style="margin-top:10px">
                 <van-space size="1rem">
                     <van-button type="primary" @click="sendmsg('rasp', 'play');" block
                         style="width: 80px;">Start</van-button>
                     <van-button type="primary" @click="sendmsg('rasp', 'stop');" block
                         style="width: 80px;">Stop</van-button>
                     <van-button type="primary" @click="sendmsg('rasp', 'pause');" block
-                        style="width: 80px;">Pause</van-button>
+                        style="width: 80px;">Pause</van-button> 
                 </van-space>
-            </div>
+            </div> -->
             <div style="margin-top:15px;padding-bottom: 20px;" class="oparea">
                 <van-space direction="vertical" fill size="1.5rem">
                     <span>Volume</span>
@@ -71,7 +78,7 @@ const active = ref(route.path);
 <script lang="jsx">
 import { showSuccessToast, showFailToast, showToast } from 'vant';
 import { getMQTTInfo } from "@/api/mqtthelper";
-import * as mqtt from "mqtt/dist/mqtt.min"; 
+import * as mqtt from "mqtt/dist/mqtt.min";
 import { getvlcsrc } from "@/api/rasp"
 
 export default {
@@ -88,6 +95,7 @@ export default {
             vlcSrcResultValue: '',
             colShowPicker: false,
             volumeValue: 0,
+            vlcrunning: false,
             vlccolumns: [
                 { text: '中国之声', value: 'http://ngcdn001.cnr.cn/live/zgzs/index.m3u8' },
                 // { text: '江苏音乐台', value: 'http://satellitepull.cnr.cn/live/wx32jsjdlxyy/playlist.m3u8' },
@@ -116,21 +124,20 @@ export default {
                     let mqtt_wsurl = mqttdata.wsurl;
                     let mqtt_username = mqttdata.username;
                     let mqtt_password = mqttdata.password;
-                    getvlcsrc().then((result)=>{
-                          if(result != null && result.status == 200) {
-                            let resultdata=result.data;
+                    getvlcsrc().then((result) => {
+                        if (result != null && result.status == 200) {
+                            let resultdata = result.data;
                             if (resultdata.Status == 1) {
                                 let videolist = resultdata.Data;
                                 if (videolist != null && videolist.length > 0) {
-                                    let that=this;
-                                    that.vlccolumns=[];
+                                    let that = this;
+                                    that.vlccolumns = [];
                                     videolist.forEach(element => {
                                         that.vlccolumns.push({
-                                             text: element.Name,
-                                             value:element.Value 
+                                            text: element.Name,
+                                            value: element.Value
                                         })
-                                    }); 
-                                    console.log(that.vlccolumns);
+                                    });
                                 }
                             } else {
                                 showFailToast({
@@ -140,7 +147,7 @@ export default {
                                 });
                             }
                         }
-                    })  
+                    })
 
                     this.connectMQTT(mqtt_wsurl, mqtt_username, mqtt_password)
                 } else {
@@ -176,10 +183,39 @@ export default {
                     "message": "The mqtt client has connected.",
                     "duration": 800
                 });
+                //status msg of Raspberry
+                that.mqttclient.subscribe("RaspStatus", (err) => {
+                    if (!err) {
+                    }
+                });
+                that.sendmsg('rasp', 'getstatus');
             })
-            that.mqttclient.on('message', function (topic, message) {
-                // console.log(topic.toString())
-                // console.log(message.toString())
+            that.mqttclient.on('message', function (topic, message) { 
+                if (topic == "RaspStatus") {
+                    try {
+                        var resp = JSON.parse(message.toString());
+                        if (resp.Status == 1) {
+                            console.log(resp.Data.streamurl)
+                            that.vlcinputsrc = resp.Data.streamurl
+                            that.volumeValue = resp.Data.volume
+                            if (resp.Data.state == 1) {
+                                that.vlcrunning = true
+                            } else {
+                                that.vlcrunning = false
+                            }
+                            if(resp.Data.streamurl!=''){
+                                that.vlccolumns.forEach(col => {
+                                    if(col.value==resp.Data.streamurl){
+                                        that.vlcresult=col.text;
+                                        return;
+                                    }
+                                });
+                            } 
+
+                        }
+                    } catch (err) {
+                    }
+                }
             })
         },
         sendmsg(topicflag, msg) {
@@ -230,16 +266,22 @@ export default {
         changevlcsrc() {
             let that = this;
             if (that.vlcSrcResultValue) {
-                this.sendmsg('rasp', `changesrc|${that.vlcSrcResultValue}`);
+                that.sendmsg('rasp', `changesrc|${that.vlcSrcResultValue}`);
+                setTimeout(() => {
+                    that.sendmsg('rasp', 'getstatus');
+                }, 3000); 
             }
         },
         changevlcsrcmanual() {
             let that = this;
             if (that.vlcinputsrc) {
                 this.sendmsg('rasp', `changesrc|${that.vlcinputsrc}`);
+                setTimeout(() => {
+                    that.sendmsg('rasp', 'getstatus');
+                }, 3000); 
             }
         },
-        volumectrl(ctrl) {
+        volumectrl(ctrl) { 
             if (ctrl) {
                 this.sendmsg('rasp', `volume|${ctrl}`);
             }
@@ -248,7 +290,8 @@ export default {
             var selectOption = result.selectedOptions[0];
             this.vlcresult = selectOption?.text;
             this.vlcSrcResultValue = selectOption?.value;
-            this.colShowPicker = false;
+            this.colShowPicker = false; 
+
         },
         setScheduleTask() {
             // scheduleCheck: '0',
@@ -266,11 +309,19 @@ export default {
             }
         },
         onVolumeChange(value) {
-            console.log(value)
+            console.log("change")
             if (value != null && value >= 0 && value <= 100) {
                 this.sendmsg('rasp', `volume|${value}`);
             }
-        }
+        },
+        onRunningChanged(value){
+            if(value){
+                this.sendmsg('rasp', 'play')
+            }else{
+                this.sendmsg('rasp', 'stop')
+            }
+
+        } 
     }
 }; 
 </script>
