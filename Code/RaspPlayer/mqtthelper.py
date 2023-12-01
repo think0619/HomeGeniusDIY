@@ -49,12 +49,17 @@ def sendVlcStatus(client: mqtt_client,player:VlcPlayer):
 def connect_mqtt() -> mqtt_client:
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
+            client.subscribe(topic)
             print("Connected to MQTT Broker!")
         else:
             print("Failed to connect, return code %d\n", rc) 
+    # def on_disconnect(client, userdata,  rc):
+    #     pass
+        # client.loop_stop(force=True)
     client = mqtt_client.Client(client_id)
     client.username_pw_set(username, password)
     client.on_connect = on_connect
+    # client.on_disconnect = on_disconnect
     client.connect(broker, port)
     return client 
 
@@ -121,7 +126,14 @@ def subscribe(client: mqtt_client,player:VlcPlayer,pinnum):
 
 def run(vlcplayer:VlcPlayer,pinnum):
     stopPlayerScheduler = BackgroundScheduler()  
+    
     client = connect_mqtt()
     subscribe(client,vlcplayer,pinnum)
     client.loop_forever() 
  
+ 
+# def reconnectMQTT(vlcplayer:VlcPlayer,pinnum):
+#     client2 = connect_mqtt()
+#     subscribe(client2,vlcplayer,pinnum)
+#     client2.loop_forever() 
+     
