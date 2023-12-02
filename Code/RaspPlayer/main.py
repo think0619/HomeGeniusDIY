@@ -9,8 +9,7 @@ from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler 
 from apscheduler.schedulers.background import BackgroundScheduler  
 from threading import Thread 
-import urllib.request
-import subprocess
+import urllib.request 
 import relayhandler
 import subprocess
 

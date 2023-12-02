@@ -7,6 +7,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 import relayhandler 
 import json
+from apscheduler.schedulers.background import BackgroundScheduler  
  
 broker = cfghelper.readConfig("mqttbroker")
 port = 1883
@@ -16,6 +17,7 @@ client_id = f'raspberry-{random.randint(0, 1000)}'
 username = cfghelper.readConfig("mqttuser")
 password =  cfghelper.readConfig("mqttpwd")  
 stopPlayerScheduler = None
+mqttclient=None
 
 def publish(client):
     msg_count = 1
@@ -124,16 +126,15 @@ def subscribe(client: mqtt_client,player:VlcPlayer,pinnum):
     client.subscribe(topic)
     client.on_message = on_message  
 
-def run(vlcplayer:VlcPlayer,pinnum):
-    stopPlayerScheduler = BackgroundScheduler()  
-    
-    client = connect_mqtt()
-    subscribe(client,vlcplayer,pinnum)
+def run(vlcplayer:VlcPlayer,pinnum) : 
+    client = connect_mqtt() 
+    subscribe(client,vlcplayer,pinnum) 
+    # msgScheduler = BackgroundScheduler()    
+    # msgScheduler.add_job(lambda:sendVlcStatus(client,vlcplayer), 'interval', seconds =30) 
+    # msgScheduler.start()  
     client.loop_forever() 
+   
+    
  
  
-# def reconnectMQTT(vlcplayer:VlcPlayer,pinnum):
-#     client2 = connect_mqtt()
-#     subscribe(client2,vlcplayer,pinnum)
-#     client2.loop_forever() 
-     
+  
