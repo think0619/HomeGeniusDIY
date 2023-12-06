@@ -14,7 +14,7 @@ def reposPull():
             pass
 
 def gitclone():
-    gitSaveFolder="D:\\logs"
+    gitSaveFolder="/home/think/outerdisk/gitbak"
     gitSSHHost="192.168.2.100:4722" 
     #Check if the folder exists to determine if the external hard drive is mounted correctly.
     if(os.path.exists(gitSaveFolder)):
@@ -22,8 +22,12 @@ def gitclone():
         lines=f.readlines()
         for li in lines:
             try:
-                gitpath = f"git clone ssh://git@{gitSSHHost}/{li.strip()}" 
-                cloneRepo(gitpath,gitSaveFolder)
+                #git clone ssh://git@192.168.2.100:4722/root/bakuangxr2022.git
+                gitpath = f"ssh://git@{gitSSHHost}/root/{li.strip()}" 
+                print(gitpath)
+                savepath=f"{gitSaveFolder}/{li.strip().replace('.git','')}"
+                print(savepath)
+                cloneRepo(gitpath,savepath)
                 f = open("logs.txt", "a+") 
                 f.write(f"Clone Successfully.{gitpath}")
                 f.write("\n")
@@ -32,8 +36,10 @@ def gitclone():
                 pass 
 
 if "__main__" == __name__:
-    gitclone()
-    # gitpullScheduler = BackgroundScheduler() 
-    # gitpullScheduler.add_job(reposPull, 'cron',day_of_week ="0-6", hour=3,minute=1) 
-    # gitpullScheduler.start()
+    # gitclone()
+    gitpullScheduler = BackgroundScheduler() 
+    gitpullScheduler.add_job(reposPull, 'cron',day_of_week ="0-6", hour=3,minute=0) 
+    gitpullScheduler.start()
+    while True:
+        pass
     
