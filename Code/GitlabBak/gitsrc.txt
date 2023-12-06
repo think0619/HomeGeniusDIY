@@ -1,0 +1,10 @@
+gitlab-instance-70610347/testpythongit.git
+root/bakuangxr2022.git
+root/BaodianXMC.git
+root/codetest2022.git
+root/hntcgem2022.git
+root/kepserverexcore.git
+root/monitorcamera22.git
+root/ordostrainningplatform2022.git
+root/shaozhai.git
+root/xianexhibition2022.git

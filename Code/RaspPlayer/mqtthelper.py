@@ -16,7 +16,7 @@ statusTopic="RaspStatus"
 client_id = f'raspberry-{random.randint(0, 1000)}'
 username = cfghelper.readConfig("mqttuser")
 password =  cfghelper.readConfig("mqttpwd")  
-stopPlayerScheduler =  BackgroundScheduler()    
+stopPlayerScheduler = BackgroundScheduler() 
 mqttclient=None
 
 def publish(client):
@@ -129,6 +129,7 @@ def subscribe(client: mqtt_client,player:VlcPlayer,pinnum):
 def run(vlcplayer:VlcPlayer,pinnum) : 
     client = connect_mqtt() 
     subscribe(client,vlcplayer,pinnum) 
+    # stopPlayerScheduler = BackgroundScheduler() 
     # msgScheduler = BackgroundScheduler()    
     # msgScheduler.add_job(lambda:sendVlcStatus(client,vlcplayer), 'interval', seconds =30) 
     # msgScheduler.start()  
