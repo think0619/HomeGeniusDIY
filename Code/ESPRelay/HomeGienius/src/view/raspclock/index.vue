@@ -44,7 +44,7 @@
                     <van-button type="primary" @click="changevlcsrc();">Change</van-button>
                 </van-space>
                 <van-space style="margin-top: 15px;">
-                    <van-field v-model="vlcinputsrc" label="Source" placeholder="Input source" />
+                    <van-field v-model="vlcinputsrc" clearable label="Source" placeholder="Input source" />
                     <van-button type="primary" @click="changevlcsrcmanual();">Change</van-button>
                 </van-space>
             </div>
@@ -56,11 +56,22 @@
                         <van-radio name="1">30</van-radio>
                         <van-radio name="2">60</van-radio>
                         <van-radio name="3">90</van-radio>
-                        <van-radio name="4">120</van-radio>
+                        <!-- <van-radio name="4">120</van-radio> -->
+                        <van-radio name="5">6s</van-radio>
                     </van-radio-group>
                     <van-button type="primary" @click="setScheduleTask();">Confirm</van-button>
+                </van-space> 
+            </div>
+               <div style="margin-top:10px" class="oparea">
+                <span>Temp ops</span>
+                <van-space size="1rem">
+                    <van-button type="primary" @click="sendmsg('rasp', 'play');" block
+                        style="width: 80px;">Start</van-button>
+                    <van-button type="primary" @click="sendmsg('rasp', 'stop');" block
+                        style="width: 80px;">Stop</van-button>
+                    <van-button type="primary" @click="sendmsg('rasp', 'pause');" block
+                        style="width: 80px;">Pause</van-button> 
                 </van-space>
-
             </div>
         </div>
     </div>

@@ -16,7 +16,7 @@ statusTopic="RaspStatus"
 client_id = f'raspberry-{random.randint(0, 1000)}'
 username = cfghelper.readConfig("mqttuser")
 password =  cfghelper.readConfig("mqttpwd")  
-stopPlayerScheduler = None
+stopPlayerScheduler =  BackgroundScheduler()    
 mqttclient=None
 
 def publish(client):
