@@ -35,6 +35,11 @@ def checkNetwork():
     else: 
         pass
 
+def aircondition():
+    #ops on /off 
+    result1 = subprocess.run(f"irsend SEND_ONCE aircon on", shell=True, capture_output=False, text=False)
+    
+     
 
 def my_call_back(event):
     pass
@@ -54,6 +59,7 @@ if "__main__" == __name__:
     # trigger_cron = '0 30 10 * * *'  # 设置为每天的10:30:00执行任务
     clockPlayScheduler.add_job(playPlayer, 'cron',day_of_week ="0-5", hour=7,minute='20,30,40,50'  ) 
     clockPlayScheduler.add_job(playPlayer, 'cron',day_of_week ="0-5", hour=8,minute='0'  )  
+    clockPlayScheduler.add_job(aircondition, 'cron',day_of_week ="0-5", hour=7,minute='0'  )  
     clockPlayScheduler.add_job(playPlayer, 'cron',day_of_week ="6", hour=9,minute='0'  )  
     clockPlayScheduler.add_job(stopPlayer, 'cron',day_of_week ="0-5", hour=8,minute=25 )   
     clockPlayScheduler.add_job(checkNetwork, 'interval', minutes =15) 

@@ -7,7 +7,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 import relayhandler 
 import json
-from apscheduler.schedulers.background import BackgroundScheduler  
+from apscheduler.schedulers.background import BackgroundScheduler   
+import subprocess
  
 broker = cfghelper.readConfig("mqttbroker")
 port = 1883
@@ -51,7 +52,8 @@ def sendVlcStatus(client: mqtt_client,player:VlcPlayer):
 def connect_mqtt() -> mqtt_client:
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
-            client.subscribe(topic)
+            client.subscribe(topic,1)
+            client.subscribe("Aircondition",2)
             print("Connected to MQTT Broker!")
         else:
             print("Failed to connect, return code %d\n", rc) 
@@ -83,6 +85,10 @@ def subscribe(client: mqtt_client,player:VlcPlayer,pinnum):
             player.pause() 
         elif(cmdmsg=="getstatus"):
             sendVlcStatus(client,player) 
+        elif(cmdmsg=="turnon"):
+            aircondition('on')
+        elif(cmdmsg=="turnoff"):
+            aircondition('off')
         else:
             if(cmdmsg.find('changesrc')==0):
                 #`changesrc|${that.vlcSrcResultValue}`
@@ -134,7 +140,12 @@ def run(vlcplayer:VlcPlayer,pinnum) :
     # msgScheduler.add_job(lambda:sendVlcStatus(client,vlcplayer), 'interval', seconds =30) 
     # msgScheduler.start()  
     client.loop_forever() 
-   
+
+def aircondition(ops):
+    #ops on /off
+    print(f"irsend SEND_ONCE aircon {ops}")
+    result1 = subprocess.run(f"irsend SEND_ONCE aircon  {ops} ", shell=True, capture_output=False, text=False)
+    
     
  
  
