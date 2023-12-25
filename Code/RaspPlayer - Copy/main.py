@@ -22,7 +22,7 @@ def checkNetwork():
 
 def aircondition():
     #ops on /off 
-    result1 = subprocess.run(f"irsend SEND_ONCE aircon on", shell=True, capture_output=False, text=False)
+    result1 = subprocess.run(f"irsend SEND_ONCE aircon turnon", shell=True, capture_output=False, text=False)
     
      
 
@@ -31,8 +31,8 @@ def my_call_back(event):
     # print("call:", player.get_time()) 
 
 if "__main__" == __name__:  
-    synctimecmd="sudo date -s \"$(wget -qSO- --max-redirect=0 baidu.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z\""
-    syncresult1 = subprocess.run(synctimecmd, shell=True, capture_output=False, text=False)
+    # synctimecmd="sudo date -s \"$(wget -qSO- --max-redirect=0 baidu.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z\""
+    # syncresult1 = subprocess.run(synctimecmd, shell=True, capture_output=False, text=False)
      
     thread=Thread(target=mqtthelper.run,args=( )) 
     thread.start()
@@ -40,7 +40,8 @@ if "__main__" == __name__:
     clockPlayScheduler = BackgroundScheduler()
     # trigger_cron = '0 30 10 * * *'  # 设置为每天的10:30:00执行任务 
     clockPlayScheduler.add_job(aircondition, 'cron',day_of_week ="0-5", hour=7,minute='0'  )   
-    clockPlayScheduler.add_job(checkNetwork, 'interval', minutes =15) 
+    #clockPlayScheduler.add_job(aircondition, 'cron',day_of_week ="0-5", hour=23,minute='11'  )   
+    #clockPlayScheduler.add_job(checkNetwork, 'interval', minutes =15) 
     clockPlayScheduler.start()  
 
     while True:

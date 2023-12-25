@@ -53,7 +53,7 @@ def connect_mqtt() -> mqtt_client:
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
             client.subscribe(topic,1)
-            client.subscribe("Aircondition",2)
+          #  client.subscribe("Aircondition",2)
             print("Connected to MQTT Broker!")
         else:
             print("Failed to connect, return code %d\n", rc) 
@@ -85,10 +85,10 @@ def subscribe(client: mqtt_client,player:VlcPlayer,pinnum):
             player.pause() 
         elif(cmdmsg=="getstatus"):
             sendVlcStatus(client,player) 
-        elif(cmdmsg=="turnon"):
-            aircondition('on')
-        elif(cmdmsg=="turnoff"):
-            aircondition('off')
+        # elif(cmdmsg=="turnon"):
+        #     aircondition('on')
+        # elif(cmdmsg=="turnoff"):
+        #     aircondition('off')
         else:
             if(cmdmsg.find('changesrc')==0):
                 #`changesrc|${that.vlcSrcResultValue}`
