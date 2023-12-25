@@ -7,6 +7,7 @@
                 <van-button type="primary" block @click="change('weather');">天气</van-button> 
                 <van-button type="primary" block @click="change('control');">控制</van-button> 
                 <van-button type="primary" block @click="change('raspclock');">闹钟&收音机</van-button> 
+                <van-button type="primary" block @click="change('aircondition');">红外控制【空调、音响】</van-button> 
     </van-space> 
         </div>
 </template>    
@@ -82,6 +83,9 @@ export default {
                 case 'control':route='/esp';break;
                 case 'weather':route='/weather';break;
                 case 'raspclock':route='/raspclock';break;
+                case 'aircondition':route='/ir';break;
+
+                
             }
             this.$router.push({  
                 path: route,   

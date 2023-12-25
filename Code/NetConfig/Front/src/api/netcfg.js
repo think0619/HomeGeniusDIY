@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { serverUrl } from '@/api/config'
-
+import { router } from '../router';
 
 export async function getConfigList() {
     var result = {
@@ -9,12 +9,16 @@ export async function getConfigList() {
         "Msg": "Fail.",
         "Data": null
     }
+
     await axios({
         method: 'post',
         timeout: 3000,
         url: serverUrl + '/api/netcfg/query',
         async: false,
-        headers: { 'Content-Type': 'application/json', },
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + localStorage.getItem('token')
+        },
         params: {},
         dataType: "JSON"
     }).then(function(response) {
@@ -25,6 +29,9 @@ export async function getConfigList() {
         }
     }).catch(function(error) {
         console.log(error);
+        if (error.response.status == 401) {
+            router.replace({ path: "/login" })
+        }
     });
     return result;
 }
@@ -40,7 +47,7 @@ export async function addConfigInfo(updateobj) {
         timeout: 3000,
         url: serverUrl + '/api/netcfg/add',
         async: false,
-        headers: { 'Content-Type': 'application/json', },
+        headers: { 'Content-Type': 'application/json', "Authorization": "Bearer " + localStorage.getItem('token') },
         params: {},
         data: JSON.stringify(updateobj),
         dataType: "JSON"
@@ -67,7 +74,7 @@ export async function updateConfigInfo(updateobj) {
         timeout: 3000,
         url: serverUrl + '/api/netcfg/update',
         async: false,
-        headers: { 'Content-Type': 'application/json', },
+        headers: { 'Content-Type': 'application/json', "Authorization": "Bearer " + localStorage.getItem('token') },
         params: {},
         data: JSON.stringify(updateobj),
         dataType: "JSON"
@@ -94,7 +101,7 @@ export async function deleteConfigInfos(IdArray) {
         timeout: 3000,
         url: serverUrl + '/api/netcfg/bulkdel',
         async: false,
-        headers: { 'Content-Type': 'application/json', },
+        headers: { 'Content-Type': 'application/json', "Authorization": "Bearer " + localStorage.getItem('token') },
         params: {},
         data: IdArray,
         dataType: "JSON"
@@ -121,7 +128,8 @@ export async function exportConfigInfos(IdArray) {
         url: serverUrl + '/api/netcfg/export',
         responseType: 'arraybuffer',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + localStorage.getItem('token')
         },
         data: IdArray,
     }).then(function(response) {

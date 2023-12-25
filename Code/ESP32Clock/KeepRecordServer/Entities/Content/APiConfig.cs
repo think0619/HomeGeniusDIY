@@ -6,7 +6,8 @@ namespace Entities.Content
 {
     public  class APiConfig
     {
-      public string username { get; set; }   
+     public int recid { get; set; }
+        public string username { get; set; }   
       public string password { get; set; }   
       public string wsurl { get; set; }   
       public string flag { get; set; }    

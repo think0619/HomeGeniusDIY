@@ -3,17 +3,24 @@ import { createRouter, createWebHashHistory, createWebHistory, } from 'vue-route
 //     import ('@/view/home/index.vue')
 
 
-const weathershow = () =>
-    import ('@/view/weather/index.vue')
+const netconfigpage = () =>
+    import ('@/view/netconfig/index.vue')
+const loginpage = () =>
+    import ('@/view/login/index.vue')
 
 const routes = [{
         path: '/',
-        redirect: '/weather'
+        redirect: '/login'
     },
     {
-        name: 'weather',
-        path: '/weather',
-        component: weathershow,
+        name: 'netconfig',
+        path: '/netconfig',
+        component: netconfigpage,
+    },
+    {
+        name: 'login',
+        path: '/login',
+        component: loginpage,
     },
 
 ];

@@ -13,14 +13,14 @@
             </van-space>
         </div>
 
-        <div style="margin-top: 30px;">
-            <div class="sysname"><span>OPS</span></div> 
+        <!-- <div style="margin-top: 30px;">
+            <div class="sysname"><span>马桶盖电源</span></div> 
             <van-space size="1rem">
-                <van-button type="primary" @click="sendmsg('ops','p');">打开电源</van-button>
-                <van-button type="primary" @click="sendmsg('ops','r');">关闭电源</van-button>
-                <van-button type="primary" @click="sendmsg('ops','diskpower');">启动硬盘</van-button>
+                <van-button type="primary" @click="sendmsg('ops','poweron');">打开电源</van-button>
+                <van-button type="primary" @click="sendmsg('ops','poweroff');">关闭电源</van-button>
+               
             </van-space>
-        </div> 
+        </div>  -->
         <div style="margin-top: 30px;">
             <div class="sysname"><span>锁屏</span></div> 
             <van-space size="1rem">

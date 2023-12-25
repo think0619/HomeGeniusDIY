@@ -6,8 +6,8 @@
   }
 
   import axios from 'axios'
-  export function login(authcode) {
-      var url = serverUrl + "/api/login";
+  export function login(username, password) {
+      var url = serverUrl + "/api/login/manual";
       return axios({
           url: url,
           method: "post",
@@ -15,7 +15,8 @@
               'Content-Type': 'application/json'
           },
           data: JSON.stringify({
-              "UserIDCode": authcode
+              "Username": username,
+              "Password": password,
           })
       })
   }

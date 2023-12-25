@@ -28,6 +28,11 @@ const weathershow = () =>
 const raspclock = () =>
     import ('@/view/raspclock/index.vue')
 
+
+const aircondition = () =>
+    import ('@/view/aircondition/index.vue')
+
+
 const routes = [{
         path: '/',
         redirect: '/login'
@@ -58,6 +63,10 @@ const routes = [{
         name: 'espcontrol',
         path: '/esp',
         component: espcontrol,
+    }, {
+        name: 'irmachine',
+        path: '/ir',
+        component: aircondition,
     },
     {
         name: 'weather',

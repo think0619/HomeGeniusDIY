@@ -41,6 +41,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Aspose.Cells">
+      <HintPath>..\Aspose(Word,Cell,Pdf)\Aspose.Cells.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

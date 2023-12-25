@@ -258,11 +258,11 @@ namespace TextVoiceServer.DBHandler
                     {
                         user = new LoginUser()
                         {
-                            id =Convert.ToInt32(queryResult[0]["id"]),
-                            username = queryResult[0]["username"].ToString(),
-                            idcode = queryResult[0]["idcode"].ToString(),
-                            //status = queryResult[0]["status"].ToString(),
-                            userinfo = queryResult[0]["userinfo"].ToString(),
+                            //id =Convert.ToInt32(queryResult[0]["id"]),
+                            //username = queryResult[0]["username"].ToString(),
+                            //idcode = queryResult[0]["idcode"].ToString(),
+                            ////status = queryResult[0]["status"].ToString(),
+                            //userinfo = queryResult[0]["userinfo"].ToString(),
                         }; 
                     } 
                 }

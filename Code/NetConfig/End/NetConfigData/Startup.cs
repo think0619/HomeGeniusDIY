@@ -8,6 +8,9 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using TextVoiceServer.DBContext;
 using TextVoiceServer.Serivices;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace TextVoiceServer
 {
@@ -52,20 +55,21 @@ namespace TextVoiceServer
             //services.AddHostedService<HandleSystemCfgService>();
             //services.AddHostedService<HandleMQPublishService>();
 
-            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            // .AddJwtBearer(options =>
-            // {
-            //     options.TokenValidationParameters = new TokenValidationParameters
-            //     {
-            //         ValidateIssuer = true,
-            //         ValidateAudience = true,
-            //         ValidateLifetime = true,
-            //         ValidateIssuerSigningKey = true,
-            //         ValidIssuer = Configuration["Jwt:Issuer"],
-            //         ValidAudience = Configuration["Jwt:Audience"],
-            //         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
-            //     };
-            // });
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+             .AddJwtBearer(options =>
+             {
+                 options.TokenValidationParameters = new TokenValidationParameters
+                 {
+                     ValidateIssuer = true,
+                     ValidateAudience = true,
+                     ValidateLifetime = true,
+                     ValidateIssuerSigningKey = true,
+                     ValidIssuer = Configuration["Jwt:Issuer"],
+                     ValidAudience = Configuration["Jwt:Audience"],
+                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                 };
+             }); 
+            services.AddSwaggerGen();
             services.AddRazorPages(); 
         }
 
@@ -75,6 +79,8 @@ namespace TextVoiceServer
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
             else
             {
@@ -91,14 +97,14 @@ namespace TextVoiceServer
                 .WithMethods("GET", "POST")
                 .SetIsOriginAllowed(origin => true) // allow any origin
                 .AllowCredentials()); // allow credentials
-
+             
             //// global cors policy
             //app.UseCors(x => x
             //    .AllowAnyMethod()
             //    .AllowAnyHeader()
             //    .SetIsOriginAllowed(origin => true) // allow any origin
             //    .AllowCredentials()); // allow credentials
-
+            app.UseMiddleware<JwtMiddleware>();
             app.UseAuthorization();
 
            // loggerFactory.AddLog4Net(); // << Add this line
@@ -108,6 +114,11 @@ namespace TextVoiceServer
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
                 // endpoints.MapHub<DataProviderHub>("/DataProvider");
+            });
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+                options.RoutePrefix = string.Empty;
             });
 
         }

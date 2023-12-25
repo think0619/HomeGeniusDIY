@@ -42,7 +42,7 @@ namespace TextVoiceServer.DataApi
                 Status = 0,
                 Msg = "", 
             }; 
-            var loginusername = HttpContext.Items[nameof(LoginUser.username)];
+            var loginusername = HttpContext.Items[nameof(LoginUser.Username)];
             if ( loginusername != null && !String.IsNullOrWhiteSpace(loginusername.ToString()))
             {
                 string latlongInfo = "118.700859,32.112609"; //pukou,nanjing

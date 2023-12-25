@@ -61,8 +61,11 @@ namespace TextVoiceServer
             services.AddSingleton<IHostedService, HandleMQPublishService>(
                                  serviceProvider => serviceProvider.GetService<HandleMQPublishService>());
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-              .AddJwtBearer(options =>
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }) .AddJwtBearer(options =>
               {
                   options.TokenValidationParameters = new TokenValidationParameters
                   {
@@ -75,8 +78,7 @@ namespace TextVoiceServer
                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
                   };
               });
-            services.AddRazorPages();
-
+            services.AddRazorPages(); 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -90,7 +92,7 @@ namespace TextVoiceServer
             {
                 app.UseExceptionHandler("/Error");
             }
-
+            app.UseAuthentication();//jwt 
             app.UseStaticFiles(); 
             app.UseRouting();
 
@@ -101,12 +103,12 @@ namespace TextVoiceServer
                 .WithMethods("GET", "POST")
                 .SetIsOriginAllowed(origin => true) // allow any origin
                 .AllowCredentials()); // allow credentials 
-        
-            app.UseMiddleware<JwtMiddleware>();
 
-            app.UseAuthorization();
+            // app.UseMiddleware<JwtMiddleware>();
+            app.UseAuthorization(); 
 
-           // loggerFactory.AddLog4Net(); // << Add this line
+
+            // loggerFactory.AddLog4Net(); // << Add this line
 
             app.UseEndpoints(endpoints =>
             {
