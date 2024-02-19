@@ -11,8 +11,18 @@
                 <van-button type="primary" @click="sendmsg('clock', 'synctime');">同步时间</van-button> 
                 <van-button type="primary" @click="sendmsg('clock', 'reset');">Reset</van-button> 
             </van-space>
-        </div>
-
+            <van-row>
+              
+            </van-row>
+        </div> 
+ <div style="margin-top: 30px;">
+            <div class="sysname"><span>USB LED电源</span></div> 
+            <van-space size="1rem">
+                <van-button type="primary" @click="sendmsg('other', 'usbledon');">打开LED</van-button>
+                <van-button type="primary" @click="sendmsg('other', 'usbledoff');">关闭LED</van-button>
+               
+            </van-space>
+        </div> 
         <!-- <div style="margin-top: 30px;">
             <div class="sysname"><span>马桶盖电源</span></div> 
             <van-space size="1rem">
@@ -134,6 +144,7 @@ export default {
                 case "ops": topic = "OPSRelayController"; break;
                 case "lock": topic = "LockPC"; break;
                 case "msg": topic = "Msg"; break; 
+                case "other": topic = "OtherEquip"; break; 
             } 
             if (topic != '') { 
                 let that = this; 
