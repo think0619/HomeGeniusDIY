@@ -6,10 +6,10 @@ import 'vant/lib/index.css'
 import { Button } from 'vant';
 import { NavBar } from 'vant';
 import { Tabbar, TabbarItem } from 'vant';
-import { Toast } from 'vant';
+import { Toast, FloatingBubble } from 'vant';
 import { Image as VanImage } from 'vant';
 import { Space } from 'vant';
-import { Col, Row } from 'vant';
+import { Col, Row, Grid, GridItem } from 'vant';
 import { Form, Calendar, Cell, Field, CellGroup, Picker, Popup, Card, SwipeCell, List, PullRefresh } from 'vant';
 
 
@@ -21,11 +21,14 @@ app.use(Form);
 app.use(NavBar);
 app.use(Tabbar);
 app.use(TabbarItem);
+app.use(FloatingBubble);
 app.use(Toast);
 app.use(VanImage);
 app.use(Space);
 app.use(Col);
 app.use(Row);
+app.use(Grid);
+app.use(GridItem);
 app.use(Calendar);
 app.use(Cell);
 app.use(CellGroup);

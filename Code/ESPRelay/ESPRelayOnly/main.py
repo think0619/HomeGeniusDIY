@@ -1,33 +1,39 @@
 from machine import Pin, SPI
 import utime 
 import time
-import commonhelper
-import _thread 
-import wifihelper 
-from umqtt.simple import MQTTClient 
+import commonhelper 
+import wifihelper  
+from umqttsimple import MQTTClient
 
-OPSRelay=16     
+OPSRelay=0    
 
             
 def connectwifi_func():
     ssid=commonhelper.readConfig('ssid');
     pwd=commonhelper.readConfig('password'); 
     connectR =wifihelper.connectwifi(ssid, pwd)
-    # print("WiFi conncet stutus:"+str(connectR))
+    print("WiFi conncet stutus:"+str(connectR))
     return connectR
  
             
-TOPIC = b"OPSRelayController"
+TOPIC = b"OtherEquip"
 
 # poweron  poweroff  
 def mqttsub_cb(topic, msg):
     global OPSRelay
     global DiskRelay 
     if(topic==TOPIC):
-        if(msg.decode('utf-8')=='poweron'):
+        if(msg.decode('utf-8')=='officedooropen'):
               commonhelper.updatePin(OPSRelay,1)
-        elif(msg.decode('utf-8')=='poweroff'): 
-              commonhelper.updatePin(OPSRelay,0) 
+              time.sleep(1)
+              commonhelper.updatePin(OPSRelay,0)
+              print("hi")
+        elif(msg.decode('utf-8')=='officeopendoornon'):
+            commonhelper.updatePin(OPSRelay,1)
+        elif(msg.decode('utf-8')=='officeopendoornoff'):
+            commonhelper.updatePin(OPSRelay,0)
+        elif(msg.decode('utf-8')=='opendoorother'):
+            pass
 
 def autoconnectmqtt(mqttclient,clearsession):
     while True:

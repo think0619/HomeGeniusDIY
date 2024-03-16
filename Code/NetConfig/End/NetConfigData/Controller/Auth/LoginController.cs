@@ -8,7 +8,7 @@ using System.Security.Claims;
 using System.Text;
 using System;
 using TextVoiceServer;
-using Entities;
+using Entities.User;
 
 namespace NetConfigServer.Controller.Auth
 {
@@ -26,37 +26,37 @@ namespace NetConfigServer.Controller.Auth
             _serviceScopeFactory = serviceScopeFactory;
         }
 
-        [AllowAnonymous]
-        [HttpPost]
-        public IActionResult Login([FromBody] UserModel login)
-        {
-            string requestIP = "";
-            var remoteIpAddress = Request.HttpContext.Connection.RemoteIpAddress;
-            if (remoteIpAddress != null)
-            {
-                requestIP = remoteIpAddress.ToString();
-            }
-            LoginTipResult tipResult = new LoginTipResult()
-            {
-                Status = 0,
-                Msg = "",
-                Token = ""
-            };
-            var user = AuthenticateUser(login);
-            if (user != null)
-            {
-                var tokenString = GenerateJSONWebToken(user);
-                tipResult.Token = tokenString;
-                tipResult.Status = 1;
-                tipResult.Msg = "success";
-            }
-            else
-            {
-                tipResult.Status = 0;
-                tipResult.Msg = "用户名或密码错误。";
-            }
-            return Ok(tipResult);
-        }
+        //[AllowAnonymous]
+        //[HttpPost]
+        //public IActionResult Login([FromBody] UserModel login)
+        //{
+        //    string requestIP = "";
+        //    var remoteIpAddress = Request.HttpContext.Connection.RemoteIpAddress;
+        //    if (remoteIpAddress != null)
+        //    {
+        //        requestIP = remoteIpAddress.ToString();
+        //    }
+        //    LoginTipResult tipResult = new LoginTipResult()
+        //    {
+        //        Status = 0,
+        //        Msg = "",
+        //        Token = ""
+        //    };
+        //    var user = AuthenticateUser(login);
+        //    if (user != null)
+        //    {
+        //        var tokenString = GenerateJSONWebToken(user);
+        //        tipResult.Token = tokenString;
+        //        tipResult.Status = 1;
+        //        tipResult.Msg = "success";
+        //    }
+        //    else
+        //    {
+        //        tipResult.Status = 0;
+        //        tipResult.Msg = "用户名或密码错误。";
+        //    }
+        //    return Ok(tipResult);
+        //}
 
         private string GenerateJSONWebToken(LoginUser userInfo)
         {
@@ -85,16 +85,16 @@ namespace NetConfigServer.Controller.Auth
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        //Check user login info
-        private LoginUser AuthenticateUser(UserModel loginuser)
-        {
-            LoginUser user = null;
-            if ((!String.IsNullOrWhiteSpace(loginuser.UserIDCode)))
-            {
-                user = SQLiteHelper.checkUserInfo(loginuser.UserIDCode);
-            }
-            return user;
-        }
+        ////Check user login info
+        //private LoginUser AuthenticateUser(UserModel loginuser)
+        //{
+        //    LoginUser user = null;
+        //    if ((!String.IsNullOrWhiteSpace(loginuser.UserIDCode)))
+        //    {
+        //        user = SQLiteHelper.checkUserInfo(loginuser.UserIDCode);
+        //    }
+        //    return user;
+        //}
 
 
 

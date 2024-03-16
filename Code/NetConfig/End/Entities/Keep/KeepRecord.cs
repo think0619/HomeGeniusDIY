@@ -8,7 +8,7 @@ namespace Entities.Keep
 {
     public class KeepRecord 
     {
-        public int RecID { get; set; }
+        public int Id { get; set; }
         public int TypeId { get; set; }
         public Decimal Count { get; set; }
         public int UnitsId { get; set; }

@@ -23,7 +23,7 @@ const keepview = () =>
 
 const routes = [{
         path: '/',
-        redirect: '/keep/view'
+        redirect: '/keep/add'
     },
     {
         path: '/home',

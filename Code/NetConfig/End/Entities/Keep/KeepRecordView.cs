@@ -11,7 +11,7 @@ namespace Entities.Keep
     {
         //[JsonIgnore]
         //[IgnoreDataMember]
-        public int RecID { get; set; }
+        public int Id { get; set; }
 
         
         public string TypeName { get; set; }
@@ -69,6 +69,7 @@ namespace Entities.Keep
             }
         }
 
+        [NotMapped]
         public long UpdateDatetime { get; set; }
 
         [NotMapped]

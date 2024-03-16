@@ -4,49 +4,11 @@
     </div>
     <div class="control">
         <div style="margin-top: 15px;">
-            <div class="sysname"><span>ESP32 时钟</span></div>
-            <van-space size="1rem">
-                <van-button type="primary" @click="sendmsg('clock', 'on');">打开时钟</van-button>
-                <van-button type="primary" @click="sendmsg('clock', 'off');">关闭时钟</van-button>
-                <van-button type="primary" @click="sendmsg('clock', 'synctime');">同步时间</van-button>
-                <van-button type="primary" @click="sendmsg('clock', 'reset');">Reset</van-button>
-            </van-space>
-            <van-row>
-
-            </van-row>
-        </div>
-        <div style="margin-top: 30px;">
-            <div class="sysname"><span>USB LED电源</span></div>
-            <van-space size="1rem">
-                <van-button type="primary" @click="sendmsg('other', 'usbledon');">打开LED</van-button>
-                <van-button type="primary" @click="sendmsg('other', 'usbledoff');">关闭LED</van-button>
-
-            </van-space>
-        </div>
-        <!-- <div style="margin-top: 30px;">
-            <div class="sysname"><span>马桶盖电源</span></div> 
-            <van-space size="1rem">
-                <van-button type="primary" @click="sendmsg('ops','poweron');">打开电源</van-button>
-                <van-button type="primary" @click="sendmsg('ops','poweroff');">关闭电源</van-button>
-               
-            </van-space>
-        </div>  -->
-        <div style="margin-top: 30px;">
-            <div class="sysname"><span>锁屏</span></div>
-            <van-space size="1rem">
-                <van-button type="primary" @click="sendmsg('lock', 'LOCKPC_PCLockEmma');">锁屏Emma</van-button>
-                <van-button type="primary" @click="sendmsg('lock', 'LOCKPC_PCLockThink');">锁屏XS</van-button>
-            </van-space>
-        </div>
-        <div style="margin-top: 10px;">
-            <div class="sysname"><span>锁屏</span></div>
-            <van-space size="1rem" direction="vertical" fill>
-                <van-cell-group inset><van-field v-model="msgcontent" label="内容" placeholder="请输入消息"
-                        clearable /></van-cell-group>
-                <van-space size="1rem">
-                    <van-button type="primary" @click="sendmsg('msg', 'Msg_PCLockEmma');">to Emma</van-button>
-                    <van-button type="primary" @click="sendmsg('msg', 'Msg_PCLockThink');">to Think</van-button>
-                </van-space>
+            <div class="sysname"><span>办公室门锁</span></div>
+            <van-space direction="vertical" fill size="15px"> 
+                <van-button type="primary" block @click="sendmsg('other', 'officedooropen');">开锁</van-button>
+                <van-button type="primary" block @click="sendmsg('other', 'officeopendoornon');">常开</van-button>
+                <van-button type="primary" block @click="sendmsg('other', 'officeopendoornoff');">解除常开</van-button>
             </van-space>
         </div>
     </div>
@@ -126,34 +88,27 @@
                         "message": "The mqtt client has connected.",
                         "duration": 800
                     });
-                    that.mqttclient.subscribe('ShowClockTime', function (err) {
-                        if (!err) { } else { }
-                    })
-                    that.mqttclient.subscribe('OPSRelayController', function (err) {
-                        if (!err) { } else {
-                        }
-                    })
+                    // that.mqttclient.subscribe('ShowClockTime', function (err) {
+                    //     if (!err) { } else { }
+                    // })
+                    // that.mqttclient.subscribe('OPSRelayController', function (err) {
+                    //     if (!err) { } else {
+                    //     }
+                    // })
                 })
-                that.mqttclient.on('message', function (topic, message) {
-                    // console.log(topic.toString())
-                    // console.log(message.toString())
-                })
+                // that.mqttclient.on('message', function (topic, message) {
+                //     // console.log(topic.toString())
+                //     // console.log(message.toString())
+                // })
             },
             sendmsg(topicflag, msg) {
                 var topic = ""
                 switch (topicflag) {
-                    case "clock": topic = "ShowClockTime"; break;
-                    case "ops": topic = "OPSRelayController"; break;
-                    case "lock": topic = "LockPC"; break;
-                    case "msg": topic = "Msg"; break;
                     case "other": topic = "OtherEquip"; break;
                 }
                 if (topic != '') {
                     let that = this;
-                    if (topic == "Msg") {
-                        msg = `${msg}_${that.msgcontent}`
-                        console.log(msg)
-                    }
+
                     if (that.mqttclient != null) {
                         that.mqttclient.publish(topic, msg, {
                             qos: 0,

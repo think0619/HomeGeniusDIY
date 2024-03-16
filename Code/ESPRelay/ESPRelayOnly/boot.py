@@ -2,14 +2,17 @@
 #import esp
 #esp.osdebug(None)
 #import webrepl
-#webrepl.start()
-import _thread
+#webrepl.start() 
 import main 
 import commonhelper   
  
 
+print("1") 
+if(main.connectwifi_func()):
+    main.connectmqtt()
  
-if(main.connectwifi_func()): 
-     if(commonhelper.needRun()): 
-         _thread.start_new_thread(main.connectmqtt, ())   
+
+    
+#     if(commonhelper.needRun()): 
+#    _thread.start_new_thread(main.connectmqtt, ())   
   

@@ -8,5 +8,7 @@ namespace Entities.Content
     {
         public int PageIndex { get; set; }
         public int PageCount { get; set; }
+        public DateTime? DateStart { get; set; }
+        public DateTime? DateEnd { get; set; }
     }
 }

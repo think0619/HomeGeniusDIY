@@ -6,7 +6,7 @@ namespace Entities.Net
 {
     public  class NetInfo
     {
-        public int RecId { get; set; }
+        public int Id { get; set; }
         public int MachineId { get; set; }
         public string MachineName { get; set; }
         public string ServerName { get; set; }

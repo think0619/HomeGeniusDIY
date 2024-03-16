@@ -1,16 +1,5 @@
 import { createRouter, createWebHashHistory, createWebHistory, } from 'vue-router';
-const home = () =>
-    import ('@/view/home/index.vue')
-const main = () =>
-    import ('@/view/main/main.vue')
-const tab1 = () =>
-    import ('@/view/main/tab1/index.vue')
-const tab2 = () =>
-    import ('@/view/main/tab2/index.vue')
-const tab3 = () =>
-    import ('@/view/main/tab3/index.vue')
-const tab4 = () =>
-    import ('@/view/main/tab4/index.vue')
+
 
 
 const login = () =>
@@ -31,6 +20,9 @@ const raspclock = () =>
 
 const aircondition = () =>
     import ('@/view/aircondition/index.vue')
+
+const misccontrol = () =>
+    import ('@/view/misc/index.vue')
 
 
 const routes = [{
@@ -82,6 +74,11 @@ const routes = [{
         name: 'loginpage',
         path: '/login',
         component: login,
+    },
+    {
+        name: 'miscpage',
+        path: '/miscctrl',
+        component: misccontrol,
     },
 
 ];

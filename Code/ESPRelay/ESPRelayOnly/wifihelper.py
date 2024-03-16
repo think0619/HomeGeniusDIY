@@ -1,6 +1,5 @@
-import network
-import _thread
-import time
+import network 
+import time 
 
 _ssid=""
 _password=""
@@ -16,7 +15,7 @@ def connectwifi(ssid,password):
     wlan.active(True)
     time.sleep(3)
     if(wlan.isconnected()):
-        print('ESP32 has connected wifi.')
+        print('ESP3266 has connected wifi.')
     else:
         wlan.connect(ssid,password)
         print('connecting to network...')
@@ -26,8 +25,9 @@ def connectwifi(ssid,password):
         print('network config:', wlan.ifconfig())
         return True;
     else:
-        return False;
-    _thread.start_new_thread(checkwifi, ())    
+        return False; 
+ 
+#    _thread.start_new_thread(checkwifi, ())    
 
 def checkwifi():
     time.sleep(60)

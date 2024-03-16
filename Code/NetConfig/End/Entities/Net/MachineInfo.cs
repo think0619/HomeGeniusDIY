@@ -6,7 +6,7 @@ namespace Entities.Net
 {
     public  class MachineInfo
     {
-        public int RecId { get; set; } 
+        public int Id { get; set; } 
         public string MachineName { get; set; }
         public int Status { get; set; } 
         public string Remark { get; set; }

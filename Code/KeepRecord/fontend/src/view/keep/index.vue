@@ -30,11 +30,10 @@
         </van-cell-group>
         <div style="margin: 16px;">
             <van-button round block type="primary" native-type="submit">提交</van-button>
-        </div>
+        </div> 
+           <van-floating-bubble icon="list-switch"  axis="xy" @click="onViewPathClick" />
     </van-form>
-</template>   
-
-
+</template>    
 
 
 <script setup  lang="jsx">
@@ -198,14 +197,17 @@ export default {
                     });
                 }
             }).catch(e => { });
-
         },
+        onViewPathClick() {
+            this.$router.push('/keep/view')
+        }
 
     }
 }; 
 </script>
 
-<style scoped> .title>span {
+<style scoped>
+ .title>span {
      display: block;
      font-size: 24px;
      ;

@@ -137,13 +137,13 @@ namespace TextVoiceServer.ContentMgmt
                 Status = 0,
                 Msg = ""
             };
-            if (updateItem != null && updateItem.RecId > 0)
+            if (updateItem != null && updateItem.Id > 0)
             {
                 using var context = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>();
                 var transaction = context.Database.BeginTransaction();
                 try
                 {
-                    var updateObj = context.tb_config.Find(updateItem.RecId);
+                    var updateObj = context.tb_config.Find(updateItem.Id);
                     if (updateObj != null)
                     {
                         updateObj.Status = 1;
@@ -193,13 +193,13 @@ namespace TextVoiceServer.ContentMgmt
                 Status = 0,
                 Msg = ""
             };
-            if (delItem?.RecId > 0)
+            if (delItem?.Id > 0)
             {
                 using var context = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>();
                 var transaction = context.Database.BeginTransaction();
                 try
                 {
-                    var deleteItem = context.tb_config.Find(delItem.RecId);
+                    var deleteItem = context.tb_config.Find(delItem.Id);
                     if (deleteItem != null && deleteItem.Status == 1)
                     {
                         deleteItem.Status = 0;
@@ -244,7 +244,7 @@ namespace TextVoiceServer.ContentMgmt
                 try
                 {
                    // List<int> validIdList = IdArray.Where(x => x > 0).ToList();
-                    var deleteItems = context.tb_config.Where(x => IdArray.Contains(x.RecId));
+                    var deleteItems = context.tb_config.Where(x => IdArray.Contains(x.Id));
                     foreach (var item in deleteItems)
                     {
                         item.Status = 0;
@@ -282,7 +282,7 @@ namespace TextVoiceServer.ContentMgmt
 
                 using (var dbcontext = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>())
                 {
-                    var exportDataList = dbcontext.tb_config.Where(s => s.Status == 1 && IdArray.Contains(s.RecId)).ToList();
+                    var exportDataList = dbcontext.tb_config.Where(s => s.Status == 1 && IdArray.Contains(s.Id)).ToList();
 
                     ImportTableOptions imp = new ImportTableOptions();
                     imp.InsertRows = true;

@@ -1,13 +1,14 @@
 import time
 import ubinascii
-from umqtt.simple import MQTTClient
+#from umqtt.simple import MQTTClient
 import machine
+from umqttsimple import MQTTClient
 
 # Default MQTT MQTT_BROKER to connect to
 # const url = 'ws://hw.hellolinux.cn:8083/';
 MQTT_BROKER = "hw.hellolinux.cn"
 CLIENT_ID = ubinascii.hexlify(machine.unique_id())
-TOPIC = b"RelayCMD"
+TOPIC = b"OtherEquip"
 User="homediskrelay"
 Password="@Xiongsen1994!+"
 

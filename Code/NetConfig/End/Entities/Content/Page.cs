@@ -8,7 +8,7 @@ namespace Entities
 {
     public class Page
     { 
-        public int recid { get; set; }
+        public int Id { get; set; }
         public string PageIndex { get; set; }
         public string ModuleName { get; set; }
 
@@ -30,7 +30,7 @@ namespace Entities
 
     public class PageNameCfg 
     {
-        public int recid { get; set; }
+        public int Id { get; set; }
         public string PageName { get; set; }
         public string PageIndex { get; set; } 
 

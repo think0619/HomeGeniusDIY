@@ -3543,7 +3543,7 @@ w2utils.event = {
 *   - copy or large number of records is slow
 *   - reusable search component (see https://github.com/vitmalina/w2ui/issues/914#issuecomment-107340524)
 *   - allow enum in inline edit (see https://github.com/vitmalina/w2ui/issues/911#issuecomment-107341193)
-*   - if record has no recid, then it should be index in the aray (should not be 0)
+*   - if record has no Id, then it should be index in the aray (should not be 0)
 *
 * == KNOWN ISSUES ==
 *   - bug: vs_start = 100 and more then 500 records, when scrolling empty sets
@@ -3603,7 +3603,7 @@ w2utils.event = {
 *   - move events into prototype
 *   - move rec.summary, rec.style, rec.editable -> into rec.w2ui.summary, rec.w2ui.style, rec.w2ui.editable
 *   - record: {
-        recid
+        Id
         field1
         ...
         fieldN
@@ -3619,7 +3619,7 @@ w2utils.event = {
                 // similar to records array
                 // can have sub children
             ]
-            parent_recid: (internally set, id of the parent record, when children are copied to records array)
+            parent_Id: (internally set, id of the parent record, when children are copied to records array)
             summary: true/false
             style: 'string' - for entire row OR { field: 'string', ...} - per field
             class: 'string' - for entire row OR { field: 'string', ...} - per field
@@ -3689,7 +3689,7 @@ w2utils.event = {
         this.box          = null;     // HTML element that hold this element
         this.columns      = [];       // { field, text, size, attr, render, hidden, gridMinWidth, editable }
         this.columnGroups = [];       // { span: int, text: 'string', master: true/false }
-        this.records      = [];       // { recid: int(requied), field1: 'value1', ... fieldN: 'valueN', style: 'string',  changes: object }
+        this.records      = [];       // { Id: int(requied), field1: 'value1', ... fieldN: 'valueN', style: 'string',  changes: object }
         this.summary      = [];       // arry of summary records, same structure as records array
         this.searches     = [];       // { type, label, field, inTag, outTag, hidden }
         this.sortMap      = {};       // remap sort Fields
@@ -3699,7 +3699,7 @@ w2utils.event = {
         this.searchData   = [];
         this.sortData     = [];
         this.total        = 0;        // server total
-        this.recid        = null;     // field from records to be used as recid
+        this.Id        = null;     // field from records to be used as Id
 
         // internal
         this.last = {
@@ -3769,13 +3769,13 @@ w2utils.event = {
             if (searchData)   for (p = 0; p < searchData.length; p++)   object.searchData[p]    = $.extend(true, {}, searchData[p]);
             if (sortData)     for (p = 0; p < sortData.length; p++)     object.sortData[p]      = $.extend(true, {}, sortData[p]);
 
-            // check if there are records without recid
+            // check if there are records without Id
             if (records) for (var r = 0; r < records.length; r++) {
-                if (records[r][object.recid] != null) {
-                    records[r].recid = records[r][object.recid];
+                if (records[r][object.Id] != null) {
+                    records[r].Id = records[r][object.Id];
                 }
-                if (records[r].recid == null) {
-                    console.log('ERROR: Cannot add records without recid. (obj: '+ object.name +')');
+                if (records[r].Id == null) {
+                    console.log('ERROR: Cannot add records without Id. (obj: '+ object.name +')');
                     return;
                 }
                 object.records[r] = $.extend(true, {}, records[r]);
@@ -4047,11 +4047,11 @@ w2utils.event = {
             var added = 0;
             for (var i = 0; i < record.length; i++) {
                 var rec = record[i];
-                if (rec[this.recid] != null) {
-                    rec.recid = rec[this.recid];
+                if (rec[this.Id] != null) {
+                    rec.Id = rec[this.Id];
                 }
-                if (rec.recid == null) {
-                    console.log('ERROR: Cannot add record without recid. (obj: '+ this.name +')');
+                if (rec.Id == null) {
+                    console.log('ERROR: Cannot add record without Id. (obj: '+ this.name +')');
                     continue;
                 }
                 if (rec.w2ui && rec.w2ui.summary === true) {
@@ -4093,44 +4093,44 @@ w2utils.event = {
                         if (obj[o] != val) match = false;
                     }
                 }
-                if (match && returnIndex !== true) recs.push(this.records[i].recid);
+                if (match && returnIndex !== true) recs.push(this.records[i].Id);
                 if (match && returnIndex === true) recs.push(i);
             }
             return recs;
         },
 
-        set: function (recid, record, noRefresh) { // does not delete existing, but overrides on top of it
-            if ((typeof recid == 'object') && (recid !== null)) {
+        set: function (Id, record, noRefresh) { // does not delete existing, but overrides on top of it
+            if ((typeof Id == 'object') && (Id !== null)) {
                 noRefresh = record;
-                record    = recid;
-                recid     = null;
+                record    = Id;
+                Id     = null;
             }
             // update all records
-            if (recid == null) {
+            if (Id == null) {
                 for (var i = 0; i < this.records.length; i++) {
-                    $.extend(true, this.records[i], record); // recid is the whole record
+                    $.extend(true, this.records[i], record); // Id is the whole record
                 }
                 if (noRefresh !== true) this.refresh();
             } else { // find record to update
-                var ind = this.get(recid, true);
+                var ind = this.get(Id, true);
                 if (ind == null) return false;
-                var isSummary = (this.records[ind] && this.records[ind].recid == recid ? false : true);
+                var isSummary = (this.records[ind] && this.records[ind].Id == Id ? false : true);
                 if (isSummary) {
                     $.extend(true, this.summary[ind], record);
                 } else {
                     $.extend(true, this.records[ind], record);
                 }
-                if (noRefresh !== true) this.refreshRow(recid, ind); // refresh only that record
+                if (noRefresh !== true) this.refreshRow(Id, ind); // refresh only that record
             }
             return true;
         },
 
-        get: function (recid, returnIndex) {
+        get: function (Id, returnIndex) {
             // search records
-            if ($.isArray(recid)) {
+            if ($.isArray(Id)) {
                 var recs = [];
-                for (var i = 0; i < recid.length; i++) {
-                    var v = this.get(recid[i], returnIndex);
+                for (var i = 0; i < Id.length; i++) {
+                    var v = this.get(Id[i], returnIndex);
                     if (v !== null)
                         recs.push(v);
                 }
@@ -4142,29 +4142,29 @@ w2utils.event = {
                 if (!idCache) {
                     this.last.idCache = idCache = {};
                 }
-                var i = idCache[recid];
+                var i = idCache[Id];
                 if (typeof(i) === "number") {
-                    if (i >= 0 && i < this.records.length && this.records[i].recid == recid) {
+                    if (i >= 0 && i < this.records.length && this.records[i].Id == Id) {
                         if (returnIndex === true) return i; else return this.records[i];
                     }
                     // summary indexes are stored as negative numbers, try them now.
                     i = ~i;
-                    if (i >= 0 && i < this.summary.length && this.summary[i].recid == recid) {
+                    if (i >= 0 && i < this.summary.length && this.summary[i].Id == Id) {
                         if (returnIndex === true) return i; else return this.summary[i];
                     }
                     // wrong index returned, clear cache
                     this.last.idCache = idCache = {};
                 }
                 for (var i = 0; i < this.records.length; i++) {
-                    if (this.records[i].recid == recid) {
-                        idCache[recid] = i;
+                    if (this.records[i].Id == Id) {
+                        idCache[Id] = i;
                         if (returnIndex === true) return i; else return this.records[i];
                     }
                 }
                 // search summary
                 for (var i = 0; i < this.summary.length; i++) {
-                    if (this.summary[i].recid == recid) {
-                        idCache[recid] = ~i;
+                    if (this.summary[i].Id == Id) {
+                        idCache[Id] = ~i;
                         if (returnIndex === true) return i; else return this.summary[i];
                     }
                 }
@@ -4174,26 +4174,26 @@ w2utils.event = {
 
         getFirst: function () {
             if (this.records.length == 0) return null;
-            var recid = this.records[0].recid;
+            var Id = this.records[0].Id;
             var tmp   = this.last.searchIds;
             if (this.searchData.length > 0) {
                 if (Array.isArray(tmp) && tmp.length > 0) {
-                    recid = this.records[tmp[0]].recid;
+                    Id = this.records[tmp[0]].Id;
                 } else {
-                    recid = null;
+                    Id = null;
                 }
             }
-            return recid;
+            return Id;
         },
 
         remove: function () {
             var removed = 0;
             for (var a = 0; a < arguments.length; a++) {
                 for (var r = this.records.length-1; r >= 0; r--) {
-                    if (this.records[r].recid == arguments[a]) { this.records.splice(r, 1); removed++; }
+                    if (this.records[r].Id == arguments[a]) { this.records.splice(r, 1); removed++; }
                 }
                 for (var r = this.summary.length-1; r >= 0; r--) {
-                    if (this.summary[r].recid == arguments[a]) { this.summary.splice(r, 1); removed++; }
+                    if (this.summary[r].Id == arguments[a]) { this.summary.splice(r, 1); removed++; }
                 }
             }
             var url = (typeof this.url != 'object' ? this.url : this.url.get);
@@ -4444,7 +4444,7 @@ w2utils.event = {
             function preparePaths() {
                 for (var i = 0; i < obj.records.length; i++) {
                     var rec = obj.records[i];
-                    if (rec.w2ui && rec.w2ui.parent_recid != null) {
+                    if (rec.w2ui && rec.w2ui.parent_Id != null) {
                         rec.w2ui._path = getRecordPath(rec);
                     }
                 }
@@ -4454,7 +4454,7 @@ w2utils.event = {
             function cleanupPaths() {
                 for (var i = 0; i < obj.records.length; i++) {
                     var rec = obj.records[i];
-                    if (rec.w2ui && rec.w2ui.parent_recid != null) {
+                    if (rec.w2ui && rec.w2ui.parent_Id != null) {
                         rec.w2ui._path = null;
                     }
                 }
@@ -4462,7 +4462,7 @@ w2utils.event = {
 
             // compare two paths, from root of tree to given records
             function compareRecordPaths(a, b) {
-                if ((!a.w2ui || a.w2ui.parent_recid == null) && (!b.w2ui || b.w2ui.parent_recid == null)) {
+                if ((!a.w2ui || a.w2ui.parent_Id == null) && (!b.w2ui || b.w2ui.parent_Id == null)) {
                     return compareRecords(a, b);    // no tree, fast path
                 }
                 var pa = getRecordPath(a);
@@ -4479,19 +4479,19 @@ w2utils.event = {
 
             // return an array of all records from root to and including 'rec'
             function getRecordPath(rec) {
-                if (!rec.w2ui || rec.w2ui.parent_recid == null) return [rec];
+                if (!rec.w2ui || rec.w2ui.parent_Id == null) return [rec];
                 if (rec.w2ui._path)
                     return rec.w2ui._path;
                 // during actual sort, we should never reach this point
-                var subrec = obj.get(rec.w2ui.parent_recid);
+                var subrec = obj.get(rec.w2ui.parent_Id);
                 if (!subrec) {
-                    console.log('ERROR: no parent record: '+rec.w2ui.parent_recid);
+                    console.log('ERROR: no parent record: '+rec.w2ui.parent_Id);
                     return [rec];
                 }
                 return (getRecordPath(subrec).concat(rec));
             }
 
-            // compare two records according to sortData and finally recid
+            // compare two records according to sortData and finally Id
             function compareRecords(a, b) {
                 if (a === b) return 0; // optimize, same object
                 for (var i = 0; i < obj.sortData.length; i++) {
@@ -4513,7 +4513,7 @@ w2utils.event = {
                 }
                 // break tie for similar records,
                 // required to have consistent ordering for tree paths
-                var ret = compareCells(a.recid, b.recid, -1, 'asc');
+                var ret = compareCells(a.Id, b.Id, -1, 'asc');
                 return ret;
             }
 
@@ -4594,7 +4594,7 @@ w2utils.event = {
                     var rec = this.records[i];
                     var match = searchRecord(rec);
                     if (match) {
-                        if (rec && rec.w2ui) addParent(rec.w2ui.parent_recid);
+                        if (rec && rec.w2ui) addParent(rec.w2ui.parent_Id);
                         if (this.showExtraOnSearch > 0) {
                             var before = this.showExtraOnSearch;
                             var after  = this.showExtraOnSearch;
@@ -4800,27 +4800,27 @@ w2utils.event = {
             }
 
             // add parents nodes recursively
-            function addParent(recid) {
-                if (recid === undefined)
+            function addParent(Id) {
+                if (Id === undefined)
                     return;
-                if (duplicateMap[recid])
+                if (duplicateMap[Id])
                     return; // already visited
-                duplicateMap[recid] = true;
-                var i = obj.get(recid, true);
+                duplicateMap[Id] = true;
+                var i = obj.get(Id, true);
                 if (i == null)
                     return;
                 if ($.inArray(i, obj.last.searchIds) != -1)
                     return;
                 var rec = obj.records[i];
                 if (rec && rec.w2ui)
-                    addParent(rec.w2ui.parent_recid);
+                    addParent(rec.w2ui.parent_Id);
                 obj.last.searchIds.push(i);
             }
         },
 
         getRangeData: function (range, extra) {
-            var rec1 = this.get(range[0].recid, true);
-            var rec2 = this.get(range[1].recid, true);
+            var rec1 = this.get(range[0].Id, true);
+            var rec2 = this.get(range[1].Id, true);
             var col1 = range[0].column;
             var col2 = range[1].column;
 
@@ -4886,7 +4886,7 @@ w2utils.event = {
                 if (first) {
                     var rg = {
                         name: ranges[i].name,
-                        range: [{ recid: first.recid, column: first.column }, { recid: last.recid, column: last.column }],
+                        range: [{ Id: first.Id, column: first.column }, { Id: last.Id, column: last.column }],
                         style: ranges[i].style || ''
                     };
                     // add range
@@ -4930,20 +4930,20 @@ w2utils.event = {
                 var rg    = this.ranges[i];
                 var first = rg.range[0];
                 var last  = rg.range[1];
-                if (first.index == null) first.index = this.get(first.recid, true);
-                if (last.index == null) last.index = this.get(last.recid, true);
-                var td1   = $('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(first.recid) + ' td[col="'+ first.column +'"]');
-                var td2   = $('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(last.recid) + ' td[col="'+ last.column +'"]');
-                var td1f  = $('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(first.recid) + ' td[col="'+ first.column +'"]');
-                var td2f  = $('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(last.recid) + ' td[col="'+ last.column +'"]');
+                if (first.index == null) first.index = this.get(first.Id, true);
+                if (last.index == null) last.index = this.get(last.Id, true);
+                var td1   = $('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(first.Id) + ' td[col="'+ first.column +'"]');
+                var td2   = $('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(last.Id) + ' td[col="'+ last.column +'"]');
+                var td1f  = $('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(first.Id) + ' td[col="'+ first.column +'"]');
+                var td2f  = $('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(last.Id) + ' td[col="'+ last.column +'"]');
                 var _lastColumn = last.column;
                 // adjustment due to column virtual scroll
                 if (first.column < this.last.colStart && last.column > this.last.colStart) {
-                    td1 = $('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(first.recid) + ' td[col="start"]');
+                    td1 = $('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(first.Id) + ' td[col="start"]');
                 }
                 if (first.column < this.last.colEnd && last.column > this.last.colEnd) {
                     _lastColumn = '"end"';
-                    td2 = $('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(last.recid) + ' td[col="end"]');
+                    td2 = $('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(last.Id) + ' td[col="end"]');
                 }
                 // if virtual scrolling kicked in
                 var index_top     = parseInt($('#grid_'+ this.name +'_rec_top').next().attr('index'));
@@ -4966,9 +4966,9 @@ w2utils.event = {
                 // do not show selection cell if it is editable
                 var edit  = $(this.box).find('#grid_'+ this.name + '_editable');
                 var tmp   = edit.find('.w2ui-input');
-                var tmp1  = tmp.attr('recid');
+                var tmp1  = tmp.attr('Id');
                 var tmp2  = tmp.attr('column');
-                if (rg.name == 'selection' && rg.range[0].recid == tmp1 && rg.range[0].column == tmp2) continue;
+                if (rg.name == 'selection' && rg.range[0].Id == tmp1 && rg.range[0].column == tmp2) continue;
 
                 // frozen regular columns range
                 var $range = $('#grid_'+ this.name +'_f'+ rg.name);
@@ -4983,12 +4983,12 @@ w2utils.event = {
                         $range.find('.w2ui-selection-resizer').show();
                     }
                     if (td2f.length === 0) {
-                        td2f  = $('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(last.recid) +' td:last-child');
+                        td2f  = $('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(last.Id) +' td:last-child');
                         if (td2f.length === 0) td2f = $('#grid_'+ this.name +'_frec_bottom td:first-child');
                         $range.css('border-right', '0px');
                         $range.find('.w2ui-selection-resizer').hide();
                     }
-                    if (first.recid != null && last.recid != null && td1f.length > 0 && td2f.length > 0) {
+                    if (first.Id != null && last.Id != null && td1f.length > 0 && td2f.length > 0) {
                         var _left = (td1f.position().left - 0 + rec1.scrollLeft());
                         var _top  = (td1f.position().top - 0 + rec1.scrollTop());
                         $range.show().css({
@@ -5015,13 +5015,13 @@ w2utils.event = {
                         $range.attr('style', rg.style);
                     }
                     if (td1.length === 0) {
-                        td1 = $('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(first.recid) +' td:first-child');
+                        td1 = $('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(first.Id) +' td:first-child');
                         if (td1.length === 0) td1 = $('#grid_'+ this.name +'_rec_top td:first-child');
                     }
                     if (td2f.length !== 0) {
                         $range.css('border-left', '0px');
                     }
-                    if (first.recid != null && last.recid != null && td1.length > 0 && td2.length > 0) {
+                    if (first.Id != null && last.Id != null && td1.length > 0 && td2.length > 0) {
                         var _left = (td1.position().left - 0 + rec2.scrollLeft());
                         var _top  = (td1.position().top - 0 + rec2.scrollTop());
                         $range.show().css({
@@ -5058,10 +5058,10 @@ w2utils.event = {
                     y      : event.screenY,
                     divX   : 0,
                     divY   : 0,
-                    recid  : sel[0].recid,
+                    Id  : sel[0].Id,
                     column : sel[0].column,
-                    originalRange : [{ recid: sel[0].recid, column: sel[0].column }, { recid: sel[sel.length-1].recid, column: sel[sel.length-1].column }],
-                    newRange      : [{ recid: sel[0].recid, column: sel[0].column }, { recid: sel[sel.length-1].recid, column: sel[sel.length-1].column }]
+                    originalRange : [{ Id: sel[0].Id, column: sel[0].column }, { Id: sel[sel.length-1].Id, column: sel[sel.length-1].column }],
+                    newRange      : [{ Id: sel[0].Id, column: sel[0].column }, { Id: sel[sel.length-1].Id, column: sel[sel.length-1].column }]
                 };
                 $(document)
                     .off('.w2ui-' + obj.name)
@@ -5077,16 +5077,16 @@ w2utils.event = {
                 mv.divX = (event.screenX - mv.x);
                 mv.divY = (event.screenY - mv.y);
                 // find new cell
-                var recid, column;
+                var Id, column;
                 var tmp = event.originalEvent.target;
                 if (tmp.tagName.toUpperCase() != 'TD') tmp = $(tmp).parents('td')[0];
                 if ($(tmp).attr('col') != null) column = parseInt($(tmp).attr('col'));
                 tmp = $(tmp).parents('tr')[0];
-                recid = $(tmp).attr('recid');
+                Id = $(tmp).attr('Id');
                 // new range
-                if (mv.newRange[1].recid == recid && mv.newRange[1].column == column) return;
+                if (mv.newRange[1].Id == Id && mv.newRange[1].column == column) return;
                 var prevNewRange = $.extend({}, mv.newRange);
-                mv.newRange = [{ recid: mv.recid, column: mv.column }, { recid: recid, column: column }];
+                mv.newRange = [{ Id: mv.Id, column: mv.column }, { Id: Id, column: column }];
                 // event before
                 edata = obj.trigger($.extend(edata, { originalRange: mv.originalRange, newRange : mv.newRange }));
                 if (edata.isCancelled === true) {
@@ -5128,14 +5128,14 @@ w2utils.event = {
             if (args.length == 1) {
                 tmp.multiple = false;
                 if ($.isPlainObject(args[0])) {
-                    tmp.recid  = args[0].recid;
+                    tmp.Id  = args[0].Id;
                     tmp.column = args[0].column;
                 } else {
-                    tmp.recid = args[0];
+                    tmp.Id = args[0];
                 }
             } else {
                 tmp.multiple = true;
-                tmp.recids   = args;
+                tmp.Ids   = args;
             }
             var edata = this.trigger(tmp);
             if (edata.isCancelled === true) return 0;
@@ -5143,14 +5143,14 @@ w2utils.event = {
             // default action
             if (this.selectType == 'row') {
                 for (var a = 0; a < args.length; a++) {
-                    var recid  = typeof args[a] == 'object' ? args[a].recid : args[a];
-                    var index = this.get(recid, true);
+                    var Id  = typeof args[a] == 'object' ? args[a].Id : args[a];
+                    var index = this.get(Id, true);
                     if (index == null) continue;
                     var recEl1 = null;
                     var recEl2 = null;
                     if (this.searchData.length !== 0 || (index + 1 >= this.last.range_start && index + 1 <= this.last.range_end)) {
-                        recEl1 = $('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(recid));
-                        recEl2 = $('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(recid));
+                        recEl1 = $('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(Id));
+                        recEl2 = $('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(Id));
                     }
                     if (this.selectType == 'row') {
                         if (sel.indexes.indexOf(index) != -1) continue;
@@ -5167,27 +5167,27 @@ w2utils.event = {
                 // normalize for performance
                 var new_sel = {};
                 for (var a = 0; a < args.length; a++) {
-                    var recid  = typeof args[a] == 'object' ? args[a].recid : args[a];
+                    var Id  = typeof args[a] == 'object' ? args[a].Id : args[a];
                     var column = typeof args[a] == 'object' ? args[a].column : null;
-                    new_sel[recid] = new_sel[recid] || [];
+                    new_sel[Id] = new_sel[Id] || [];
                     if ($.isArray(column)) {
-                        new_sel[recid] = column;
+                        new_sel[Id] = column;
                     } else if (w2utils.isInt(column)) {
-                        new_sel[recid].push(column);
+                        new_sel[Id].push(column);
                     } else {
-                        for (var i = 0; i < this.columns.length; i++) { if (this.columns[i].hidden) continue; new_sel[recid].push(parseInt(i)); }
+                        for (var i = 0; i < this.columns.length; i++) { if (this.columns[i].hidden) continue; new_sel[Id].push(parseInt(i)); }
                     }
                 }
                 // add all
                 var col_sel = [];
-                for (var recid in new_sel) {
-                    var index = this.get(recid, true);
+                for (var Id in new_sel) {
+                    var index = this.get(Id, true);
                     if (index == null) continue;
                     var recEl1 = null;
                     var recEl2 = null;
                     if (index + 1 >= this.last.range_start && index + 1 <= this.last.range_end) {
-                        recEl1 = $('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(recid));
-                        recEl2 = $('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(recid));
+                        recEl1 = $('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(Id));
+                        recEl2 = $('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(Id));
                     }
                     var s = sel.columns[index] || [];
                     // default action
@@ -5195,12 +5195,12 @@ w2utils.event = {
                         sel.indexes.push(index);
                     }
                     // anly only those that are new
-                    for (var t = 0; t < new_sel[recid].length; t++) {
-                        if (s.indexOf(new_sel[recid][t]) == -1) s.push(new_sel[recid][t]);
+                    for (var t = 0; t < new_sel[Id].length; t++) {
+                        if (s.indexOf(new_sel[Id][t]) == -1) s.push(new_sel[Id][t]);
                     }
                     s.sort(function(a, b) { return a-b; }); // sort function must be for numerical sort
-                    for (var t = 0; t < new_sel[recid].length; t++) {
-                        var col = new_sel[recid][t];
+                    for (var t = 0; t < new_sel[Id].length; t++) {
+                        var col = new_sel[Id][t];
                         if (col_sel.indexOf(col) == -1) col_sel.push(col);
                         if (recEl1) {
                             recEl1.find('#grid_'+ this.name +'_data_'+ index +'_'+ col).addClass('w2ui-selected');
@@ -5253,25 +5253,25 @@ w2utils.event = {
             if (args.length == 1) {
                 tmp.multiple = false;
                 if ($.isPlainObject(args[0])) {
-                    tmp.recid  = args[0].recid;
+                    tmp.Id  = args[0].Id;
                     tmp.column = args[0].column;
                 } else {
-                    tmp.recid = args[0];
+                    tmp.Id = args[0];
                 }
             } else {
                 tmp.multiple = true;
-                tmp.recids   = args
+                tmp.Ids   = args
             }
             var edata = this.trigger(tmp);
             if (edata.isCancelled === true) return 0;
 
             for (var a = 0; a < args.length; a++) {
-                var recid  = typeof args[a] == 'object' ? args[a].recid : args[a];
-                var record = this.get(recid);
+                var Id  = typeof args[a] == 'object' ? args[a].Id : args[a];
+                var record = this.get(Id);
                 if (record == null) continue;
-                var index  = this.get(record.recid, true);
-                var recEl1 = $('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(recid));
-                var recEl2 = $('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(recid));
+                var index  = this.get(record.Id, true);
+                var recEl1 = $('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(Id));
+                var recEl2 = $('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(Id));
                 if (this.selectType == 'row') {
                     if (sel.indexes.indexOf(index) == -1) continue;
                     // default action
@@ -5288,28 +5288,28 @@ w2utils.event = {
                     var col  = args[a].column;
                     if (!w2utils.isInt(col)) { // unselect all columns
                         var cols = [];
-                        for (var i = 0; i < this.columns.length; i++) { if (this.columns[i].hidden) continue; cols.push({ recid: recid, column: i }); }
+                        for (var i = 0; i < this.columns.length; i++) { if (this.columns[i].hidden) continue; cols.push({ Id: Id, column: i }); }
                         return this.unselect(cols);
                     }
                     var s = sel.columns[index];
                     if (!$.isArray(s) || s.indexOf(col) == -1) continue;
                     // default action
                     s.splice(s.indexOf(col), 1);
-                    $('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(recid)).find(' > td[col='+ col +']').removeClass('w2ui-selected w2ui-inactive');
-                    $('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(recid)).find(' > td[col='+ col +']').removeClass('w2ui-selected w2ui-inactive');
+                    $('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(Id)).find(' > td[col='+ col +']').removeClass('w2ui-selected w2ui-inactive');
+                    $('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(Id)).find(' > td[col='+ col +']').removeClass('w2ui-selected w2ui-inactive');
                     // check if any row/column still selected
                     var isColSelected = false;
                     var isRowSelected = false;
                     var tmp = this.getSelection();
                     for (var i = 0; i < tmp.length; i++) {
                         if (tmp[i].column == col) isColSelected = true;
-                        if (tmp[i].recid == recid) isRowSelected = true;
+                        if (tmp[i].Id == Id) isRowSelected = true;
                     }
                     if (!isColSelected) {
                        $(this.box).find('.w2ui-grid-columns td[col='+ col +'] .w2ui-col-header, .w2ui-grid-fcolumns td[col='+ col +'] .w2ui-col-header').removeClass('w2ui-col-selected');
                     }
                     if (!isRowSelected) {
-                        $('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(recid)).find('.w2ui-col-number').removeClass('w2ui-row-selected');
+                        $('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(Id)).find('.w2ui-col-number').removeClass('w2ui-row-selected');
                     }
                     unselected++;
                     if (s.length === 0) {
@@ -5459,7 +5459,7 @@ w2utils.event = {
             if (this.selectType == 'row') {
                 for (var i = 0; i < sel.indexes.length; i++) {
                     if (!this.records[sel.indexes[i]]) continue;
-                    if (returnIndex === true) ret.push(sel.indexes[i]); else ret.push(this.records[sel.indexes[i]].recid);
+                    if (returnIndex === true) ret.push(sel.indexes[i]); else ret.push(this.records[sel.indexes[i]].Id);
                 }
                 return ret;
             } else {
@@ -5467,7 +5467,7 @@ w2utils.event = {
                     var cols = sel.columns[sel.indexes[i]];
                     if (!this.records[sel.indexes[i]]) continue;
                     for (var j = 0; j < cols.length; j++) {
-                        ret.push({ recid: this.records[sel.indexes[i]].recid, index: parseInt(sel.indexes[i]), column: cols[j] });
+                        ret.push({ Id: this.records[sel.indexes[i]].Id, index: parseInt(sel.indexes[i]), column: cols[j] });
                     }
                 }
                 return ret;
@@ -6036,7 +6036,7 @@ w2utils.event = {
                 delete params['offset'];
                 params['action'] = cmd
                 if (cmd == 'delete') {
-                    params[this.recid || 'recid'] = this.getSelection();
+                    params[this.Id || 'Id'] = this.getSelection();
                 }
             }
             // event before
@@ -6121,7 +6121,7 @@ w2utils.event = {
                         var data;
                         try { data = typeof xhr.responseJSON === 'object' ? xhr.responseJSON : $.parseJSON(xhr.responseText); } catch (e) {}
                         console.log('ERROR: Server communication failed.',
-                            '\n   EXPECTED:', { status: 'success', total: 5, records: [{ recid: 1, field: 'value' }] },
+                            '\n   EXPECTED:', { status: 'success', total: 5, records: [{ Id: 1, field: 'value' }] },
                             '\n         OR:', { status: 'error', message: 'error message' },
                             '\n   RECEIVED:', typeof data == 'object' ? data : xhr.responseText);
                         obj.requestComplete('error', xhr, cmd, callBack);
@@ -6182,13 +6182,13 @@ w2utils.event = {
                     }
                 }
                 if (Array.isArray(data.records)) {
-                    // make sure each record has recid
+                    // make sure each record has Id
                     data.records.forEach(function (rec, ind) {
-                        if (obj.recid) {
-                            rec.recid = obj.parseField(rec, obj.recid);
+                        if (obj.Id) {
+                            rec.Id = obj.parseField(rec, obj.Id);
                         }
-                        if (rec.recid == null) {
-                            rec.recid = 'recid-' + ind;
+                        if (rec.Id == null) {
+                            rec.Id = 'Id-' + ind;
                         }
                     })
                 }
@@ -6297,7 +6297,7 @@ w2utils.event = {
                 if (rec.w2ui) {
                     if (rec.w2ui.changes != null) {
                         var obj = {}
-                        obj[this.recid || 'recid'] = rec.recid
+                        obj[this.Id || 'Id'] = rec.Id
                         changes.push($.extend(true, obj, rec.w2ui.changes));
                     }
 
@@ -6313,9 +6313,9 @@ w2utils.event = {
         mergeChanges: function () {
             var changes = this.getChanges();
             for (var c = 0; c < changes.length; c++) {
-                var record = this.get(changes[c].recid);
+                var record = this.get(changes[c].Id);
                 for (var s in changes[c]) {
-                    if (s == 'recid') continue; // do not allow to change recid
+                    if (s == 'Id') continue; // do not allow to change Id
                     if (typeof changes[c][s] === "object") changes[c][s] = changes[c][s].text;
                     try {
                         if (s.indexOf('.') != -1) {
@@ -6365,22 +6365,22 @@ w2utils.event = {
             }
         },
 
-        editField: function (recid, column, value, event) {
+        editField: function (Id, column, value, event) {
             var obj = this;
             if (this.last.inEditMode === true) { // already editing
                 if (event.keyCode == 13) {
                     var index  = this.last._edit.index;
                     var column = this.last._edit.column;
-                    var recid  = this.last._edit.recid;
-                    this.editChange({ type: 'custom', value: this.last._edit.value }, this.get(recid, true), column, event);
+                    var Id  = this.last._edit.Id;
+                    this.editChange({ type: 'custom', value: this.last._edit.value }, this.get(Id, true), column, event);
                     var next = event.shiftKey ? this.prevRow(index, column) : this.nextRow(index, column);
                     if (next != null && next != index) {
                         setTimeout(function () {
                             if (obj.selectType != 'row') {
                                 obj.selectNone();
-                                obj.select({ recid: obj.records[next].recid, column: column });
+                                obj.select({ Id: obj.records[next].Id, column: column });
                             } else {
-                                obj.editField(obj.records[next].recid, column, null, event);
+                                obj.editField(obj.records[next].Id, column, null, event);
                             }
                         }, 1);
                     }
@@ -6395,7 +6395,7 @@ w2utils.event = {
                 }
                 return;
             }
-            var index  = obj.get(recid, true);
+            var index  = obj.get(Id, true);
             var edit   = obj.getCellEditable(index, column);
             if (!edit) return;
             var rec    = obj.records[index];
@@ -6406,18 +6406,18 @@ w2utils.event = {
                 return;
             }
             // event before
-            var edata = obj.trigger({ phase: 'before', type: 'editField', target: obj.name, recid: recid, column: column, value: value,
+            var edata = obj.trigger({ phase: 'before', type: 'editField', target: obj.name, Id: Id, column: column, value: value,
                 index: index, originalEvent: event });
             if (edata.isCancelled === true) return;
             value = edata.value;
             // default behaviour
             this.last.inEditMode = true;
-            this.last._edit = { value: value, index: index, column: column, recid: recid };
+            this.last._edit = { value: value, index: index, column: column, Id: Id };
             this.selectNone();
-            this.select({ recid: recid, column: column });
+            this.select({ Id: Id, column: column });
             if (['checkbox', 'check'].indexOf(edit.type) != -1) return;
             // create input element
-            var tr = $('#grid_'+ obj.name + prefix +'rec_' + w2utils.escapeId(recid));
+            var tr = $('#grid_'+ obj.name + prefix +'rec_' + w2utils.escapeId(Id));
             var el = tr.find('[col='+ column +'] > div');
             // clear previous if any
             $(this.box).find('div.w2ui-edit-box').remove();
@@ -6457,10 +6457,10 @@ w2utils.event = {
                         html += '<option value="'+ edit.items[i].id +'"'+ (edit.items[i].id == val ? ' selected="selected"' : '') +'>'+ edit.items[i].text +'</option>';
                     }
                     el.addClass('w2ui-editable')
-                        .html('<select id="grid_'+ obj.name +'_edit_'+ recid +'_'+ column +'" column="'+ column +'" class="w2ui-input"'+
+                        .html('<select id="grid_'+ obj.name +'_edit_'+ Id +'_'+ column +'" column="'+ column +'" class="w2ui-input"'+
                             '    style="width: 100%; pointer-events: auto; padding: 0 0 0 3px; margin: 0px; border-left: 0; border-right: 0; border-radius: 0px; '+
                             '           outline: none; font-family: inherit;'+ addStyle + edit.style +'" '+
-                            '    field="'+ col.field +'" recid="'+ recid +'" '+
+                            '    field="'+ col.field +'" Id="'+ Id +'" '+
                             '    '+ edit.inTag +
                             '>'+ html +'</select>' + edit.outTag);
                     setTimeout(function () {
@@ -6479,9 +6479,9 @@ w2utils.event = {
                     var $tmp = tr.find('[col='+ column +'] > div');
                     var font = 'font-family: '+ $tmp.css('font-family') + '; font-size: '+ $tmp.css('font-size') + ';';
                     el.addClass('w2ui-editable')
-                        .html('<div id="grid_'+ obj.name +'_edit_'+ recid +'_'+ column +'" class="w2ui-input"'+
+                        .html('<div id="grid_'+ obj.name +'_edit_'+ Id +'_'+ column +'" class="w2ui-input"'+
                             '    contenteditable style="'+ font + addStyle + edit.style +'" autocorrect="off" autocomplete="off" spellcheck="false" '+
-                            '    field="'+ col.field +'" recid="'+ recid +'" column="'+ column +'" '+ edit.inTag +
+                            '    field="'+ col.field +'" Id="'+ Id +'" column="'+ column +'" '+ edit.inTag +
                             '></div>' + edit.outTag);
                     if (value == null) el.find('div.w2ui-input').text(typeof val != 'object' ? val : '');
                     // add blur listener
@@ -6500,10 +6500,10 @@ w2utils.event = {
                     var $tmp = tr.find('[col='+ column +'] > div');
                     var font = 'font-family: '+ $tmp.css('font-family') + '; font-size: '+ $tmp.css('font-size');
                     el.addClass('w2ui-editable')
-                        .html('<input id="grid_'+ obj.name +'_edit_'+ recid +'_'+ column +'" autocorrect="off" autocomplete="off" spellcheck="false" type="text" '+
+                        .html('<input id="grid_'+ obj.name +'_edit_'+ Id +'_'+ column +'" autocorrect="off" autocomplete="off" spellcheck="false" type="text" '+
                             '    style="'+ font +'; width: 100%; height: 100%; padding: 3px; border-color: transparent; outline: none; border-radius: 0; '+
                             '       pointer-events: auto; '+ addStyle + edit.style +'" '+
-                            '    field="'+ col.field +'" recid="'+ recid +'" column="'+ column +'" class="w2ui-input"'+ edit.inTag +
+                            '    field="'+ col.field +'" Id="'+ Id +'" column="'+ column +'" class="w2ui-input"'+ edit.inTag +
                             '/>' + edit.outTag);
                     // issue #499
                     if (edit.type == 'number') {
@@ -6584,13 +6584,13 @@ w2utils.event = {
                         setTimeout(function () {
                             switch (event.keyCode) {
                                 case 9:  // tab
-                                    var next_rec = recid;
+                                    var next_rec = Id;
                                     var next_col = event.shiftKey ? obj.prevCell(index, column, true) : obj.nextCell(index, column, true);
                                     // next or prev row
                                     if (next_col == null) {
                                         var tmp = event.shiftKey ? obj.prevRow(index, column) : obj.nextRow(index, column);
                                         if (tmp != null && tmp != index) {
-                                            next_rec = obj.records[tmp].recid;
+                                            next_rec = obj.records[tmp].Id;
                                             // find first editable row
                                             for (var c = 0; c < obj.columns.length; c++) {
                                                 var edit = obj.getCellEditable(index, c);
@@ -6602,14 +6602,14 @@ w2utils.event = {
                                         }
 
                                     }
-                                    if (next_rec === false) next_rec = recid;
+                                    if (next_rec === false) next_rec = Id;
                                     if (next_col == null) next_col = column;
                                     // init new or same record
                                     el.blur();
                                     setTimeout(function () {
                                         if (obj.selectType != 'row') {
                                             obj.selectNone();
-                                            obj.select({ recid: next_rec, column: next_col });
+                                            obj.select({ Id: next_rec, column: next_col });
                                         } else {
                                             obj.editField(next_rec, next_col, null, event);
                                         }
@@ -6624,9 +6624,9 @@ w2utils.event = {
                                         setTimeout(function () {
                                             if (obj.selectType != 'row') {
                                                 obj.selectNone();
-                                                obj.select({ recid: obj.records[next].recid, column: column });
+                                                obj.select({ Id: obj.records[next].Id, column: column });
                                             } else {
-                                                obj.editField(obj.records[next].recid, column, null, event);
+                                                obj.editField(obj.records[next].Id, column, null, event);
                                             }
                                         }, 1);
                                     }
@@ -6645,7 +6645,7 @@ w2utils.event = {
                                         el.value = old != null ? old : '';
                                     }
                                     el.blur();
-                                    setTimeout(function () { obj.select({ recid: recid, column: column }); }, 1);
+                                    setTimeout(function () { obj.select({ Id: Id, column: column }); }, 1);
                                     break;
                             }
                             // if input too small - expand
@@ -6701,7 +6701,7 @@ w2utils.event = {
             var records = summary ? this.summary : this.records;
             var rec     = records[index];
             var col     = this.columns[column];
-            var tr      = $('#grid_'+ this.name + (col.frozen === true ? '_frec_' : '_rec_') + w2utils.escapeId(rec.recid));
+            var tr      = $('#grid_'+ this.name + (col.frozen === true ? '_frec_' : '_rec_') + w2utils.escapeId(rec.Id));
             var new_val = (el.tagName && el.tagName.toUpperCase() == 'DIV' ? $(el).text() : el.value);
             var old_val = this.parseField(rec, col.field);
             var tmp = $(el).data('w2field');
@@ -6716,7 +6716,7 @@ w2utils.event = {
             }
             // change/restore event
             var edata = {
-                phase: 'before', type: 'change', target: this.name, input_id: el.id, recid: rec.recid, index: index, column: column,
+                phase: 'before', type: 'change', target: this.name, input_id: el.id, Id: rec.Id, index: index, column: column,
                 originalEvent: (event.originalEvent ? event.originalEvent : event),
                 value_new: new_val,
                 value_previous: (rec.w2ui && rec.w2ui.changes && rec.w2ui.changes.hasOwnProperty(col.field) ? rec.w2ui.changes[col.field]: old_val),
@@ -6838,9 +6838,9 @@ w2utils.event = {
                     // clear cells
                     for (var r = 0; r < recs.length; r++) {
                         var fld = this.columns[recs[r].column].field;
-                        var ind = this.get(recs[r].recid, true);
+                        var ind = this.get(recs[r].Id, true);
                         var rec = this.records[ind];
-                        if (ind != null && fld != 'recid') {
+                        if (ind != null && fld != 'Id') {
                             this.records[ind][fld] = '';
                             if (rec.w2ui && rec.w2ui.changes) delete rec.w2ui.changes[fld];
                             // -- style should not be deleted
@@ -6856,19 +6856,19 @@ w2utils.event = {
             this.trigger($.extend(edata, { phase: 'after' }));
         },
 
-        click: function (recid, event) {
+        click: function (Id, event) {
             var time   = (new Date()).getTime();
             var column = null;
             var obj    = this;
             if (this.last.cancelClick == true || (event && event.altKey)) return;
-            if ((typeof recid == 'object') && (recid !== null)) {
-                column = recid.column;
-                recid  = recid.recid;
+            if ((typeof Id == 'object') && (Id !== null)) {
+                column = Id.column;
+                Id  = Id.Id;
             }
             if (event == null) event = {};
             // check for double click
-            if (time - parseInt(this.last.click_time) < 350 && this.last.click_recid == recid && event.type == 'click') {
-                this.dblClick(recid, event);
+            if (time - parseInt(this.last.click_time) < 350 && this.last.click_Id == Id && event.type == 'click') {
+                this.dblClick(Id, event);
                 return;
             }
             // hide bubble
@@ -6877,8 +6877,8 @@ w2utils.event = {
                 this.last.bubbleEl = null;
             }
             this.last.click_time  = time;
-            var last_recid = this.last.click_recid;
-            this.last.click_recid = recid;
+            var last_Id = this.last.click_Id;
+            this.last.click_Id = Id;
             // column user clicked on
             if (column == null && event.target) {
                 var tmp = event.target;
@@ -6886,24 +6886,24 @@ w2utils.event = {
                 if ($(tmp).attr('col') != null) column = parseInt($(tmp).attr('col'));
             }
             // event before
-            var edata = this.trigger({ phase: 'before', target: this.name, type: 'click', recid: recid, column: column, originalEvent: event });
+            var edata = this.trigger({ phase: 'before', target: this.name, type: 'click', Id: Id, column: column, originalEvent: event });
             if (edata.isCancelled === true) return;
             // default action
             var obj = this;
             var sel = this.getSelection();
             $('#grid_'+ this.name +'_check_all').prop("checked", false);
-            var ind    = this.get(recid, true);
+            var ind    = this.get(Id, true);
             var record = this.records[ind];
             var selectColumns  = [];
             obj.last.sel_ind   = ind;
             obj.last.sel_col   = column;
-            obj.last.sel_recid = recid;
+            obj.last.sel_Id = Id;
             obj.last.sel_type  = 'click';
             // multi select with shif key
             if (event.shiftKey && sel.length > 0 && obj.multiSelect) {
-                if (sel[0].recid) {
-                    var start = this.get(sel[0].recid, true);
-                    var end   = this.get(recid, true);
+                if (sel[0].Id) {
+                    var start = this.get(sel[0].Id, true);
+                    var end   = this.get(Id, true);
                     if (column > sel[0].column) {
                         var t1 = sel[0].column;
                         var t2 = column;
@@ -6913,8 +6913,8 @@ w2utils.event = {
                     }
                     for (var c = t1; c <= t2; c++) selectColumns.push(c);
                 } else {
-                    var start = this.get(last_recid, true);
-                    var end   = this.get(recid, true);
+                    var start = this.get(last_Id, true);
+                    var end   = this.get(Id, true);
                 }
                 var sel_add = [];
                 if (start > end) { var tmp = start; start = end; end = tmp; }
@@ -6922,13 +6922,13 @@ w2utils.event = {
                 for (var i = start; i <= end; i++) {
                     if (this.searchData.length > 0 && !url && $.inArray(i, this.last.searchIds) == -1) continue;
                     if (this.selectType == 'row') {
-                        sel_add.push(this.records[i].recid);
+                        sel_add.push(this.records[i].Id);
                     } else {
                         for (var sc = 0; sc < selectColumns.length; sc++) {
-                            sel_add.push({ recid: this.records[i].recid, column: selectColumns[sc] });
+                            sel_add.push({ Id: this.records[i].Id, column: selectColumns[sc] });
                         }
                     }
-                    //sel.push(this.records[i].recid);
+                    //sel.push(this.records[i].Id);
                 }
                 this.select(sel_add);
             } else {
@@ -6942,17 +6942,17 @@ w2utils.event = {
                     if (this.selectType != 'row' && $.inArray(column, last.columns[ind]) == -1) flag = false;
                     if (sel.length > 300) this.selectNone(); else this.unselect(sel);
                     if (flag === true && sel.length == 1) {
-                        this.unselect({ recid: recid, column: column });
+                        this.unselect({ Id: Id, column: column });
                     } else {
-                        this.select({ recid: recid, column: column });
+                        this.select({ Id: Id, column: column });
                     }
                 } else {
                     var isChecked = $(event.target).parents('tr').find('.w2ui-grid-select-check').is(':checked');
                     if (this.selectType != 'row' && $.inArray(column, last.columns[ind]) == -1 && !isChecked) flag = false;
                     if (flag === true) {
-                        this.unselect({ recid: recid, column: column });
+                        this.unselect({ Id: Id, column: column });
                     } else {
-                        this.select({ recid: recid, column: column });
+                        this.select({ Id: Id, column: column });
                     }
                 }
             }
@@ -7012,7 +7012,7 @@ w2utils.event = {
                     var edata = this.trigger({ phase: 'before', type: 'columnSelect', target: this.name, columns: cols });
                     if (edata.isCancelled !== true) {
                         for (var i = 0; i < this.records.length; i++) {
-                            sel.push({ recid: this.records[i].recid, column: cols });
+                            sel.push({ Id: this.records[i].Id, column: cols });
                         }
                         this.select(sel);
                     }
@@ -7077,24 +7077,24 @@ w2utils.event = {
             var records = $('#grid_'+ obj.name +'_records');
             var sel     = obj.getSelection();
             if (sel.length === 0) empty = true;
-            var recid   = sel[0] || null;
+            var Id   = sel[0] || null;
             var columns = [];
-            var recid2  = sel[sel.length-1];
-            if (typeof recid == 'object' && recid != null) {
-                recid   = sel[0].recid;
+            var Id2  = sel[sel.length-1];
+            if (typeof Id == 'object' && Id != null) {
+                Id   = sel[0].Id;
                 columns = [];
                 var ii  = 0;
                 while (true) {
-                    if (!sel[ii] || sel[ii].recid != recid) break;
+                    if (!sel[ii] || sel[ii].Id != Id) break;
                     columns.push(sel[ii].column);
                     ii++;
                 }
-                recid2 = sel[sel.length-1].recid;
+                Id2 = sel[sel.length-1].Id;
             }
-            var ind      = obj.get(recid, true);
-            var ind2     = obj.get(recid2, true);
-            var rec      = obj.get(recid);
-            var recEL    = $('#grid_'+ obj.name +'_rec_'+ (ind != null ? w2utils.escapeId(obj.records[ind].recid) : 'none'));
+            var ind      = obj.get(Id, true);
+            var ind2     = obj.get(Id2, true);
+            var rec      = obj.get(Id);
+            var recEL    = $('#grid_'+ obj.name +'_rec_'+ (ind != null ? w2utils.escapeId(obj.records[ind].Id) : 'none'));
             var cancel   = false;
             var key      = event.keyCode;
             var shiftKey = event.shiftKey;
@@ -7123,7 +7123,7 @@ w2utils.event = {
                     // if expandable columns - expand it
                     if (this.selectType == 'row' && obj.show.expandColumn === true) {
                         if (recEL.length <= 0) break;
-                        obj.toggle(recid, event);
+                        obj.toggle(Id, event);
                         cancel = true;
                     } else { // or enter edit
                         for (var c = 0; c < this.columns.length; c++) {
@@ -7138,7 +7138,7 @@ w2utils.event = {
                             columns = [this.last._edit.column];
                         }
                         if (columns.length > 0) {
-                            obj.editField(recid, columns[0], null, event);
+                            obj.editField(Id, columns[0], null, event);
                             cancel = true;
                         }
                     }
@@ -7152,12 +7152,12 @@ w2utils.event = {
                     if (this.selectType == 'row') {
                         if (recEL.length <= 0) break;
                         var tmp = this.records[ind].w2ui || {};
-                        if (tmp && tmp.parent_recid != null && (!Array.isArray(tmp.children) || tmp.children.length === 0 || !tmp.expanded)) {
-                            obj.unselect(recid);
-                            obj.collapse(tmp.parent_recid, event);
-                            obj.select(tmp.parent_recid);
+                        if (tmp && tmp.parent_Id != null && (!Array.isArray(tmp.children) || tmp.children.length === 0 || !tmp.expanded)) {
+                            obj.unselect(Id);
+                            obj.collapse(tmp.parent_Id, event);
+                            obj.select(tmp.parent_Id);
                         } else {
-                            obj.collapse(recid, event);
+                            obj.collapse(Id, event);
                         }
                     } else {
                         var prev = obj.prevCell(ind, columns[0]);
@@ -7173,22 +7173,22 @@ w2utils.event = {
                                 var unSel  = [];
                                 if (columns.indexOf(this.last.sel_col) === 0 && columns.length > 1) {
                                     for (var i = 0; i < sel.length; i++) {
-                                        if (tmp.indexOf(sel[i].recid) == -1) tmp.push(sel[i].recid);
-                                        unSel.push({ recid: sel[i].recid, column: columns[columns.length-1] });
+                                        if (tmp.indexOf(sel[i].Id) == -1) tmp.push(sel[i].Id);
+                                        unSel.push({ Id: sel[i].Id, column: columns[columns.length-1] });
                                     }
                                     obj.unselect(unSel);
                                     obj.scrollIntoView(ind, columns[columns.length-1], true);
                                 } else {
                                     for (var i = 0; i < sel.length; i++) {
-                                        if (tmp.indexOf(sel[i].recid) == -1) tmp.push(sel[i].recid);
-                                        newSel.push({ recid: sel[i].recid, column: prev });
+                                        if (tmp.indexOf(sel[i].Id) == -1) tmp.push(sel[i].Id);
+                                        newSel.push({ Id: sel[i].Id, column: prev });
                                     }
                                     obj.select(newSel);
                                     obj.scrollIntoView(ind, prev, true);
                                 }
                             } else {
                                 event.metaKey = false;
-                                obj.click({ recid: recid, column: prev }, event);
+                                obj.click({ Id: Id, column: prev }, event);
                                 obj.scrollIntoView(ind, prev, true);
                             }
                         } else {
@@ -7212,7 +7212,7 @@ w2utils.event = {
                     }
                     if (this.selectType == 'row') {
                         if (recEL.length <= 0) break;
-                        obj.expand(recid, event);
+                        obj.expand(Id, event);
                     } else {
                         var next = obj.nextCell(ind, columns[columns.length-1]); // columns is an array of selected columns
                         if (!shiftKey && next == null) {
@@ -7227,22 +7227,22 @@ w2utils.event = {
                                 var unSel  = [];
                                 if (columns.indexOf(this.last.sel_col) == columns.length-1 && columns.length > 1) {
                                     for (var i = 0; i < sel.length; i++) {
-                                        if (tmp.indexOf(sel[i].recid) == -1) tmp.push(sel[i].recid);
-                                        unSel.push({ recid: sel[i].recid, column: columns[0] });
+                                        if (tmp.indexOf(sel[i].Id) == -1) tmp.push(sel[i].Id);
+                                        unSel.push({ Id: sel[i].Id, column: columns[0] });
                                     }
                                     obj.unselect(unSel);
                                     obj.scrollIntoView(ind, columns[0], true);
                                 } else {
                                     for (var i = 0; i < sel.length; i++) {
-                                        if (tmp.indexOf(sel[i].recid) == -1) tmp.push(sel[i].recid);
-                                        newSel.push({ recid: sel[i].recid, column: next });
+                                        if (tmp.indexOf(sel[i].Id) == -1) tmp.push(sel[i].Id);
+                                        newSel.push({ Id: sel[i].Id, column: next });
                                     }
                                     obj.select(newSel);
                                     obj.scrollIntoView(ind, next, true);
                                 }
                             } else {
                                 event.metaKey = false;
-                                obj.click({ recid: recid, column: next }, event);
+                                obj.click({ Id: Id, column: next }, event);
                                 obj.scrollIntoView(ind, next, true);
                             }
                         } else {
@@ -7276,25 +7276,25 @@ w2utils.event = {
                             if (tmpUnselect()) return;
                             if (obj.selectType == 'row') {
                                 if (obj.last.sel_ind > prev && obj.last.sel_ind != ind2) {
-                                    obj.unselect(obj.records[ind2].recid);
+                                    obj.unselect(obj.records[ind2].Id);
                                 } else {
-                                    obj.select(obj.records[prev].recid);
+                                    obj.select(obj.records[prev].Id);
                                 }
                             } else {
                                 if (obj.last.sel_ind > prev && obj.last.sel_ind != ind2) {
                                     prev = ind2;
                                     var tmp = [];
-                                    for (var c = 0; c < columns.length; c++) tmp.push({ recid: obj.records[prev].recid, column: columns[c] });
+                                    for (var c = 0; c < columns.length; c++) tmp.push({ Id: obj.records[prev].Id, column: columns[c] });
                                     obj.unselect(tmp);
                                 } else {
                                     var tmp = [];
-                                    for (var c = 0; c < columns.length; c++) tmp.push({ recid: obj.records[prev].recid, column: columns[c] });
+                                    for (var c = 0; c < columns.length; c++) tmp.push({ Id: obj.records[prev].Id, column: columns[c] });
                                     obj.select(tmp);
                                 }
                             }
                         } else { // move selected record
                             if (sel.length > 300) this.selectNone(); else this.unselect(sel);
-                            obj.click({ recid: obj.records[prev].recid, column: columns[0] }, event);
+                            obj.click({ Id: obj.records[prev].Id, column: columns[0] }, event);
                         }
                         obj.scrollIntoView(prev);
                         if (event.preventDefault) event.preventDefault();
@@ -7327,25 +7327,25 @@ w2utils.event = {
                             if (tmpUnselect()) return;
                             if (obj.selectType == 'row') {
                                 if (this.last.sel_ind < next && this.last.sel_ind != ind) {
-                                    obj.unselect(obj.records[ind].recid);
+                                    obj.unselect(obj.records[ind].Id);
                                 } else {
-                                    obj.select(obj.records[next].recid);
+                                    obj.select(obj.records[next].Id);
                                 }
                             } else {
                                 if (this.last.sel_ind < next && this.last.sel_ind != ind) {
                                     next = ind;
                                     var tmp = [];
-                                    for (var c = 0; c < columns.length; c++) tmp.push({ recid: obj.records[next].recid, column: columns[c] });
+                                    for (var c = 0; c < columns.length; c++) tmp.push({ Id: obj.records[next].Id, column: columns[c] });
                                     obj.unselect(tmp);
                                 } else {
                                     var tmp = [];
-                                    for (var c = 0; c < columns.length; c++) tmp.push({ recid: obj.records[next].recid, column: columns[c] });
+                                    for (var c = 0; c < columns.length; c++) tmp.push({ Id: obj.records[next].Id, column: columns[c] });
                                     obj.select(tmp);
                                 }
                             }
                         } else { // move selected record
                             if (sel.length > 300) this.selectNone(); else this.unselect(sel);
-                            obj.click({ recid: obj.records[next].recid, column: columns[0] }, event);
+                            obj.click({ Id: obj.records[next].Id, column: columns[0] }, event);
                         }
                         obj.scrollIntoView(next);
                         cancel = true;
@@ -7410,7 +7410,7 @@ w2utils.event = {
                     var focus = $('#grid_'+ obj.name + '_focus');
                     var key   = focus.val();
                     focus.val('');
-                    obj.editField(recid, columns[0], key, event);
+                    obj.editField(Id, columns[0], key, event);
                 }, 1);
             }
             if (cancel) { // cancel default behaviour
@@ -7422,7 +7422,7 @@ w2utils.event = {
             function selectTopRecord() {
                 var ind = Math.floor(records[0].scrollTop / obj.recordHeight) + 1;
                 if (!obj.records[ind] || ind < 2) ind = 0;
-                obj.select({ recid: obj.records[ind].recid, column: 0});
+                obj.select({ Id: obj.records[ind].Id, column: 0});
             }
 
             function tmpUnselect () {
@@ -7431,7 +7431,7 @@ w2utils.event = {
                     obj.last.sel_type = 'key';
                     if (sel.length > 1) {
                         for (var s = 0; s < sel.length; s++) {
-                            if (sel[s].recid == obj.last.sel_recid && sel[s].column == obj.last.sel_col) {
+                            if (sel[s].Id == obj.last.sel_Id && sel[s].column == obj.last.sel_col) {
                                 sel.splice(s, 1);
                                 break;
                             }
@@ -7443,7 +7443,7 @@ w2utils.event = {
                 } else {
                     obj.last.sel_type = 'key';
                     if (sel.length > 1) {
-                        sel.splice(sel.indexOf(obj.records[obj.last.sel_ind].recid), 1);
+                        sel.splice(sel.indexOf(obj.records[obj.last.sel_ind].Id), 1);
                         obj.unselect(sel);
                         return true;
                     }
@@ -7529,12 +7529,12 @@ w2utils.event = {
             }
         },
 
-        dblClick: function (recid, event) {
+        dblClick: function (Id, event) {
             // find columns
             var column = null;
-            if ((typeof recid == 'object') && (recid !== null)) {
-                column = recid.column;
-                recid  = recid.recid;
+            if ((typeof Id == 'object') && (Id !== null)) {
+                column = Id.column;
+                Id  = Id.Id;
             }
             if (event == null) event = {};
             // column user clicked on
@@ -7543,36 +7543,36 @@ w2utils.event = {
                 if (tmp.tagName.toUpperCase() != 'TD') tmp = $(tmp).parents('td')[0];
                 column = parseInt($(tmp).attr('col'));
             }
-            var index = this.get(recid, true);
+            var index = this.get(Id, true);
             var rec = this.records[index];
             // event before
-            var edata = this.trigger({ phase: 'before', target: this.name, type: 'dblClick', recid: recid, column: column, originalEvent: event });
+            var edata = this.trigger({ phase: 'before', target: this.name, type: 'dblClick', Id: Id, column: column, originalEvent: event });
             if (edata.isCancelled === true) return;
             // default action
             this.selectNone();
             var edit = this.getCellEditable(index, column);
             if (edit) {
-                this.editField(recid, column, null, event);
+                this.editField(Id, column, null, event);
             } else {
-                this.select({ recid: recid, column: column });
-                if (this.show.expandColumn || (rec.w2ui && Array.isArray(rec.w2ui.children))) this.toggle(recid);
+                this.select({ Id: Id, column: column });
+                if (this.show.expandColumn || (rec.w2ui && Array.isArray(rec.w2ui.children))) this.toggle(Id);
             }
             // event after
             this.trigger($.extend(edata, { phase: 'after' }));
         },
 
-        contextMenu: function (recid, column, event) {
+        contextMenu: function (Id, column, event) {
             var obj = this;
             if (obj.last.userSelect == 'text') return;
-            if (event == null) event = { offsetX: 0, offsetY: 0, target: $('#grid_'+ obj.name +'_rec_'+ recid)[0] };
+            if (event == null) event = { offsetX: 0, offsetY: 0, target: $('#grid_'+ obj.name +'_rec_'+ Id)[0] };
             if (event.offsetX == null) {
                 event.offsetX = event.layerX - event.target.offsetLeft;
                 event.offsetY = event.layerY - event.target.offsetTop;
             }
-            if (w2utils.isFloat(recid)) recid = parseFloat(recid);
+            if (w2utils.isFloat(Id)) Id = parseFloat(Id);
             var sel = this.getSelection();
             if (this.selectType == 'row') {
-                if (sel.indexOf(recid) == -1) obj.click(recid);
+                if (sel.indexOf(Id) == -1) obj.click(Id);
             } else {
                 var $tmp = $(event.target);
                 if ($tmp[0].tagName.toUpperCase() != 'TD') $tmp = $(event.target).parents('td');
@@ -7580,13 +7580,13 @@ w2utils.event = {
                 column = $tmp.attr('col');
                 // check if any selected sel in the right row/column
                 for (var i=0; i<sel.length; i++) {
-                    if (sel[i].recid == recid || sel[i].column == column) selected = true;
+                    if (sel[i].Id == Id || sel[i].column == column) selected = true;
                 }
-                if (!selected && recid != null) obj.click({ recid: recid, column: column });
+                if (!selected && Id != null) obj.click({ Id: Id, column: column });
                 if (!selected && column != null) obj.columnClick(this.columns[column].field, event);
             }
             // event before
-            var edata = obj.trigger({ phase: 'before', type: 'contextMenu', target: obj.name, originalEvent: event, recid: recid, column: column });
+            var edata = obj.trigger({ phase: 'before', type: 'contextMenu', target: obj.name, originalEvent: event, Id: Id, column: column });
             if (edata.isCancelled === true) return;
             // default action
             if (obj.menu.length > 0) {
@@ -7595,7 +7595,7 @@ w2utils.event = {
                         originalEvent: event,
                         contextMenu: true,
                         onSelect: function (event) {
-                            obj.menuClick(recid, event);
+                            obj.menuClick(Id, event);
                         }
                     }
                 );
@@ -7606,13 +7606,13 @@ w2utils.event = {
             obj.trigger($.extend(edata, { phase: 'after' }));
         },
 
-        menuClick: function (recid, event) {
+        menuClick: function (Id, event) {
             var obj = this;
             // event before
             var edata = obj.trigger({
                 phase: 'before', type: 'menuClick', target: obj.name,
                 originalEvent: event.originalEvent, menuEvent: event,
-                recid: recid, menuIndex: event.index, menuItem: event.item
+                Id: Id, menuIndex: event.index, menuItem: event.item
             });
             if (edata.isCancelled === true) return;
             // default action
@@ -7621,27 +7621,27 @@ w2utils.event = {
             obj.trigger($.extend(edata, { phase: 'after' }));
         },
 
-        toggle: function (recid) {
-            var rec = this.get(recid);
+        toggle: function (Id) {
+            var rec = this.get(Id);
             rec.w2ui = rec.w2ui || {};
-            if (rec.w2ui.expanded === true) return this.collapse(recid); else return this.expand(recid);
+            if (rec.w2ui.expanded === true) return this.collapse(Id); else return this.expand(Id);
         },
 
-        expand: function (recid) {
+        expand: function (Id) {
             var obj  = this;
-            var ind  = this.get(recid, true);
+            var ind  = this.get(Id, true);
             var rec  = this.records[ind];
             rec.w2ui = rec.w2ui || {};
-            var id   = w2utils.escapeId(recid);
+            var id   = w2utils.escapeId(Id);
             var children = rec.w2ui.children;
             if (Array.isArray(children)) {
                 if (rec.w2ui.expanded === true || children.length === 0) return false; // already shown
-                var edata = this.trigger({ phase: 'before', type: 'expand', target: this.name, recid: recid });
+                var edata = this.trigger({ phase: 'before', type: 'expand', target: this.name, Id: Id });
                 if (edata.isCancelled === true) return false;
                 rec.w2ui.expanded = true;
                 children.forEach(function (child) {
                     child.w2ui = child.w2ui || {};
-                    child.w2ui.parent_recid = rec.recid;
+                    child.w2ui.parent_Id = rec.Id;
                     if (child.w2ui.children == null) child.w2ui.children = [];
                 });
                 this.records.splice.apply(this.records, [ind + 1, 0].concat(children));
@@ -7660,32 +7660,32 @@ w2utils.event = {
                 if (rec.w2ui.expanded == 'none') return false;
                 // insert expand row
                 $('#grid_'+ this.name +'_rec_'+ id).after(
-                        '<tr id="grid_'+ this.name +'_rec_'+ recid +'_expanded_row" class="w2ui-expanded-row">'+
+                        '<tr id="grid_'+ this.name +'_rec_'+ Id +'_expanded_row" class="w2ui-expanded-row">'+
                         '    <td colspan="100" class="w2ui-expanded2">'+
-                        '        <div id="grid_'+ this.name +'_rec_'+ recid +'_expanded"></div>'+
+                        '        <div id="grid_'+ this.name +'_rec_'+ Id +'_expanded"></div>'+
                         '    </td>'+
                         '    <td class="w2ui-grid-data-last"></td>'+
                         '</tr>');
 
                 $('#grid_'+ this.name +'_frec_'+ id).after(
-                        '<tr id="grid_'+ this.name +'_frec_'+ recid +'_expanded_row" class="w2ui-expanded-row">'+
+                        '<tr id="grid_'+ this.name +'_frec_'+ Id +'_expanded_row" class="w2ui-expanded-row">'+
                             (this.show.lineNumbers ? '<td class="w2ui-col-number"></td>' : '') +
                         '    <td class="w2ui-grid-data w2ui-expanded1" colspan="100">'+
-                        '       <div id="grid_'+ this.name +'_frec_'+ recid +'_expanded"></div>'+
+                        '       <div id="grid_'+ this.name +'_frec_'+ Id +'_expanded"></div>'+
                         '   </td>'+
                         '</tr>');
 
                 // event before
-                var edata = this.trigger({ phase: 'before', type: 'expand', target: this.name, recid: recid,
-                    box_id: 'grid_'+ this.name +'_rec_'+ recid +'_expanded', fbox_id: 'grid_'+ this.name +'_frec_'+ id +'_expanded' });
+                var edata = this.trigger({ phase: 'before', type: 'expand', target: this.name, Id: Id,
+                    box_id: 'grid_'+ this.name +'_rec_'+ Id +'_expanded', fbox_id: 'grid_'+ this.name +'_frec_'+ id +'_expanded' });
                 if (edata.isCancelled === true) {
                     $('#grid_'+ this.name +'_rec_'+ id +'_expanded_row').remove();
                     $('#grid_'+ this.name +'_frec_'+ id +'_expanded_row').remove();
                     return false;
                 }
                 // expand column
-                var row1 = $(this.box).find('#grid_'+ this.name +'_rec_'+ recid +'_expanded');
-                var row2 = $(this.box).find('#grid_'+ this.name +'_frec_'+ recid +'_expanded');
+                var row1 = $(this.box).find('#grid_'+ this.name +'_rec_'+ Id +'_expanded');
+                var row2 = $(this.box).find('#grid_'+ this.name +'_frec_'+ Id +'_expanded');
                 var innerHeight = row1.find('> div:first-child').height();
                 if (row1.height() < innerHeight) {
                     row1.css({ height: innerHeight + 'px' });
@@ -7697,7 +7697,7 @@ w2utils.event = {
                 $('#grid_'+ this.name +'_rec_'+ id).attr('expanded', 'yes').addClass('w2ui-expanded');
                 $('#grid_'+ this.name +'_frec_'+ id).attr('expanded', 'yes').addClass('w2ui-expanded');
                 // $('#grid_'+ this.name +'_rec_'+ id +'_expanded_row').show();
-                $('#grid_'+ this.name +'_cell_'+ this.get(recid, true) +'_expand div').html('-');
+                $('#grid_'+ this.name +'_cell_'+ this.get(Id, true) +'_expand div').html('-');
                 rec.w2ui.expanded = true;
                 // event after
                 this.trigger($.extend(edata, { phase: 'after' }));
@@ -7706,27 +7706,27 @@ w2utils.event = {
             return true;
         },
 
-        collapse: function (recid) {
+        collapse: function (Id) {
             var obj  = this;
-            var ind  = this.get(recid, true);
+            var ind  = this.get(Id, true);
             var rec  = this.records[ind];
             rec.w2ui = rec.w2ui || {};
-            var id   = w2utils.escapeId(recid);
+            var id   = w2utils.escapeId(Id);
             var children = rec.w2ui.children;
             if (Array.isArray(children)) {
                 if (rec.w2ui.expanded !== true) return false; // already hidden
-                var edata = this.trigger({ phase: 'before', type: 'collapse', target: this.name, recid: recid });
+                var edata = this.trigger({ phase: 'before', type: 'collapse', target: this.name, Id: Id });
                 if (edata.isCancelled === true) return false;
                 clearExpanded(rec);
                 var stops = [];
-                for (var r = rec; r != null; r = this.get(r.w2ui.parent_recid))
-                    stops.push(r.w2ui.parent_recid);
+                for (var r = rec; r != null; r = this.get(r.w2ui.parent_Id))
+                    stops.push(r.w2ui.parent_Id);
                 // stops contains 'undefined' plus the ID of all nodes in the path from 'rec' to the tree root
                 var start = ind + 1;
                 var end   = start;
                 while (true) {
                     if (this.records.length <= end + 1 || this.records[end+1].w2ui == null ||
-                        stops.indexOf(this.records[end+1].w2ui.parent_recid) >= 0) {
+                        stops.indexOf(this.records[end+1].w2ui.parent_Id) >= 0) {
                         break;
                     }
                     end++;
@@ -7744,13 +7744,13 @@ w2utils.event = {
             } else {
                 if ($('#grid_'+ this.name +'_rec_'+ id +'_expanded_row').length === 0 || this.show.expandColumn !== true) return false;
                 // event before
-                var edata = this.trigger({ phase: 'before', type: 'collapse', target: this.name, recid: recid,
+                var edata = this.trigger({ phase: 'before', type: 'collapse', target: this.name, Id: Id,
                     box_id: 'grid_'+ this.name +'_rec_'+ id +'_expanded', fbox_id: 'grid_'+ this.name +'_frec_'+ id +'_expanded' });
                 if (edata.isCancelled === true) return false;
                 // default action
                 $('#grid_'+ this.name +'_rec_'+ id).removeAttr('expanded').removeClass('w2ui-expanded');
                 $('#grid_'+ this.name +'_frec_'+ id).removeAttr('expanded').removeClass('w2ui-expanded');
-                $('#grid_'+ this.name +'_cell_'+ this.get(recid, true) +'_expand div').html('+');
+                $('#grid_'+ this.name +'_cell_'+ this.get(Id, true) +'_expand div').html('+');
                 $('#grid_'+ obj.name +'_rec_'+ id +'_expanded').css('height', '0px');
                 $('#grid_'+ obj.name +'_frec_'+ id +'_expanded').css('height', '0px');
                 setTimeout(function () {
@@ -7916,7 +7916,7 @@ w2utils.event = {
 
         paste: function (text) {
             var sel = this.getSelection();
-            var ind = this.get(sel[0].recid, true);
+            var ind = this.get(sel[0].Id, true);
             var col = sel[0].column;
             // before event
             var edata = this.trigger({ phase: 'before', type: 'paste', target: this.name, text: text, index: ind, column: col });
@@ -7943,7 +7943,7 @@ w2utils.event = {
                     cols.push(col + cnt);
                     cnt++;
                 }
-                for (var c = 0; c < cols.length; c++) newSel.push({ recid: rec.recid, column: cols[c] });
+                for (var c = 0; c < cols.length; c++) newSel.push({ Id: rec.Id, column: cols[c] });
                 ind++;
             }
             this.selectNone();
@@ -7999,7 +7999,7 @@ w2utils.event = {
                     var rec = this.records[index] || {};
                     if (!rec.w2ui) rec.w2ui = {};
                     for (var column = 0; column < this.columns.length; column++) {
-                        var row  = $(this.box).find('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(rec.recid));
+                        var row  = $(this.box).find('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(rec.Id));
                         var cell = $(this.box).find('#grid_'+ this.name + '_data_'+ index +'_'+ column);
                         cell.replaceWith(this.getCellHTML(index, column, false));
                         cell = $(this.box).find('#grid_'+ this.name + '_data_'+ index +'_'+ column); // need to reselect as it was replaced
@@ -8037,7 +8037,7 @@ w2utils.event = {
                         continue;
                     }
                     var rec  = this.records[index] || {};
-                    var row  = $(this.box).find('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(rec.recid));
+                    var row  = $(this.box).find('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(rec.Id));
                     var cell = $(this.box).find('#grid_'+ this.name + '_data_'+ index +'_'+ column);
                     if (!rec.w2ui) rec.w2ui = {};
                     cell.replaceWith(this.getCellHTML(index, column, false));
@@ -8067,23 +8067,23 @@ w2utils.event = {
             return (new Date()).getTime() - time;
         },
 
-        refreshCell: function (recid, field) {
-            var index     = this.get(recid, true);
+        refreshCell: function (Id, field) {
+            var index     = this.get(Id, true);
             var col_ind   = this.getColumn(field, true);
-            var isSummary = (this.records[index] && this.records[index].recid == recid ? false : true);
+            var isSummary = (this.records[index] && this.records[index].Id == Id ? false : true);
             var cell      = $(this.box).find((isSummary ? '.w2ui-grid-summary ' : '') + '#grid_'+ this.name + '_data_'+ index +'_'+ col_ind);
             if (cell.length == 0) return false;
             // set cell html and changed flag
             cell.replaceWith(this.getCellHTML(index, col_ind, isSummary));
         },
 
-        refreshRow: function (recid, ind) {
-            var tr1 = $(this.box).find('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(recid));
-            var tr2 = $(this.box).find('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(recid));
+        refreshRow: function (Id, ind) {
+            var tr1 = $(this.box).find('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(Id));
+            var tr2 = $(this.box).find('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(Id));
             if (tr1.length > 0) {
-                if (ind == null) ind = this.get(recid, true);
+                if (ind == null) ind = this.get(Id, true);
                 var line = tr1.attr('line');
-                var isSummary = (this.records[ind] && this.records[ind].recid == recid ? false : true);
+                var isSummary = (this.records[ind] && this.records[ind].Id == Id ? false : true);
                 // if it is searched, find index in search array
                 var url = (typeof this.url != 'object' ? this.url : this.url.get);
                 if (this.searchData.length > 0 && !url) for (var s = 0; s < this.last.searchIds.length; s++) if (this.last.searchIds[s] == ind) ind = s;
@@ -8093,8 +8093,8 @@ w2utils.event = {
                 // apply style to row if it was changed in render functions
                 var st = (this.records[ind].w2ui ? this.records[ind].w2ui.style : '');
                 if (typeof st == 'string') {
-                    var tr1 = $(this.box).find('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(recid));
-                    var tr2 = $(this.box).find('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(recid));
+                    var tr1 = $(this.box).find('#grid_'+ this.name +'_frec_'+ w2utils.escapeId(Id));
+                    var tr2 = $(this.box).find('#grid_'+ this.name +'_rec_'+ w2utils.escapeId(Id));
                     tr1.attr('custom_style', st);
                     tr2.attr('custom_style', st);
                     if (tr1.hasClass('w2ui-selected')) {
@@ -8284,25 +8284,25 @@ w2utils.event = {
             if (this.selectType == 'row') {
               records
               .on('mouseover mouseout', 'tr', function(event) {
-                $('#grid_'+ self.name +'_frec_' + w2utils.escapeId($(this).attr('recid'))).toggleClass('w2ui-record-hover', event.type == 'mouseover')
+                $('#grid_'+ self.name +'_frec_' + w2utils.escapeId($(this).attr('Id'))).toggleClass('w2ui-record-hover', event.type == 'mouseover')
               })
               frecords
               .on('mouseover mouseout', 'tr', function(event) {
-                $('#grid_'+ self.name +'_rec_' + w2utils.escapeId($(this).attr('recid'))).toggleClass('w2ui-record-hover', event.type == 'mouseover')
+                $('#grid_'+ self.name +'_rec_' + w2utils.escapeId($(this).attr('Id'))).toggleClass('w2ui-record-hover', event.type == 'mouseover')
               })
             }
             if(w2utils.isIOS)
               records.add(frecords)
               .on('click', 'tr', function(ev) {
-                self.dblClick($(this).attr('recid'), ev);
+                self.dblClick($(this).attr('Id'), ev);
               })
             else
               records.add(frecords)
               .on('click', 'tr', function(ev) {
-                self.click($(this).attr('recid'), ev);
+                self.click($(this).attr('Id'), ev);
               })
               .on('contextmenu', 'tr', function(ev) {
-                self.contextMenu($(this).attr('recid'), null, ev);
+                self.contextMenu($(this).attr('Id'), null, ev);
               })
 
             // enable scrolling on frozen records,
@@ -8523,13 +8523,13 @@ w2utils.event = {
                         divY   : 0,
                         focusX : pos.x,
                         focusY : pos.y,
-                        recid  : $(event.target).parents('tr').attr('recid'),
+                        Id  : $(event.target).parents('tr').attr('Id'),
                         column : parseInt(event.target.tagName.toUpperCase() == 'TD' ? $(event.target).attr('col') : $(event.target).parents('td').attr('col')),
                         type   : 'select',
                         ghost  : false,
                         start  : true
                     };
-                    if (obj.last.move.recid == null) obj.last.move.type = 'select-column';
+                    if (obj.last.move.Id == null) obj.last.move.type = 'select-column';
                     // set focus to grid
                     var target = event.target;
                     var $input = $(obj.box).find('#grid_'+ obj.name + '_focus');
@@ -8583,10 +8583,10 @@ w2utils.event = {
                         // display empty record and ghost record
                         var mv = obj.last.move;
                         if (!mv.ghost) {
-                            var row    = $('#grid_'+ obj.name + '_rec_'+ mv.recid);
+                            var row    = $('#grid_'+ obj.name + '_rec_'+ mv.Id);
                             var tmp    = row.parents('table').find('tr:first-child').clone();
                             mv.offsetY = event.offsetY;
-                            mv.from    = mv.recid;
+                            mv.from    = mv.Id;
                             mv.pos     = row.position();
                             mv.ghost   = $(row).clone(true);
                             mv.ghost.removeAttr('id');
@@ -8626,17 +8626,17 @@ w2utils.event = {
                 if (obj.reorderRows == true && obj.last.move.reorder) {
                     var recs  = $(obj.box).find('.w2ui-grid-records');
                     var tmp   = $(event.target).parents('tr');
-                    var recid = tmp.attr('recid');
-                    if (recid == '-none-') recid = 'bottom';
-                    if (recid != mv.from) {
-                        var row1 = $('#grid_'+ obj.name + '_rec_'+ mv.recid);
-                        var row2 = $('#grid_'+ obj.name + '_rec_'+ recid);
+                    var Id = tmp.attr('Id');
+                    if (Id == '-none-') Id = 'bottom';
+                    if (Id != mv.from) {
+                        var row1 = $('#grid_'+ obj.name + '_rec_'+ mv.Id);
+                        var row2 = $('#grid_'+ obj.name + '_rec_'+ Id);
                         $(obj.box).find('.insert-before');
                         row2.addClass('insert-before');
                         // MOVABLE GHOST
                         // if (event.screenY - mv.lastY < 0) row1.after(row2); else row2.after(row1);
                         mv.lastY = event.screenY;
-                        mv.to      = recid;
+                        mv.to      = Id;
                         // line to insert before
                         var pos = row2.position()
                         var ghost_line = $('#grid_'+ obj.name + '_ghost_line');
@@ -8659,13 +8659,13 @@ w2utils.event = {
                     });
                     return;
                 }
-                if (mv.start && mv.recid) {
+                if (mv.start && mv.Id) {
                     obj.selectNone();
                     mv.start = false;
                 }
                 var newSel= [];
-                var recid = (event.target.tagName.toUpperCase() == 'TR' ? $(event.target).attr('recid') : $(event.target).parents('tr').attr('recid'));
-                if (recid == null) {
+                var Id = (event.target.tagName.toUpperCase() == 'TR' ? $(event.target).attr('Id') : $(event.target).parents('tr').attr('Id'));
+                if (Id == null) {
                     // select by dragging columns
                     if (obj.selectType == 'row') return;
                     if (obj.last.move && obj.last.move.type == 'select') return;
@@ -8702,7 +8702,7 @@ w2utils.event = {
                                 obj.removeRange('column-selection');
                                 obj.addRange({
                                     name  : 'column-selection',
-                                    range : [{ recid: obj.records[0].recid, column: tmp[0] }, { recid: obj.records[obj.records.length-1].recid, column: tmp[1] }],
+                                    range : [{ Id: obj.records[0].Id, column: tmp[0] }, { Id: obj.records[obj.records.length-1].Id, column: tmp[1] }],
                                     style : 'background-color: rgba(90, 145, 234, 0.1)'
                                 });
                             }
@@ -8711,10 +8711,10 @@ w2utils.event = {
 
                 } else { // regular selection
 
-                    var ind1  = obj.get(mv.recid, true);
+                    var ind1  = obj.get(mv.Id, true);
                     // this happens when selection is started on summary row
-                    if (ind1 == null || (obj.records[ind1] && obj.records[ind1].recid != mv.recid)) return;
-                    var ind2  = obj.get(recid, true);
+                    if (ind1 == null || (obj.records[ind1] && obj.records[ind1].Id != mv.Id)) return;
+                    var ind2  = obj.get(Id, true);
                     // this happens when selection is extended into summary row (a good place to implement scrolling)
                     if (ind2 == null) return;
                     var col1 = parseInt(mv.column);
@@ -8735,10 +8735,10 @@ w2utils.event = {
                             var tmp = [];
                             for (var c = col1; c <= col2; c++) {
                                 if (obj.columns[c].hidden) continue;
-                                newSel.push({ recid: obj.records[i].recid, column: parseInt(c) });
+                                newSel.push({ Id: obj.records[i].Id, column: parseInt(c) });
                             }
                         } else {
-                            newSel.push(obj.records[i].recid);
+                            newSel.push(obj.records[i].Id);
                         }
                     }
                     if (obj.selectType != 'row') {
@@ -8747,16 +8747,16 @@ w2utils.event = {
                         var tmp = [];
                         for (var ns = 0; ns < newSel.length; ns++) {
                             var flag = false;
-                            for (var s = 0; s < sel.length; s++) if (newSel[ns].recid == sel[s].recid && newSel[ns].column == sel[s].column) flag = true;
-                            if (!flag) tmp.push({ recid: newSel[ns].recid, column: newSel[ns].column });
+                            for (var s = 0; s < sel.length; s++) if (newSel[ns].Id == sel[s].Id && newSel[ns].column == sel[s].column) flag = true;
+                            if (!flag) tmp.push({ Id: newSel[ns].Id, column: newSel[ns].column });
                         }
                         obj.select(tmp);
                         // remove items
                         var tmp = [];
                         for (var s = 0; s < sel.length; s++) {
                             var flag = false;
-                            for (var ns = 0; ns < newSel.length; ns++) if (newSel[ns].recid == sel[s].recid && newSel[ns].column == sel[s].column) flag = true;
-                            if (!flag) tmp.push({ recid: sel[s].recid, column: sel[s].column });
+                            for (var ns = 0; ns < newSel.length; ns++) if (newSel[ns].Id == sel[s].Id && newSel[ns].column == sel[s].column) flag = true;
+                            if (!flag) tmp.push({ Id: sel[s].Id, column: sel[s].column });
                         }
                         obj.unselect(tmp);
                     } else {
@@ -8784,7 +8784,7 @@ w2utils.event = {
                         for (var i = 0; i < obj.records.length; i++) {
                             var cols = []
                             for (var j = parseInt(tmp[0]); j <= parseInt(tmp[1]); j++) cols.push(j);
-                            sel.push({ recid: obj.records[i].recid, column: cols });
+                            sel.push({ Id: obj.records[i].Id, column: cols });
                         }
                         obj.removeRange('column-selection');
                         obj.trigger($.extend(edataCol, { phase: 'after' }));
@@ -8792,7 +8792,7 @@ w2utils.event = {
                     }
                     if (obj.reorderRows == true && obj.last.move.reorder) {
                         // event
-                        var edata = obj.trigger({ phase: 'before', target: obj.name, type: 'reorderRow', recid: mv.from, moveAfter: mv.to });
+                        var edata = obj.trigger({ phase: 'before', target: obj.name, type: 'reorderRow', Id: mv.from, moveAfter: mv.to });
                         if (edata.isCancelled === true) {
                             $('#grid_'+ obj.name + '_ghost').remove();
                             $('#grid_'+ obj.name + '_ghost_line').remove();
@@ -9354,7 +9354,7 @@ w2utils.event = {
                             break;
                         case 'w2ui-add':
                             // events
-                            var edata2 = obj.trigger({ phase: 'before', target: obj.name, type: 'add', recid: null });
+                            var edata2 = obj.trigger({ phase: 'before', target: obj.name, type: 'add', Id: null });
                             if (edata2.isCancelled === true) return false;
                             obj.trigger($.extend(edata2, { phase: 'after' }));
                             // hide all tooltips
@@ -9362,10 +9362,10 @@ w2utils.event = {
                             break;
                         case 'w2ui-edit':
                             var sel   = obj.getSelection();
-                            var recid = null;
-                            if (sel.length == 1) recid = sel[0];
+                            var Id = null;
+                            if (sel.length == 1) Id = sel[0];
                             // events
-                            var edata2 = obj.trigger({ phase: 'before', target: obj.name, type: 'edit', recid: recid });
+                            var edata2 = obj.trigger({ phase: 'before', target: obj.name, type: 'edit', Id: Id });
                             if (edata2.isCancelled === true) return false;
                             obj.trigger($.extend(edata2, { phase: 'after' }));
                             // hide all tooltips
@@ -9660,8 +9660,8 @@ w2utils.event = {
                 var html1 = '';
                 var html2 = '';
                 var htmlp = '';
-                html1 += '<tr class="'+ (row % 2 ? 'w2ui-even' : 'w2ui-odd') + ' w2ui-empty-record" recid="-none-" style="height: '+ height +'px">';
-                html2 += '<tr class="'+ (row % 2 ? 'w2ui-even' : 'w2ui-odd') + ' w2ui-empty-record" recid="-none-" style="height: '+ height +'px">';
+                html1 += '<tr class="'+ (row % 2 ? 'w2ui-even' : 'w2ui-odd') + ' w2ui-empty-record" Id="-none-" style="height: '+ height +'px">';
+                html2 += '<tr class="'+ (row % 2 ? 'w2ui-even' : 'w2ui-odd') + ' w2ui-empty-record" Id="-none-" style="height: '+ height +'px">';
                 if (grid.show.lineNumbers)  html1 += '<td class="w2ui-col-number"></td>';
                 if (grid.show.selectColumn) html1 += '<td class="w2ui-grid-data w2ui-col-select"></td>';
                 if (grid.show.expandColumn) html1 += '<td class="w2ui-grid-data w2ui-col-expand"></td>';
@@ -10795,11 +10795,11 @@ w2utils.event = {
                 record = this.summary[ind];
             }
             if (!record) return '';
-            if (record.recid == null && this.recid != null) {
-                var rid = this.parseField(record, this.recid)
-                if (rid != null) record.recid = rid;
+            if (record.Id == null && this.Id != null) {
+                var rid = this.parseField(record, this.Id)
+                if (rid != null) record.Id = rid;
             }
-            var id = w2utils.escapeId(record.recid);
+            var id = w2utils.escapeId(record.Id);
             var isRowSelected = false;
             if (sel.indexes.indexOf(ind) != -1) isRowSelected = true;
             var rec_style = (record.w2ui ? record.w2ui.style : '');
@@ -10807,7 +10807,7 @@ w2utils.event = {
             var rec_class = (record.w2ui ? record.w2ui.class : '');
             if (rec_class == null || typeof rec_class != 'string') rec_class = '';
             // render TR
-            rec_html1 += '<tr id="grid_'+ this.name +'_frec_'+ record.recid +'" recid="'+ record.recid +'" line="'+ lineNum +'" index="'+ ind +'" '+
+            rec_html1 += '<tr id="grid_'+ this.name +'_frec_'+ record.Id +'" Id="'+ record.Id +'" line="'+ lineNum +'" index="'+ ind +'" '+
                 ' class="'+ (lineNum % 2 === 0 ? 'w2ui-even' : 'w2ui-odd') + ' w2ui-record ' + rec_class +
                     (isRowSelected && this.selectType == 'row' ? ' w2ui-selected' : '') +
                     (record.w2ui && record.w2ui.editable === false ? ' w2ui-no-edit' : '') +
@@ -10815,7 +10815,7 @@ w2utils.event = {
                 ' style="height: '+ this.recordHeight +'px; '+ (!isRowSelected && rec_style != '' ? rec_style : rec_style.replace('background-color', 'none')) +'" '+
                     (rec_style != '' ? 'custom_style="'+ rec_style +'"' : '') +
                 '>';
-            rec_html2 += '<tr id="grid_'+ this.name +'_rec_'+ record.recid +'" recid="'+ record.recid +'" line="'+ lineNum +'" index="'+ ind +'" '+
+            rec_html2 += '<tr id="grid_'+ this.name +'_rec_'+ record.Id +'" Id="'+ record.Id +'" line="'+ lineNum +'" index="'+ ind +'" '+
                 ' class="'+ (lineNum % 2 === 0 ? 'w2ui-even' : 'w2ui-odd') + ' w2ui-record ' + rec_class +
                     (isRowSelected && this.selectType == 'row' ? ' w2ui-selected' : '') +
                     (record.w2ui && record.w2ui.editable === false ? ' w2ui-no-edit' : '') +
@@ -10853,7 +10853,7 @@ w2utils.event = {
                         '<td id="grid_'+ this.name +'_cell_'+ ind +'_expand' + (summary ? '_s' : '') + '" class="w2ui-grid-data w2ui-col-expand">'+
                             (summary !== true ?
                             '    <div ondblclick="if (event.stopPropagation) event.stopPropagation(); else event.cancelBubble = true;" '+
-                            '            onclick="w2ui[\''+ this.name +'\'].toggle(jQuery(this).parents(\'tr\').attr(\'recid\')); '+
+                            '            onclick="w2ui[\''+ this.name +'\'].toggle(jQuery(this).parents(\'tr\').attr(\'Id\')); '+
                             '                if (event.stopPropagation) event.stopPropagation(); else event.cancelBubble = true;">'+
                             '        '+ tmp_img +' </div>'
                             :
@@ -10952,13 +10952,13 @@ w2utils.event = {
             // expand icon
             if (col_ind === 0 && record && record.w2ui && Array.isArray(record.w2ui.children)) {
                 var level  = 0;
-                var subrec = this.get(record.w2ui.parent_recid, true);
+                var subrec = this.get(record.w2ui.parent_Id, true);
                 while (true) {
                     if (subrec != null) {
                         level++
                         var tmp = this.records[subrec].w2ui;
-                        if (tmp != null && tmp.parent_recid != null) {
-                            subrec = this.get(tmp.parent_recid, true);
+                        if (tmp != null && tmp.parent_Id != null) {
+                            subrec = this.get(tmp.parent_Id, true);
                         } else {
                             break;
                         }
@@ -10966,7 +10966,7 @@ w2utils.event = {
                         break;
                     }
                 }
-                if (record.w2ui.parent_recid){
+                if (record.w2ui.parent_Id){
                         for (var i = 0; i < level; i++) {
                         infoBubble += '<span class="w2ui-show-children w2ui-icon-empty"></span>';
                         }
@@ -10976,7 +10976,7 @@ w2utils.event = {
                             ? (record.w2ui.expanded ? 'w2ui-icon-collapse' : 'w2ui-icon-expand')
                             : 'w2ui-icon-empty'
                         ) +'" '+
-                    ' onclick="event.stopPropagation(); w2ui[\''+ this.name + '\'].toggle(jQuery(this).parents(\'tr\').attr(\'recid\'))"></span>';
+                    ' onclick="event.stopPropagation(); w2ui[\''+ this.name + '\'].toggle(jQuery(this).parents(\'tr\').attr(\'Id\'))"></span>';
             }
             // info bubble
             if (col.info === true) col.info = {};
@@ -11266,7 +11266,7 @@ w2utils.event = {
                     }
                     if (this.show.statusRecordID && sel.length == 1) {
                         var tmp = sel[0];
-                        if (typeof tmp == 'object') tmp = tmp.recid + ', '+ w2utils.lang('Column') +': '+ tmp.column;
+                        if (typeof tmp == 'object') tmp = tmp.Id + ', '+ w2utils.lang('Column') +': '+ tmp.column;
                         msgLeft = w2utils.lang('Record ID') + ': '+ tmp + ' ';
                     }
                 }
@@ -11598,7 +11598,7 @@ w2utils.event = {
             if (lst) for (var i = 0; i < lst.length; i++) {
                 if ($.isPlainObject(lst[i])) {
                     // selectType: cell
-                    var tmp = this.get(lst[i].recid, true);
+                    var tmp = this.get(lst[i].Id, true);
                     if (tmp != null) {
                         if (sel.indexes.indexOf(tmp) == -1) sel.indexes.push(tmp);
                         if (!sel.columns[tmp]) sel.columns[tmp] = [];
@@ -17051,7 +17051,7 @@ var w2prompt = function (label, title, callBack) {
                         items           : [],
                         selected        : {},
                         url             : null,          // url to pull data from
-                        recId           : null,          // map retrieved data from url to id, can be string or function
+                        Id           : null,          // map retrieved data from url to id, can be string or function
                         recText         : null,          // map retrieved data from url to text, can be string or function
                         method          : null,          // default comes from w2utils.settings.dataType
                         interval        : 350,           // number of ms to wait before sending server call on search
@@ -17126,7 +17126,7 @@ var w2prompt = function (label, title, callBack) {
                         selected        : [],
                         max             : 0,             // max number of selected items, 0 - unlim
                         url             : null,          // not implemented
-                        recId           : null,          // map retrieved data from url to id, can be string or function
+                        Id           : null,          // map retrieved data from url to id, can be string or function
                         recText         : null,          // map retrieved data from url to text, can be string or function
                         interval        : 350,           // number of ms to wait before sending server call on search
                         method          : null,          // default comes from w2utils.settings.dataType
@@ -18261,11 +18261,11 @@ var w2prompt = function (label, title, callBack) {
                             // remove all extra items if more then needed for cache
                             if (data.records.length > options.cacheMax) data.records.splice(options.cacheMax, 100000);
                             // map id and text
-                            if (options.recId == null && options.recid != null) options.recId = options.recid; // since lower-case recid is used in grid
-                            if (options.recId || options.recText) {
+                            if (options.Id == null && options.Id != null) options.Id = options.Id; // since lower-case Id is used in grid
+                            if (options.Id || options.recText) {
                                 data.records.forEach(function (item) {
-                                    if (typeof options.recId === 'string') item.id   = item[options.recId];
-                                    if (typeof options.recId === 'function') item.id = options.recId(item);
+                                    if (typeof options.Id === 'string') item.id   = item[options.Id];
+                                    if (typeof options.Id === 'function') item.id = options.Id(item);
                                     if (typeof options.recText === 'string') item.text   = item[options.recText];
                                     if (typeof options.recText === 'function') item.text = options.recText(item);
                                 });
@@ -19645,7 +19645,7 @@ var w2prompt = function (label, title, callBack) {
         this.formURL     = '';       // url where to get form HTML
         this.formHTML    = '';       // form HTML (might be loaded from the url)
         this.page        = 0;        // current page
-        this.recid       = 0;        // can be null or 0
+        this.Id       = 0;        // can be null or 0
         this.fields      = [];
         this.actions     = {};
         this.record      = {};
@@ -19945,7 +19945,7 @@ var w2prompt = function (label, title, callBack) {
 
         reload: function (callBack) {
             var url = (typeof this.url !== 'object' ? this.url : this.url.get);
-            if (url && this.recid !== 0 && this.recid != null) {
+            if (url && this.Id !== 0 && this.Id != null) {
                 // this.clear();
                 this.request(callBack);
             } else {
@@ -19964,7 +19964,7 @@ var w2prompt = function (label, title, callBack) {
                     this.refresh(field);
                 }.bind(this));
             } else {
-                this.recid    = 0;
+                this.Id    = 0;
                 this.record   = {};
                 this.original = null;
                 this.refresh();
@@ -20184,12 +20184,12 @@ var w2prompt = function (label, title, callBack) {
             }
             if (postData == null) postData = {};
             if (!this.url || (typeof this.url === 'object' && !this.url.get)) return;
-            if (this.recid == null) this.recid = 0;
+            if (this.Id == null) this.Id = 0;
             // build parameters list
             var params = {};
             // add list params
             params['cmd']   = 'get';
-            params['recid'] = this.recid;
+            params['Id'] = this.Id;
             params['name']  = this.name;
             // append other params
             $.extend(params, this.postData);
@@ -20329,7 +20329,7 @@ var w2prompt = function (label, title, callBack) {
                 var params = {};
                 // add list params
                 params['cmd']   = 'save';
-                params['recid'] = obj.recid;
+                params['Id'] = obj.Id;
                 params['name']  = obj.name;
                 // append other params
                 $.extend(params, obj.postData);
@@ -20396,11 +20396,11 @@ var w2prompt = function (label, title, callBack) {
                         ajaxOptions.data = { request: JSON.stringify(ajaxOptions.data) };
                         break;
                     case 'RESTFULL':
-                        if (obj.recid !== 0 && obj.recid != null) ajaxOptions.type = 'PUT';
+                        if (obj.Id !== 0 && obj.Id != null) ajaxOptions.type = 'PUT';
                         ajaxOptions.data = String($.param(ajaxOptions.data, false)).replace(/%5B/g, '[').replace(/%5D/g, ']');
                         break;
                     case 'RESTFULLJSON':
-                        if (obj.recid !== 0 && obj.recid != null) ajaxOptions.type = 'PUT';
+                        if (obj.Id !== 0 && obj.Id != null) ajaxOptions.type = 'PUT';
                         ajaxOptions.data        = JSON.stringify(ajaxOptions.data);
                         ajaxOptions.contentType = 'application/json';
                         break;
@@ -21408,7 +21408,7 @@ var w2prompt = function (label, title, callBack) {
             // after render actions
             this.resize();
             var url = (typeof this.url !== 'object' ? this.url : this.url.get);
-            if (url && this.recid !== 0 && this.recid != null) {
+            if (url && this.Id !== 0 && this.Id != null) {
                 this.request();
             } else {
                 this.refresh();

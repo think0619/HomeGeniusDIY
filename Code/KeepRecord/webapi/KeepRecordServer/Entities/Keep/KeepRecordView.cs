@@ -69,15 +69,15 @@ namespace Entities.Keep
             }
         }
 
-        public long UpdateDatetime { get; set; }
+        public DateTime? UpdateDatetime { get; set; }
 
-        [NotMapped]
-        public DateTime U
-        {
-            get
-            { 
-                return DateTimeOffset.FromUnixTimeMilliseconds(UpdateDatetime).DateTime;
-            }
-        }
+        //[NotMapped]
+        //public DateTime U
+        //{
+        //    get
+        //    { 
+        //        return DateTimeOffset.FromUnixTimeMilliseconds(UpdateDatetime).DateTime;
+        //    }
+        //}
     } 
 }
