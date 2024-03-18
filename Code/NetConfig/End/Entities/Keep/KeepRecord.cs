@@ -49,15 +49,15 @@ namespace Entities.Keep
         }
 
         
-        public long UpdateDatetime { get; set; }
+        //public long UpdateDatetime { get; set; }
 
-        public DateTime U 
-        {
-            get {
+        //public DateTime U 
+        //{
+        //    get {
 
-                return DateTimeOffset.FromUnixTimeMilliseconds(UpdateDatetime).DateTime;
-            }
-        }
+        //        return DateTimeOffset.FromUnixTimeMilliseconds(UpdateDatetime).DateTime;
+        //    }
+        //}
 
 
         public int Status { get; set; }

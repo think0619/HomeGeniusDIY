@@ -46,7 +46,7 @@ const active = ref(route.path);
 
 <script lang="jsx">
 import { showSuccessToast, showFailToast } from 'vant';
-import { addkeeprecord } from "@/api/keep";
+import { addkeeprecord,querySinglekeeprecord } from "@/api/keep";
 import { isFunction } from 'vant/lib/utils';
 export default {
     components: {
@@ -54,6 +54,7 @@ export default {
     data() {
         //  const date = ref('');
         return {
+            updateId:-1,
             contentTitle: '', // 
 
             currentdate: '', // 
@@ -93,12 +94,47 @@ export default {
         this.setTitle();
         this.calendarPickDate = this.getDate();
         var thisquery = this.$route.query;
-        if (thisquery.recid) {
+        if (thisquery.Id) {
+            this.updateId = thisquery.Id;
+            let that = this;
+         
+            querySinglekeeprecord({ "Id":this.updateId }).then(response => {
+                let res = response.data;
+                if (res.Status == 1) {
+                    const queryObj = res.Data;
+                    that.calendarPickDate = queryObj._RecordDate;
+                    that.pickTypeResult = queryObj.TypeId;
+                    that.numberRec = queryObj.Count;
+                    that.pickUnitsResult = queryObj.UnitsId;
+                    that.numberRecSub = queryObj.SubCount;
+                    that.pickUnitsResultSub = queryObj.SubUnitsId; 
+
+                    //type id
+                    that.typeColumns.forEach((t) => {
+                        if (that.pickTypeResult == t.value) {
+                            that.pickTypeResult = t.text;
+                            return false;
+                        }
+                        return true;
+                    });
+
+                    //units id
+                    that.unitsColumns.forEach((u) => {
+                        if (that.pickUnitsResult == u.value) {
+                            that.pickUnitsResult = u.text;
+                        }
+                        if (that.pickUnitsResultSub == u.value) {
+                            that.pickUnitsResultSub = u.text;
+                        }
+                    });
+                } else {
+
+                }
+            }).catch(e => { });
             console.log("edit");
         } else {
             console.log("add")
-        }
-
+        } 
     },
     methods: {
         showTypeShowPicker() {
@@ -125,8 +161,7 @@ export default {
         onConfirmUnitsPicker(selectedOption) {
             var _this = this;
             var selectObj = selectedOption.selectedOptions[0];
-            var selectText = selectObj?.text;
-
+            var selectText = selectObj?.text; 
             if (_this.focusUnitsOption === 'main') {
                 _this.pickUnitsResult = selectText;
             } else if (_this.focusUnitsOption === 'sub') {
@@ -161,6 +196,7 @@ export default {
                 "UnitsId": -1,
                 "SubCount": Number(inputValue.countInputSub),
                 "SubUnitsId": -1,
+                "Id":this.updateId
             };
 
             //type id

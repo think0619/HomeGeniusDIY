@@ -13,7 +13,7 @@ namespace Entities.Keep
         //[IgnoreDataMember]
         public int Id { get; set; }
 
-        
+        public int TypeId { get; set; }
         public string TypeName { get; set; }
         public Decimal Count { get; set; }
         public string Units { get; set; } 
@@ -69,16 +69,16 @@ namespace Entities.Keep
             }
         }
 
-        [NotMapped]
-        public long UpdateDatetime { get; set; }
+        //[NotMapped]
+        //public long UpdateDatetime { get; set; }
 
-        [NotMapped]
-        public DateTime U
-        {
-            get
-            { 
-                return DateTimeOffset.FromUnixTimeMilliseconds(UpdateDatetime).DateTime;
-            }
-        }
+        //[NotMapped]
+        //public DateTime U
+        //{
+        //    get
+        //    { 
+        //        return DateTimeOffset.FromUnixTimeMilliseconds(UpdateDatetime).DateTime;
+        //    }
+        //}
     } 
 }

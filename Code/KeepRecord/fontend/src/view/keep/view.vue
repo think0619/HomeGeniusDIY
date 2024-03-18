@@ -14,11 +14,11 @@
 
     <van-pull-refresh class="h1" v-model="refreshing" @refresh="onRefresh">
         <van-list class="dataview" v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
-            <van-swipe-cell v-for="(item, index) in list" :key="index" :name="item.RecID" @click="swipeClick"
+            <van-swipe-cell v-for="(item, index) in list" :key="index" :name="item.Id" @click="swipeClick"
                 @open="swipeOpen" :before-close="beforeClose">
-                <van-card class="goods-card" :centered="false" :tag="item.TypeName" :price="item.RecID" currency=""
+                <van-card class="goods-card" :centered="false" :tag="item.TypeName" :price="item.Id" currency=""
                     :title="item._RecordDate" :desc="item.DescInfo"
-                    thumb="https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg" />
+                    :thumb="item.ImgSrc" />
                 <template #right>
                     <van-button square type="danger" text="删除" class="swipe-button" @click="delClick" />
                     <van-button square type="primary" text="修改" class="swipe-button" @click="editClick" />
@@ -36,11 +36,18 @@
     const router = useRouter();
     const route = useRoute();
     const active = ref(route.path);   
+
 </script>
 
 <script lang="jsx">
     import { showConfirmDialog, showSuccessToast, showFailToast } from 'vant';
     import { querykeeprecord, deletekeeprecord } from "@/api/keep";
+
+    import boxing from "@/assets/img/sport/icons8-boxing-96.png"
+    import pushups from "@/assets/img/sport/icons8-pushups-80.png"
+    import riding from "@/assets/img/sport/icons8-riding-64.png"
+    import run from "@/assets/img/sport/icons8-run-96.png"
+    import skipping from "@/assets/img/sport/icons8-skipping-rope-96.png"
 
     export default {
         components: {
@@ -110,6 +117,19 @@
                     _this.finished = true;
                 }
                 _this.total = res.Total;		// 
+                res.Data.forEach(element => {
+                    if(element.TypeId==1){
+                        element.ImgSrc=run
+                    }else if(element.TypeId==2){
+                        element.ImgSrc=skipping
+                    }else if(element.TypeId==3){
+                        element.ImgSrc=boxing
+                    }else if(element.TypeId==4){
+                        element.ImgSrc=pushups
+                    }else if(element.TypeId==5){
+                        element.ImgSrc=riding
+                    }
+                }); 
                 _this.list.push(...res.Data)	//  
 
                 let index = 1;
@@ -145,7 +165,7 @@
                     // on confirm
                     let _this = this;
                     deletekeeprecord({
-                        RecID: _this.selectedItem
+                        Id: _this.selectedItem
                     }).then(response => {
                         let res = response.data;
                         if (res.Status == 1) {
@@ -167,7 +187,7 @@
                 });
             },
             editClick() {
-                this.$router.push({ path: '/keep/add', query: { recid: this.selectedItem } });
+                this.$router.push({ path: '/keep/add', query: { Id: this.selectedItem } });
             },
             swipeClick(position) {
                 // console.log('swiopeclick',position);

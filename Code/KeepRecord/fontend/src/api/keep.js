@@ -21,6 +21,15 @@ export function querykeeprecord(_params) {
     })
 }
 
+export function querySinglekeeprecord(_params) {
+    var url = host + "/api/HandleKeepRecord/RecordInfo";
+    return axios({
+        url: url,
+        method: "post",
+        data: _params
+    })
+}
+
 export function deletekeeprecord(_params) {
     var url = host + "/api/HandleKeepRecord/Del";
     return axios({

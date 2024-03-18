@@ -54,17 +54,32 @@ namespace TextVoiceServer.ContentMgmt
                 var transaction = context.Database.BeginTransaction();
                 try
                 {
-                    context.tb_keeprecord.Add(new KeepRecord()
+                    if (newInsertParam.Id > 0)
                     {
-                        TypeId = newInsertParam.TypeId,
-                        Count = newInsertParam.Count,
-                        UnitsId = newInsertParam.UnitsId,
-                        SubCount = newInsertParam.SubCount,
-                        SubUnitsId = newInsertParam.SubUnitsId,
-                        Status = 1,
-                        RecordDatetime = DateTime.Now,
-                        RecordDate = newInsertParam.RecordDate,
-                    });
+                        var updateObj = context.tb_keeprecord.Where(x => x.Id == newInsertParam.Id).FirstOrDefault();
+                        updateObj.TypeId = newInsertParam.TypeId;
+                        updateObj.Count = newInsertParam.Count;
+                        updateObj.UnitsId = newInsertParam.UnitsId;
+                        updateObj.SubCount = newInsertParam.SubCount;
+                        updateObj.SubUnitsId = newInsertParam.SubUnitsId;
+                        updateObj.Status = 1;
+                        updateObj.RecordDatetime = DateTime.Now;
+                        updateObj.RecordDate = newInsertParam.RecordDate; 
+                    }
+                    else
+                    {
+                        context.tb_keeprecord.Add(new KeepRecord()
+                        {
+                            TypeId = newInsertParam.TypeId,
+                            Count = newInsertParam.Count,
+                            UnitsId = newInsertParam.UnitsId,
+                            SubCount = newInsertParam.SubCount,
+                            SubUnitsId = newInsertParam.SubUnitsId,
+                            Status = 1,
+                            RecordDatetime = DateTime.Now,
+                            RecordDate = newInsertParam.RecordDate,
+                        });
+                    }
                     await context.SaveChangesAsync();
                     transaction.Commit();
 
@@ -123,11 +138,11 @@ namespace TextVoiceServer.ContentMgmt
                     //    RecordDatetime = DateTime.Now,
                     //    RecordDate = newInsertParam.RecordDate,
                     //});
-                  //  await context.SaveChangesAsync();
+                    await context.SaveChangesAsync();
                     transaction.Commit();
 
                     tip.Status = 1;
-                    tip.Msg = "Successfully added.";
+                    tip.Msg = "Successfully updated.";
                 }
                 catch (Exception ex)
                 {
@@ -149,6 +164,22 @@ namespace TextVoiceServer.ContentMgmt
         [HttpPost("Query")]
         public async Task<IActionResult> GetRecord([FromBody] PageQuery pagequery)
         {
+            if(!pagequery.DateStart.HasValue) 
+            {
+                pagequery.DateStart=DateTime.MinValue;
+            }
+            if (!pagequery.DateEnd.HasValue)
+            {
+                pagequery.DateEnd = DateTime.MaxValue;
+            }
+            else 
+            {
+                //if (pagequery.DateEnd != DateTime.MaxValue) 
+                //{
+                //    pagequery.DateEnd= pagequery.DateEnd.Value.AddDays(1); 
+                //} 
+            }
+
             KeepRecordViewTip datatip = new KeepRecordViewTip()
             {
                 Status = 0,
@@ -159,8 +190,8 @@ namespace TextVoiceServer.ContentMgmt
                 using (var dbcontext = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>())
                 {
                     int skipcount = (pagequery.PageIndex <= 1) ? 0 : ((pagequery.PageIndex - 1) * pagequery.PageCount);
-                    datatip.Data = await dbcontext.view_keeprecord.Where(a => a.RecordDatetime >= pagequery.DateStart && a.RecordDatetime <= pagequery.DateEnd).OrderBy(x => x.Id).Skip(skipcount).Take(pagequery.PageCount).ToListAsync();
-                    datatip.Total = dbcontext.view_keeprecord.Where(a => a.RecordDatetime >= pagequery.DateStart && a.RecordDatetime <= pagequery.DateEnd).Count();
+                    datatip.Data = await dbcontext.view_keeprecord.Where(a => a.RecordDate >= pagequery.DateStart && a.RecordDate <= pagequery.DateEnd ).OrderBy(x => x.Id).Skip(skipcount).Take(pagequery.PageCount).ToListAsync();
+                    datatip.Total = dbcontext.view_keeprecord.Where(a => a.RecordDate >= pagequery.DateStart && a.RecordDate <= pagequery.DateEnd ).Count();
                     datatip.Status = 1;
                     datatip.Msg = "Success";
                 }
@@ -168,6 +199,40 @@ namespace TextVoiceServer.ContentMgmt
             catch (Exception ex)
             {
                 datatip.Msg = $"Exception:{ex.Message}";
+            }
+
+            return Ok(datatip);
+        }
+         
+        [HttpPost("RecordInfo")]
+        public async Task<IActionResult> GetSingleRecord([FromBody] KeepRecord KeepRecord)
+        { 
+            int Id = KeepRecord.Id;
+            KeepRecordResult datatip = new KeepRecordResult()
+            {
+                Status = 0,
+                Data = new KeepRecord()
+            };
+            if (Id >= 0)
+            {
+                try
+                {
+                    using (var dbcontext = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>())
+                    {
+                        datatip.Data = await dbcontext.tb_keeprecord.Where(a => a.Id == Id && a.Status == 1).FirstOrDefaultAsync();
+                        datatip.Status = 1;
+                        datatip.Msg = "Success";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    datatip.Msg = $"Exception:{ex.Message}";
+                }
+            }
+            else 
+            {
+                datatip.Status = 0;
+                datatip.Msg = "Fail";
             }
 
             return Ok(datatip);
