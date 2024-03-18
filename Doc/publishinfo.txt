@@ -1,0 +1,9 @@
+1. 后台webapi
+port 6001 47081
+sudo pm2 start "dotnet /home/think/Software/HomeGenius/Webapi/NetConfigServer.dll" --name NetConfigServer
+2. 网络配置前端 
+47080
+/home/think/Software/HomeGenius/NetCfgWeb
+3. 手机端锻炼系统
+8080
+/home/think/Software/HomeGenius/KeepMobile 

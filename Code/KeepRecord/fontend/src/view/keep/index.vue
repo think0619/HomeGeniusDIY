@@ -7,7 +7,8 @@
         <van-cell-group inset>
             <van-field v-model="calendarPickDate" is-link readonly name="datePicker" label="日期" placeholder="点击选择日期"
                 @click="showCalendarForm = true" />
-            <van-calendar v-model:show="showCalendarForm" @confirm="onConfirmDate" />
+            <van-calendar v-model:show="showCalendarForm" @confirm="onConfirmDate" :min-date="minDate"
+        :max-date="maxDate"/>
 
             <van-field v-model="pickTypeResult" is-link readonly name="typePicker" label="运动种类" placeholder="点击选择种类"
                 @click="showTypeShowPicker" />
@@ -17,7 +18,7 @@
                 @click="showUnitsShowPicker('main')" />
 
             <van-field v-model="numberRecSub" name="countInputSub" label="数值" placeholder="数值" type="number"
-                :rules="[{ required: true, message: '请填写数值' }]" />
+                :rules="[{ required: false, message: '请填写数值' }]" />
             <van-field v-model="pickUnitsResultSub" is-link readonly name="unitsPickerSub" label="单位" placeholder="点击选择单位"
                 @click="showUnitsShowPicker('sub')" />
 
@@ -85,8 +86,19 @@ export default {
                 { text: '公里', value: 4 },],
         };
     },
-    computed: {
-    },
+        computed: {
+            
+            minDate: function () {
+                let currentDate = new Date();
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                return currentDate; 
+            },
+            maxDate: function () {
+                let currentDate = new Date();
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                return currentDate; 
+            },
+        },
     setup() {
 
     },

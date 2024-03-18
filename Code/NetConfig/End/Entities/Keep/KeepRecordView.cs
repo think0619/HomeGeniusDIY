@@ -69,7 +69,11 @@ namespace Entities.Keep
             }
         }
 
+<<<<<<< Updated upstream
         //[NotMapped]
+=======
+        
+>>>>>>> Stashed changes
         //public long UpdateDatetime { get; set; }
 
         //[NotMapped]
