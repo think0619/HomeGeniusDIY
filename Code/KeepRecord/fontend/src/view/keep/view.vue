@@ -164,13 +164,7 @@
                 }).then(() => {
                     // on confirm
                     let _this = this;
-                    deletekeeprecord({
-<<<<<<< Updated upstream
-                        Id: _this.selectedItem
-=======
-                        Id: _this.selectedItem 
->>>>>>> Stashed changes
-                    }).then(response => {
+                    deletekeeprecord({ Id: _this.selectedItem }).then(response => {
                         let res = response.data;
                         if (res.Status == 1) {
                             showSuccessToast({

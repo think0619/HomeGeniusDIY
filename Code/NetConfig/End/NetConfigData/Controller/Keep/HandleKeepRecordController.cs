@@ -189,14 +189,9 @@ namespace TextVoiceServer.ContentMgmt
             {
                 using (var dbcontext = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>())
                 {
-                    int skipcount = (pagequery.PageIndex <= 1) ? 0 : ((pagequery.PageIndex - 1) * pagequery.PageCount);
-<<<<<<< Updated upstream
+                    int skipcount = (pagequery.PageIndex <= 1) ? 0 : ((pagequery.PageIndex - 1) * pagequery.PageCount); 
                     datatip.Data = await dbcontext.view_keeprecord.Where(a => a.RecordDate >= pagequery.DateStart && a.RecordDate <= pagequery.DateEnd ).OrderBy(x => x.Id).Skip(skipcount).Take(pagequery.PageCount).ToListAsync();
-                    datatip.Total = dbcontext.view_keeprecord.Where(a => a.RecordDate >= pagequery.DateStart && a.RecordDate <= pagequery.DateEnd ).Count();
-=======
-                    datatip.Data = await dbcontext.view_keeprecord.Where(a => a.RecordDatetime >= pagequery.DateStart && a.RecordDatetime <= pagequery.DateEnd.Value.AddDays(1)).OrderBy(x => x.Id).Skip(skipcount).Take(pagequery.PageCount).ToListAsync();
-                    datatip.Total = dbcontext.view_keeprecord.Where(a => a.RecordDatetime >= pagequery.DateStart && a.RecordDatetime <= pagequery.DateEnd).Count();
->>>>>>> Stashed changes
+                    datatip.Total = dbcontext.view_keeprecord.Where(a => a.RecordDate >= pagequery.DateStart && a.RecordDate <= pagequery.DateEnd ).Count(); 
                     datatip.Status = 1;
                     datatip.Msg = "Success";
                 }
