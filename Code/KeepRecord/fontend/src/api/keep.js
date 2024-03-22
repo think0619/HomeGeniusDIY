@@ -1,7 +1,8 @@
 //  index.js
 import axios from 'axios'
 
-var host = 'http://localhost:34172';
+var host2 = 'http://localhost:34172';
+var host = 'http://192.168.2.100:47081';
 
 export function addkeeprecord(_params) {
     var url = host + "/api/HandleKeepRecord/Add";

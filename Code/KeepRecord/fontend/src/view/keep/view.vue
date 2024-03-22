@@ -102,7 +102,7 @@
         },
         methods: {
             setTitle() {
-                this.contentTitle = "x";
+                this.contentTitle = "运动记录";
             },
             // 获取列表数据方法
             async getList() {
@@ -164,9 +164,7 @@
                 }).then(() => {
                     // on confirm
                     let _this = this;
-                    deletekeeprecord({
-                        Id: _this.selectedItem
-                    }).then(response => {
+                    deletekeeprecord({ Id: _this.selectedItem }).then(response => {
                         let res = response.data;
                         if (res.Status == 1) {
                             showSuccessToast({

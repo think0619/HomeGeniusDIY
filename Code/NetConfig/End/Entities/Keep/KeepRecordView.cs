@@ -69,7 +69,8 @@ namespace Entities.Keep
             }
         }
 
-        //[NotMapped]
+ 
+        //[NotMapped]  
         //public long UpdateDatetime { get; set; }
 
         //[NotMapped]

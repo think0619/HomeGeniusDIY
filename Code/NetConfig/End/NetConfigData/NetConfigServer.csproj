@@ -45,7 +45,7 @@
 
   <ItemGroup>
     <Reference Include="Aspose.Cells">
-      <HintPath>C:\Users\xs\Desktop\dll\Aspose(Word,Cell,Pdf)\Aspose.Cells.dll</HintPath>
+      <HintPath>C:\Users\think\OneDrive\桌面\Aspose.Cells.dll</HintPath>
     </Reference>
   </ItemGroup>
 
