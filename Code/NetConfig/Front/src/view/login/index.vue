@@ -77,6 +77,7 @@ export default {
                                 })
                                 this.$router.replace({ path: "/netconfig" }) ;
                             } else if(result.Status == -1){
+                                localStorage.clear()
                                 this.$router.replace({ path: "/login" }) ;
                             } else{
                                 ElMessage({

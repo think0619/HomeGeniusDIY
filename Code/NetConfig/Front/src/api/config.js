@@ -7,7 +7,7 @@
 
   import axios from 'axios'
   export function login(username, password) {
-      var url = serverUrl + "/api/login/manual";
+      var url = serverUrl + "/api/login/login";
       return axios({
           url: url,
           method: "post",

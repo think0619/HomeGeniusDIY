@@ -44,7 +44,7 @@ export async function addConfigInfo(updateobj) {
     }
     await axios({
         method: 'post',
-        timeout: 3000,
+        timeout: 5000,
         url: serverUrl + '/api/netcfg/add',
         async: false,
         headers: { 'Content-Type': 'application/json', "Authorization": "Bearer " + localStorage.getItem('token') },
@@ -71,7 +71,7 @@ export async function updateConfigInfo(updateobj) {
     }
     await axios({
         method: 'post',
-        timeout: 3000,
+        timeout: 5000,
         url: serverUrl + '/api/netcfg/update',
         async: false,
         headers: { 'Content-Type': 'application/json', "Authorization": "Bearer " + localStorage.getItem('token') },
@@ -98,7 +98,7 @@ export async function deleteConfigInfos(IdArray) {
     }
     await axios({
         method: 'post',
-        timeout: 3000,
+        timeout: 5000,
         url: serverUrl + '/api/netcfg/bulkdel',
         async: false,
         headers: { 'Content-Type': 'application/json', "Authorization": "Bearer " + localStorage.getItem('token') },
@@ -124,7 +124,7 @@ export async function exportConfigInfos(IdArray) {
     var result = null
     await axios({
         method: 'post',
-        timeout: 30000,
+        timeout: 5000,
         url: serverUrl + '/api/netcfg/export',
         responseType: 'arraybuffer',
         headers: {

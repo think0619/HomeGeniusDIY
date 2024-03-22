@@ -11,8 +11,13 @@ namespace Entities.User
         /// 0 error
         /// 1 success
         /// </summary>
-        public int Status { get; set; } 
+        public int Status { get; set; }
         public string Msg { get; set; }
-        public string Token { get; set; }
+        public string Token { get; set; } 
+
+        public class LoginTipData
+        {
+            public string token { get; set; }
+        }
     }
 }

@@ -29,6 +29,7 @@ using Aspose.Cells;
 using System.Text;
 using Ubiety.Dns.Core;
 using System.Drawing;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace TextVoiceServer.ContentMgmt
 {
@@ -58,19 +59,28 @@ namespace TextVoiceServer.ContentMgmt
                 Status = 0,
                 Msg = ""
             };
-            try
+            var loginUsername = HttpContext.Items[nameof(Entities.User.LoginUser.Username)]?.ToString();
+            if (String.IsNullOrWhiteSpace(loginUsername))
             {
-                using (var dbcontext = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>())
-                {
-                    datatip.Data = await dbcontext.tb_config.Where(s => s.Status == 1).ToListAsync();
-                    datatip.Total = dbcontext.tb_config.Where(s => s.Status == 1).Count();
-                    datatip.Status = 1;
-                    datatip.Msg = "Success";
-                }
+                datatip.Status = -1;
+                datatip.Msg = "Unauthorized";
             }
-            catch (Exception ex)
+            else
             {
-                datatip.Msg = $"Exception:{ex.Message}";
+                try
+                {
+                    using (var dbcontext = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>())
+                    {
+                        datatip.Data = await dbcontext.tb_config.Where(s => s.Status == 1).ToListAsync();
+                        datatip.Total = dbcontext.tb_config.Where(s => s.Status == 1).Count();
+                        datatip.Status = 1;
+                        datatip.Msg = "Success";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    datatip.Msg = $"Exception:{ex.Message}";
+                }
             }
             return Ok(datatip);
         }
@@ -83,7 +93,17 @@ namespace TextVoiceServer.ContentMgmt
                 Status = 0,
                 Msg = ""
             };
-            if (newrecord != null)
+
+            var loginUsername = HttpContext.Items[nameof(Entities.User.LoginUser.Username)]?.ToString();
+            if (String.IsNullOrWhiteSpace(loginUsername))
+            {
+                tip.Status = -1;
+                tip.Msg = "Unauthorized";
+            }
+            else
+            {
+
+                if (newrecord != null)
             {
                 using var context = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>();
                 var transaction = context.Database.BeginTransaction();
@@ -126,6 +146,7 @@ namespace TextVoiceServer.ContentMgmt
                 tip.Status = 0;
                 tip.Msg = "Invalid argument.";
             }
+            }
             return Ok(tip);
         }
 
@@ -137,7 +158,16 @@ namespace TextVoiceServer.ContentMgmt
                 Status = 0,
                 Msg = ""
             };
-            if (updateItem != null && updateItem.Id > 0)
+
+            var loginUsername = HttpContext.Items[nameof(Entities.User.LoginUser.Username)]?.ToString();
+            if (String.IsNullOrWhiteSpace(loginUsername))
+            {
+                tip.Status = -1;
+                tip.Msg = "Unauthorized";
+            }
+            else
+            {
+                if (updateItem != null && updateItem.Id > 0)
             {
                 using var context = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>();
                 var transaction = context.Database.BeginTransaction();
@@ -181,6 +211,7 @@ namespace TextVoiceServer.ContentMgmt
             {
                 tip.Status = 0;
                 tip.Msg = "Invalid argument.";
+                }
             }
             return Ok(tip);
         }
@@ -193,7 +224,15 @@ namespace TextVoiceServer.ContentMgmt
                 Status = 0,
                 Msg = ""
             };
-            if (delItem?.Id > 0)
+            var loginUsername = HttpContext.Items[nameof(Entities.User.LoginUser.Username)]?.ToString();
+            if (String.IsNullOrWhiteSpace(loginUsername))
+            {
+                tip.Status = -1;
+                tip.Msg = "Unauthorized";
+            }
+            else
+            {
+                if (delItem?.Id > 0)
             {
                 using var context = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>();
                 var transaction = context.Database.BeginTransaction();
@@ -225,6 +264,7 @@ namespace TextVoiceServer.ContentMgmt
             {
                 tip.Status = 0;
                 tip.Msg = "Invalid argument.";
+                }
             }
             return Ok(tip);
         }
@@ -237,7 +277,16 @@ namespace TextVoiceServer.ContentMgmt
                 Status = 0,
                 Msg = ""
             };
-            if (IdArray?.Length > 0)
+
+            var loginUsername = HttpContext.Items[nameof(Entities.User.LoginUser.Username)]?.ToString();
+            if (String.IsNullOrWhiteSpace(loginUsername))
+            {
+                tip.Status = -1;
+                tip.Msg = "Unauthorized";
+            }
+            else
+            {
+                if (IdArray?.Length > 0)
             {
                 using var context = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>();
                 var transaction = context.Database.BeginTransaction();
@@ -265,78 +314,87 @@ namespace TextVoiceServer.ContentMgmt
             {
                 tip.Status = 0;
                 tip.Msg = "Invalid argument.";
+                }
             }
             return Ok(tip);
         }
 
         [HttpPost("export")]
-        public async Task<IActionResult> exportRecordAsync([FromBody] int[] IdArray) 
+        public async Task<IActionResult> exportRecordAsync([FromBody] int[] IdArray)
         {
-            //var IdArray =new int[] { 1, 2, 3 };
-            if (IdArray?.Length > 0)
+            var loginUsername = HttpContext.Items[nameof(Entities.User.LoginUser.Username)]?.ToString();
+            if (String.IsNullOrWhiteSpace(loginUsername))
             {
-                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                Workbook ExcelFileWorkbook = new Workbook();
-                Worksheet ExcelFileSheet = ExcelFileWorkbook.Worksheets[0];
-                Cells SheetCells = ExcelFileSheet.Cells;
 
-                using (var dbcontext = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>())
+            }
+            else
+            {
+                //var IdArray =new int[] { 1, 2, 3 };
+                if (IdArray?.Length > 0)
                 {
-                    var exportDataList = dbcontext.tb_config.Where(s => s.Status == 1 && IdArray.Contains(s.Id)).ToList();
+                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                    Workbook ExcelFileWorkbook = new Workbook();
+                    Worksheet ExcelFileSheet = ExcelFileWorkbook.Worksheets[0];
+                    Cells SheetCells = ExcelFileSheet.Cells;
 
-                    ImportTableOptions imp = new ImportTableOptions();
-                    imp.InsertRows = true;
-                    SheetCells.ImportCustomObjects(
-                        (System.Collections.ICollection)exportDataList,
-                        new string[] { "ServerName", "InnerIP", "OuterIP", "Username", "Userpassword", "Token", "Remark", "Remark2", "Remark3 ", "MachineName", "TextRecord", "WebUrl", "WebBindMail", "WebName", "ConfigType" },
-                        true,
-                        0,
-                        0,
-                        exportDataList.Count,
-                        true,
-                        "yyyy-MM-dd",
-                        false);
+                    using (var dbcontext = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>())
+                    {
+                        var exportDataList = dbcontext.tb_config.Where(s => s.Status == 1 && IdArray.Contains(s.Id)).ToList();
+
+                        ImportTableOptions imp = new ImportTableOptions();
+                        imp.InsertRows = true;
+                        SheetCells.ImportCustomObjects(
+                            (System.Collections.ICollection)exportDataList,
+                            new string[] { "ServerName", "InnerIP", "OuterIP", "Username", "Userpassword", "Token", "Remark", "Remark2", "Remark3 ", "MachineName", "TextRecord", "WebUrl", "WebBindMail", "WebName", "ConfigType" },
+                            true,
+                            0,
+                            0,
+                            exportDataList.Count,
+                            true,
+                            "yyyy-MM-dd",
+                            false);
+                    }
+
+                    Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
+                    Response.Headers.Add("Content-Disposition", $"attachment; Filename=\"{$"ConfigData_{DateTime.Now.ToString("yyyyMMdd")}.xlsx"}\"");
+                    Response.ContentType = "application/octet-stream";
+
+                    //Create a named range
+                    Aspose.Cells.Range range = ExcelFileSheet.Cells.CreateRange("A1", "E1");
+                    //Set the name of the named range
+                    range.Name = "Range1";
+                    Aspose.Cells.Style style = ExcelFileWorkbook.CreateStyle();
+                    style.ForegroundColor = System.Drawing.Color.FromArgb(50, 83, 220);
+                    style.Pattern = BackgroundType.Solid;
+                    style.Font.Color = Color.White;
+                    style.Font.Size = 12;
+
+                    // Adding a thick top border with blue line
+                    range.SetOutlineBorder(BorderType.TopBorder, CellBorderType.Thick, Color.Blue);
+
+                    // Adding a thick bottom border with blue line
+                    range.SetOutlineBorder(BorderType.BottomBorder, CellBorderType.Thick, Color.Blue);
+
+                    // Adding a thick left border with blue line
+                    range.SetOutlineBorder(BorderType.LeftBorder, CellBorderType.Thick, Color.Blue);
+
+                    // Adding a thick right border with blue line
+                    range.SetOutlineBorder(BorderType.RightBorder, CellBorderType.Thick, Color.Blue);
+
+                    StyleFlag styleFlag = new StyleFlag();
+                    styleFlag.All = true;
+                    range.ApplyStyle(style, styleFlag);
+
+                    ExcelFileSheet.AutoFitColumns(0, 0, 0, 5);
+
+                    var stream = new MemoryStream();
+                    ExcelFileWorkbook.Save(stream, SaveFormat.Xlsx);
+                    stream.Position = 0;
+
+                    await stream.CopyToAsync(Response.Body);
+                    stream.Dispose();
                 }
-                 
-                Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition"); 
-                Response.Headers.Add("Content-Disposition", $"attachment; Filename=\"{$"ConfigData_{DateTime.Now.ToString("yyyyMMdd")}.xlsx"}\"");
-                Response.ContentType = "application/octet-stream"; 
-
-                //Create a named range
-                Aspose.Cells.Range range = ExcelFileSheet.Cells.CreateRange("A1", "E1");
-                //Set the name of the named range
-                range.Name = "Range1";
-                Aspose.Cells.Style style = ExcelFileWorkbook.CreateStyle();
-                style.ForegroundColor = System.Drawing.Color.FromArgb(50, 83, 220);
-                style.Pattern = BackgroundType.Solid;
-                style.Font.Color = Color.White;
-                style.Font.Size = 12;
-
-                // Adding a thick top border with blue line
-                range.SetOutlineBorder(BorderType.TopBorder, CellBorderType.Thick, Color.Blue);
-
-                // Adding a thick bottom border with blue line
-                range.SetOutlineBorder(BorderType.BottomBorder, CellBorderType.Thick, Color.Blue);
-
-                // Adding a thick left border with blue line
-                range.SetOutlineBorder(BorderType.LeftBorder, CellBorderType.Thick, Color.Blue);
-
-                // Adding a thick right border with blue line
-                range.SetOutlineBorder(BorderType.RightBorder, CellBorderType.Thick, Color.Blue);
-
-                StyleFlag styleFlag = new StyleFlag();
-                styleFlag.All = true;
-                range.ApplyStyle(style, styleFlag);
-
-                ExcelFileSheet.AutoFitColumns(0, 0, 0, 5); 
-
-                var stream = new MemoryStream();
-                ExcelFileWorkbook.Save(stream, SaveFormat.Xlsx);
-                stream.Position = 0;
-
-                await stream.CopyToAsync(Response.Body); 
-                stream.Dispose(); 
-            } 
+            }
             return new EmptyResult();
         }
     }
