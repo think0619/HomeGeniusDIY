@@ -102,9 +102,9 @@ namespace TextVoiceServer.Controller.Auth
             var claims = new Claim[]
             {
                 new Claim(ClaimTypes.Name, ConfigurationHelper.AppSetting["Jwt:ClaimName"]),
-                new Claim("user.name", userInfo.Username),
-                new Claim("user.id", userInfo.RecId.ToString()),
-                new Claim("user.userinfo", userInfo.UserInfo!=null?userInfo.UserInfo:""),
+                new Claim("user.Username", userInfo.Username),
+                new Claim("user.Id", userInfo.Id.ToString()),
+                new Claim("user.UserInfo", userInfo.UserInfo!=null?userInfo.UserInfo:""),
                 new Claim("user.role", userInfo.Role!=null?userInfo.Role:""),
                 new Claim(JwtRegisteredClaimNames.Nbf, new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds().ToString()),
                 new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset(DateTime.Now.AddMinutes(60)).ToUnixTimeSeconds().ToString()),

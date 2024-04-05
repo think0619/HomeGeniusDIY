@@ -44,7 +44,7 @@ namespace TextVoiceServer
             services.AddControllers().AddNewtonsoftJson(
                opt =>
                  {
-                     opt.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();//json×Ö·û´®´óÐ¡Ð´Ô­ÑùÊä³ö
+                     opt.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();//jsonï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡Ð´Ô­ï¿½ï¿½ï¿½ï¿½ï¿½
                  }) ;
             ////auto start , Microsoft.Extensions.Hosting.IHostApplicationLifetime applicationLifetime
             /// services.Configure<SensorValueCfg>(Configuration);
@@ -104,7 +104,7 @@ namespace TextVoiceServer
                 .SetIsOriginAllowed(origin => true) // allow any origin
                 .AllowCredentials()); // allow credentials 
 
-            // app.UseMiddleware<JwtMiddleware>();
+            app.UseMiddleware<JwtMiddleware>();
             app.UseAuthorization(); 
 
 

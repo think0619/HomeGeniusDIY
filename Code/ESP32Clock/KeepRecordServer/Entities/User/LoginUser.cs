@@ -8,7 +8,7 @@ namespace Entities.User
 {
     public class LoginUser
     {
-        public int RecId { get; set; }
+        public int Id { get; set; }
         public string Username { get; set; } 
         //MD5 from remark
         public string IDCode { get; set; } 

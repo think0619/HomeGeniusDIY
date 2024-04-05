@@ -46,10 +46,10 @@ namespace TextVoiceServer
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
 
-                var jwtToken = (JwtSecurityToken)validatedToken;
-                context.Items[nameof(Entities.User.LoginUser.UserInfo)] = jwtToken.Claims.First(x => nameof(Entities.User.LoginUser.UserInfo).Equals(x.Type)).Value;
-                context.Items[nameof(Entities.User.LoginUser.Username)] = jwtToken.Claims.First(x => nameof(Entities.User.LoginUser.Username).Equals(x.Type)).Value;
-                context.Items[nameof(Entities.User.LoginUser.RecId)] = jwtToken.Claims.First(x => nameof(Entities.User.LoginUser.RecId).Equals(x.Type)).Value;
+                var jwtToken = (JwtSecurityToken)validatedToken; 
+                context.Items[nameof(Entities.User.LoginUser.UserInfo)] = jwtToken.Claims.First(x => String.Format($"user.{nameof(Entities.User.LoginUser.UserInfo)}").Equals(x.Type))?.Value;
+                context.Items[nameof(Entities.User.LoginUser.Username)] = jwtToken.Claims.First(x => String.Format($"user.{nameof(Entities.User.LoginUser.Username)}").Equals(x.Type))?.Value;
+                context.Items[nameof(Entities.User.LoginUser.Id)] = jwtToken.Claims.First(x => String.Format($"user.{nameof(Entities.User.LoginUser.Id)}").Equals(x.Type))?.Value;
             }
             catch
             {

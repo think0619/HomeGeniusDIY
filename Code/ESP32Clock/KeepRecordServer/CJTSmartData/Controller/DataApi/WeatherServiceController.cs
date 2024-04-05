@@ -19,6 +19,7 @@ using RestSharp;
 using Entities.User; 
 using Entities.Weather;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace TextVoiceServer.DataApi
 {
@@ -98,8 +99,81 @@ namespace TextVoiceServer.DataApi
             return Ok(tipResult);
         }
 
+        [HttpPost("hefengw")]
+        public async Task<IActionResult> GetHefengWeather()
+        {
+            //[FromBody]string type
+            TipResult tipResult = new TipResult()
+            {
+                Status = 0,
+                Msg = "",
+            };
+            
+           var loginusername = HttpContext.Items[nameof(LoginUser.Username)];
+            if (loginusername != null && !String.IsNullOrWhiteSpace(loginusername.ToString()))
+            {
+                string location = "101190107"; //pukou,nanjing
+                string key = ConfigurationHelper.AppSetting["HefengApi:Key"].ToString(); 
+                var weatherClient = new RestClient("https://devapi.qweather.com/v7/weather/");
+
+                //实时
+                string nowRequestString = $"now?key={key}&location={location}";
+                //24h预报
+                string hourlyRequestString = $"24h?key={key}&location={location}";
+                //7天
+                string dailyRequestString = $"7d?key={key}&location={location}";
+                 
+               
+                try
+                {
+                    HefengWeatherResponse weatherResponse = new HefengWeatherResponse();
+                    //nowRequest
+                    var nowRequest = new RestRequest(nowRequestString);
+                    nowRequest.Timeout = 5000;
+                    var nowResponse = await weatherClient.GetAsync<HefengWeatherResponse>(nowRequest);
+                    if(nowResponse != null&& "200".Equals(nowResponse.code))
+                    {
+                        weatherResponse.now = nowResponse.now;
+                    }
+
+                    //nowRequest
+                    var hourlyRequest = new RestRequest(hourlyRequestString);
+                    hourlyRequest.Timeout = 5000;
+                    var hourlyResponse = await weatherClient.GetAsync<HefengWeatherResponse>(hourlyRequest);
+                    if (hourlyResponse != null && "200".Equals(hourlyResponse.code))
+                    {
+                        weatherResponse.hourly = hourlyResponse.hourly;
+                    }
+
+                    //dailyRequest
+                    var dailyRequest = new RestRequest(dailyRequestString);
+                    dailyRequest.Timeout = 5000;
+                    var dailyResponse = await weatherClient.GetAsync<HefengWeatherResponse>(dailyRequest);
+                    if (dailyResponse != null && "200".Equals(dailyResponse.code))
+                    {
+                        weatherResponse.daily = dailyResponse.daily;
+                    }
+                    tipResult.Data = weatherResponse;
+                    tipResult.Status = 1;
+                    tipResult.Msg = "Success."; 
+                }
+                catch (Exception ex)
+                {
+                    tipResult.Status = 0;
+                    tipResult.Msg = "Fail.";
+                    tipResult.Data = ex;
+                }
+            }
+            else
+            {
+                tipResult.Status = 0;
+                tipResult.Msg = "Unauthorized.";
+            }
+            return Ok(tipResult);
+        }
 
 
-        
+
+
     }
 }

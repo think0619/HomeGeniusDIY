@@ -3,25 +3,31 @@
         <van-nav-bar :title="contentTitle" left-text="" left-arrow  @click-left="onClickLeft"  ></van-nav-bar>
     </div>
     <div class="control" title="Location">
+       
         <van-cell-group>
-            <van-cell title="南京·浦口" :value="weatherDatetime" :label="weatherlonglat" />
+            <van-cell title="南京·浦口" :value="weatherDatetime" :label="weatherlonglat" ><i :class="weatherIcon" style="font-size: 23px;"></i></van-cell>
+       
         </van-cell-group>
         <van-cell-group title="Realtime">
             <van-cell v-for="(item, index) in realtimeInfoItems" :key="index" :title="item.title"
                 :value="item.value"></van-cell>
         </van-cell-group>
-        <van-cell-group title="Daily">
+        <!-- <van-cell-group title="Daily">
             <van-cell v-for="(item, index) in dailyInfoItems" :key="index" :title="item.title"
                 :value="item.value"></van-cell>
-        </van-cell-group>
+        </van-cell-group> -->
         <van-cell-group title="Hourly">
-            <van-cell title="温度变化趋势" :value="hourlyInfo" />
+            <van-cell title="温度、降水变化趋势" :value="hourlyInfo" />
             <div id="tempcharts" style="width: 100%;height: 300px;"></div>
-            <van-cell title="降水概率趋势" />
-            <div id="precipitationcharts" style="width: 100%;height: 300px;"></div>
+            <!-- <van-cell title="降水概率趋势" />
+            <div id="precipitationcharts" style="width: 100%;height: 300px;"></div> -->
         </van-cell-group>
         <van-cell-group title="Hourly Sky Condition">
-            <van-cell v-for="(item, index) in hoursForecast" :key="index" :title="item.time" :label="item.value"
+            <van-cell v-for="(item, index) in hoursForecast" :key="index" :title="item.time" :label="item.value" label-class="labelcustom"
+                :value="item.alias"></van-cell>
+        </van-cell-group>
+        <van-cell-group title="Daily Sky Condition">
+            <van-cell v-for="(item, index) in dailyForecast" :key="index" :title="item.date" :label="item.value" label-class="labelcustom"
                 :value="item.alias"></van-cell>
         </van-cell-group>
     </div>
@@ -40,7 +46,7 @@ import { showSuccessToast, showFailToast, showToast } from 'vant';
 import * as echarts from 'echarts';
 
 import { login } from "@/api/config";
-import { getWeather } from "@/api/weather"
+import { getWeather,getWeatherHefeng } from "@/api/weather"
 
 export default {
     components: {
@@ -50,7 +56,7 @@ export default {
             contentTitle: '', //  
             currentdate: '', //   
             weatherDatetime: '', //   
-            weatherlonglat: '', //   
+            weatherlonglat: '118.700859,32.112609', //   
             hourlyInfo: '', //   
             dailyInfoItems: [
                 { property: 'SunriseSunsetDesc', title: '日出日落', value: '' },
@@ -60,30 +66,27 @@ export default {
                 { property: 'CarWashingDesc', title: '洗车', value: '' },
                 { property: 'DressingDesc', title: '穿衣指数', value: '' },
                 { property: 'ComfortDesc', title: '舒适度指数', value: '' },
-                { property: 'ColdRiskDesc', title: '感冒指数', value: '' },
+                { property: 'ColdRiskDesc', title: '感冒指数', value: '' }, 
             ],
             realtimeInfoItems: [
-                { property: 'Temperature', title: '地表2米气温', value: '' },
-                { property: 'ApparentTemperature', title: '体感气温', value: '' },
-                { property: 'Humidity', title: '相对湿度(%)', value: '' },
-                { property: 'CloudRate', title: '总云量(0.0-1.0)', value: '' },
-                { property: '_Skycon', title: '天气现象', value: '' },
-                { property: 'WindSpeed', title: '地表10米风速', value: '' },
-                { property: 'Pressure', title: '地面气压', value: '' },
-                { property: 'PrecipitationIntensityLocal', title: '	本地降水强度', value: '' },
-                { property: 'PrecipitationDistanceNearest', title: '最近降水带与本地的距离', value: '' },
-                { property: 'AirPM25', title: 'PM25浓度(μg/m³)', value: '' },
-                { property: 'AirPM10', title: 'PM10浓度(μg/m³)', value: '' },
-                { property: 'AirO3', title: '臭氧浓度(μg/m³)', value: '' },
-                { property: 'AirSO2', title: '二氧化硫浓度(μg/m³)', value: '' },
-                { property: 'AirNO2', title: '二氧化氮浓度(μg/m³)', value: '' },
-                { property: 'AirCO', title: '一氧化碳浓度(μg/m³)', value: '' },
-                { property: 'AirAQI_CHN', title: '空气质量（CN)', value: '' },
-                { property: 'AirAQI_USA', title: '空气质量（US)', value: '' },
-                { property: 'Life_Ultraviolet', title: '紫外线', value: '' },
-                { property: 'Life_Comfort', title: '生活指数', value: '' },
+                { property: 'obsTimeFmt', title: '数据观测时间', value: '' },
+                { property: 'temp', title: '温度℃', value: '' },
+                { property: 'feelsLike', title: '体感温度℃', value: '' },
+                { property: 'text', title: '天气状况', value: '' },
+                { property: 'wind360', title: '风向360角度', value: '' },
+                { property: 'windDir', title: '风向', value: '' },
+                { property: 'windScale', title: '风力等级', value: '' },
+                { property: 'windSpeed', title: '风速km/h', value: '' },
+                { property: 'humidity', title: '相对湿度%', value: '' },
+                { property: 'precip', title: '当前小时累计降水量mm', value: '' },
+                { property: 'pressure', title: '大气压强(百帕)', value: '' },
+                { property: 'vis', title: '能见度(km)', value: '' },
+                { property: 'cloud', title: '云量(%)', value: '' },
+                { property: 'dew', title: '露点温度', value: '' }, 
             ],
-            hoursForecast: []
+            weatherIcon:'qi-307',
+            hoursForecast: [],
+            dailyForecast: []
         };
     },
     computed: {
@@ -92,24 +95,20 @@ export default {
 
     },
     mounted() {
-        this.setTitle();
-        this.chartTemp();
+        this.setTitle(); 
         let token = this.$store.state.token; 
         if (token ) {
-            getWeather(token).then((weatherResult) => {
+            let that = this;
+            getWeatherHefeng(token).then((weatherResult) => {
                 if (weatherResult != null && weatherResult.Status == 1) {
-                    let weatherdata = weatherResult.Data;
+                    let weatherdata = weatherResult.Data; 
 
-                    let that = this;
-
-                    that.weatherDatetime = 'Server：' + weatherdata._ServerTime;
-                    that.weatherlonglat = weatherdata.LatLong;
-
-                    let dailyInfos = weatherdata.dailyInfo;
-                    for (let key in dailyInfos) {
-                        if (dailyInfos.hasOwnProperty(key)) {
-                            const dailyValue = dailyInfos[key];
-                            that.dailyInfoItems.forEach((ele) => {
+                    let realtimeInfos = weatherdata.now;
+                    that.weatherIcon=`qi-${realtimeInfos.icon}`
+                    for (let key in realtimeInfos) {
+                        if (realtimeInfos.hasOwnProperty(key)) {
+                            const dailyValue = realtimeInfos[key];
+                            that.realtimeInfoItems.forEach((ele) => {
                                 if (ele.property === key) {
                                     ele.value = dailyValue;
                                     return;
@@ -118,57 +117,115 @@ export default {
                         }
                     }
 
-                    let realtimeInfos = weatherdata.realtimeInfo;
-                    for (let key in realtimeInfos) {
-                        if (realtimeInfos.hasOwnProperty(key)) {
-                            const realtimeValue = realtimeInfos[key];
-                            that.realtimeInfoItems.forEach((ele) => {
-                                if (ele.property === key) {
-                                    ele.value = realtimeValue;
-                                    return;
-                                }
-                            });
-                        }
-                    }
-
-                    let hourlyInfos = weatherdata.hourlyInfo;
-                    that.hourlyInfo = hourlyInfos.Description;
+                    let hourlyInfos = weatherdata.hourly;
                     let timeArray = [];
-                    let tempArray = [];
-                    let apparentTemp = [];
-                    hourlyInfos.Temperature.forEach((temp) => {
-                        timeArray.push(temp.Time);
-                        tempArray.push(temp.Value);
-                    });
-                    hourlyInfos.ApparentTemperature.forEach((temp) => {
-                        apparentTemp.push(temp.Value);
-                    });
-                    that.chartTemp(timeArray, tempArray, apparentTemp);
-
-                    let precipTimeArray = [];
-                    let precipValueArray = [];
-                    hourlyInfos.Precipitations.forEach((prec) => {
-                        precipTimeArray.push(prec.Time);
-                        precipValueArray.push(prec.Probability);
-                    });
-                    that.echartPrecipitation(precipTimeArray, precipValueArray);
-
+                    let tempArray = []; //温度
+                    let popArray = []; //降水 
                     that.hoursForecast = []
-                    hourlyInfos.SkyconInfo.forEach((skycon) => {
+
+                    hourlyInfos.forEach((item) => {
+                        timeArray.push(item.fxTimeTimeFmt);
+                        tempArray.push(item.temp);
+                        popArray.push(item.pop);
+
                         that.hoursForecast.push({
-                            "time": skycon.Time,
-                            "value": skycon.Value,
-                            "alias": skycon._Value
+                            "time":  `${item.fxTimeTimeFmt}:00:00`,
+                            "value": `温度:${item.temp}℃，降水概率:${item.pop}%,  风力:${item.windDir} ${item.windScale}级别.`,
+                            "alias": item.text
                         });
                     });
-                } else {
-                    showFailToast({
-                        "wordBreak": "break-word",
-                        "message": "Identity expired.",
-                        "duration": 800
+                    that.chartTemp(timeArray, tempArray, popArray);
+
+
+                    let dailyInfos = weatherdata.daily; 
+                    that.dailyForecast = []
+                    dailyInfos.forEach((item) => {  
+                        that.dailyForecast.push({
+                            "date":  `${item.fxTimeTimeFmt} ${this.getDayofWeek(item.fxTimeTimeFmt)}`,
+                            "value": `日间:${item.sunrise}-${item.sunset}, 月相:${item.moonPhase}, 紫外线:${item.uvIndex}, 能见度:${item.vis}.`,
+                            "alias": `${item.tempMin}-${item.tempMax}℃，${item.textDay}-${item.textNight}`
+                        });
                     });
-                }
-            });
+                    
+ 
+                  
+                }});
+
+
+
+            // getWeather(token).then((weatherResult) => {
+            //     if (weatherResult != null && weatherResult.Status == 1) {
+            //         let weatherdata = weatherResult.Data;
+
+            //         let that = this;
+
+            //         that.weatherDatetime = 'Server：' + weatherdata._ServerTime;
+            //         that.weatherlonglat = weatherdata.LatLong;
+
+            //         let dailyInfos = weatherdata.dailyInfo;
+            //         for (let key in dailyInfos) {
+            //             if (dailyInfos.hasOwnProperty(key)) {
+            //                 const dailyValue = dailyInfos[key];
+            //                 that.dailyInfoItems.forEach((ele) => {
+            //                     if (ele.property === key) {
+            //                         ele.value = dailyValue;
+            //                         return;
+            //                     }
+            //                 });
+            //             }
+            //         }
+
+            //         let realtimeInfos = weatherdata.realtimeInfo;
+            //         for (let key in realtimeInfos) {
+            //             if (realtimeInfos.hasOwnProperty(key)) {
+            //                 const realtimeValue = realtimeInfos[key];
+            //                 that.realtimeInfoItems.forEach((ele) => {
+            //                     if (ele.property === key) {
+            //                         ele.value = realtimeValue;
+            //                         return;
+            //                     }
+            //                 });
+            //             }
+            //         }
+
+            //         let hourlyInfos = weatherdata.hourlyInfo;
+            //         that.hourlyInfo = hourlyInfos.Description;
+            //         let timeArray = [];
+            //         let tempArray = [];
+            //         let apparentTemp = [];
+            //         hourlyInfos.Temperature.forEach((temp) => {
+            //             timeArray.push(temp.Time);
+            //             tempArray.push(temp.Value);
+            //         });
+            //         hourlyInfos.ApparentTemperature.forEach((temp) => {
+            //             apparentTemp.push(temp.Value);
+            //         });
+            //         that.chartTemp(timeArray, tempArray, apparentTemp);
+
+            //         let precipTimeArray = [];
+            //         let precipValueArray = [];
+            //         hourlyInfos.Precipitations.forEach((prec) => {
+            //             precipTimeArray.push(prec.Time);
+            //             precipValueArray.push(prec.Probability);
+            //         });
+            //         that.echartPrecipitation(precipTimeArray, precipValueArray);
+
+            //         that.hoursForecast = []
+            //         hourlyInfos.SkyconInfo.forEach((skycon) => {
+            //             that.hoursForecast.push({
+            //                 "time": skycon.Time,
+            //                 "value": skycon.Value,
+            //                 "alias": skycon._Value
+            //             });
+            //         });
+            //     } else {
+            //         showFailToast({
+            //             "wordBreak": "break-word",
+            //             "message": "Identity expired.",
+            //             "duration": 800
+            //         });
+            //     }
+            // });
 
         } else {
             showFailToast('need login')
@@ -192,23 +249,25 @@ export default {
                     type: 'category',
                     data: xData,
                 },
-                yAxis: {
-                    type: 'value'
-                },
+                yAxis: [{
+                    type: 'value' 
+                },{
+                    type: 'value' 
+                },],
                 legend: {
-                    data: ['气温', '体感气温'],
+                    data: ['温度', '降水概率'],
                     right: 30
                 },
                 series: [
                     {
-                        name: '气温',
+                        name: '温度',
                         type: 'line',
-                        smooth: true,
+                        smooth: true,yAxisIndex: '0',
                         data: y1Data
                     }, {
-                        name: '体感气温',
+                        name: '降水概率',
                         type: 'line',
-                        smooth: true,
+                        smooth: true,yAxisIndex: '1',
                         data: y2Data
                     },
                 ]
@@ -243,6 +302,12 @@ export default {
             };
             option && myChart.setOption(option);
         },
+
+        getDayofWeek(datestr){
+            const weeks=['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+            var dayofweek=(new Date(datestr)).getDay();
+            return weeks[dayofweek] 
+        }
     }
 }; 
 </script>
@@ -252,6 +317,10 @@ export default {
     --van-cell-group-title-font-size: 20px;
     --van-cell-group-title-color: rgb(0, 102, 255);
     --van-cell-value-color: #000000;
+}
+
+.labelcustom{
+    
 }
 </style>
 

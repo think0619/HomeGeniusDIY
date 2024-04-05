@@ -30,7 +30,7 @@ namespace TextVoiceServer.DBContext
             modelBuilder.Entity<NetInfo>(entity => { entity.HasKey(e => e.RecId); });
             modelBuilder.Entity<APiConfig>(entity => { entity.HasKey(e => e.recid); });
             modelBuilder.Entity<ESPConfig>(entity => { entity.HasKey(e => e.recid); });
-            modelBuilder.Entity<LoginUser>(entity => { entity.HasKey(e => e.RecId); });
+            modelBuilder.Entity<LoginUser>(entity => { entity.HasKey(e => e.Id); });
         }
     }
 }
