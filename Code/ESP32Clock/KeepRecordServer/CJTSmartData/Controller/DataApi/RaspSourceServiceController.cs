@@ -60,5 +60,42 @@ namespace TextVoiceServer.DataApi
             }
             return Ok(tip);
         }
+
+
+        [HttpGet("setclockurl")]
+        [HttpPost("setclockurl")]
+        public async Task<IActionResult> SetRaspClockUrl([FromForm]string clocksrc)
+        {
+            TipResult tip = new TipResult()
+            {
+                Status = 0,
+                Msg = "", 
+            };
+            try
+            {
+                using (var dbcontext = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>())
+                {
+                    foreach (var item in dbcontext.tb_vlcsrc.Where(t => t.Status == 1))
+                    {
+                        if (item.Value.Equals(clocksrc))
+                        {
+                            item.IsClockSrc = 1;
+                        }
+                        else
+                        {
+                            item.IsClockSrc = 0;
+                        } 
+                    }  
+                   await dbcontext.SaveChangesAsync(); 
+                    tip.Status = 1;
+                    tip.Msg = "Success";
+                }
+            }
+            catch (Exception ex)
+            {
+                tip.Msg = ex.Message;
+            }
+            return Ok(tip);
+        }
     }
 }

@@ -7,9 +7,9 @@
             <div>
                 <van-cell center title="Is running">
                     <template #right-icon>
-                        <van-switch v-model="vlcrunning"   @change="onRunningChanged"/>
+                        <van-switch v-model="vlcrunning" @change="onRunningChanged" />
                     </template>
-                </van-cell> 
+                </van-cell>
             </div>
             <!-- <div style="margin-top:10px">
                 <van-space size="1rem">
@@ -60,9 +60,27 @@
                         <van-radio name="5">6s</van-radio>
                     </van-radio-group>
                     <van-button type="primary" @click="setScheduleTask();">Confirm</van-button>
-                </van-space> 
+                </van-space>
             </div>
-               <div style="margin-top:10px" class="oparea">
+
+
+            <!-- clock source -->
+            <div style="margin-top: 15px;" class="oparea">
+                <van-space>
+                    <div>
+                        <van-field v-model="clocksrcresult" is-link readonly name="picker" label="Clock Source" placeholder="Select source" @click="colShowPicker = true" />
+                        <van-popup v-model:show="colShowPicker" position="bottom">
+                            <van-picker :columns="vlccolumns" @confirm="onconfirmClockSrc" @cancel="colShowPicker = false" />
+                        </van-popup>
+                    </div> <van-button type="primary" @click="changeclocksrc();">Change</van-button>
+                </van-space>
+                <van-cell-group inset>
+                    <van-field autosize v-model="clocksrcinput" label=" " label-width="0" type="textarea" rows="1" />
+                </van-cell-group>
+            </div>
+            <!-- clock source -->
+
+            <div style="margin-top:10px" class="oparea">
                 <span>Temp ops</span>
                 <van-space size="1rem">
                     <van-button type="primary" @click="sendmsg('rasp', 'play');" block
@@ -70,7 +88,7 @@
                     <van-button type="primary" @click="sendmsg('rasp', 'stop');" block
                         style="width: 80px;">Stop</van-button>
                     <van-button type="primary" @click="sendmsg('rasp', 'pause');" block
-                        style="width: 80px;">Pause</van-button> 
+                        style="width: 80px;">Pause</van-button>
                 </van-space>
             </div>
         </div>
@@ -90,7 +108,7 @@ const active = ref(route.path);
 import { showSuccessToast, showFailToast, showToast } from 'vant';
 import { getMQTTInfo } from "@/api/mqtthelper";
 import * as mqtt from "mqtt/dist/mqtt.min";
-import { getvlcsrc } from "@/api/rasp"
+import { getvlcsrc,setclocksrc } from "@/api/rasp"
 
 export default {
     components: {
@@ -103,6 +121,8 @@ export default {
             msgcontent: '',
             vlcresult: '',
             vlcinputsrc: '',
+            clocksrcresult: '',
+            clocksrcinput: '',
             vlcSrcResultValue: '',
             colShowPicker: false,
             volumeValue: 0,
@@ -221,8 +241,7 @@ export default {
                                         return;
                                     }
                                 });
-                            } 
-
+                            }  
                         }
                     } catch (err) {
                     }
@@ -301,8 +320,35 @@ export default {
             var selectOption = result.selectedOptions[0];
             this.vlcresult = selectOption?.text;
             this.vlcSrcResultValue = selectOption?.value;
-            this.colShowPicker = false; 
-
+            this.colShowPicker = false;  
+        },
+        onconfirmClockSrc(result) {
+            var selectOption = result.selectedOptions[0];
+            this.clocksrcresult  = selectOption?.text;
+            // this.vlcSrcResultValue = selectOption?.value;
+            this.clocksrcinput= selectOption?.value;
+            this.colShowPicker = false;  
+        },
+        changeclocksrc(){
+            let that=this;
+            setclocksrc(that.clocksrcinput).then((result) => {
+                        if (result != null && result.status == 200) {
+                            let resultdata = result.data;
+                            if (resultdata.Status == 1) {
+                                showSuccessToast({
+                                    "wordBreak": "break-word",
+                                    "message": "The clock source has been changed.",
+                                    "duration": 800
+                                });
+                            } else {
+                                showFailToast({
+                                    "wordBreak": "break-word",
+                                    "message": "Identity expired." + resultdata.Msg,
+                                    "duration": 800
+                                });
+                            }
+                        }
+                    }) 
         },
         setScheduleTask() {
             // scheduleCheck: '0',

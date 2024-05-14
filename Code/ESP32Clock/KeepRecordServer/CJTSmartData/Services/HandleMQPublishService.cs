@@ -52,9 +52,7 @@ namespace TextVoiceServer.Serivices
                       .WithPayload(msg)
                       .Build();
             await mqttClient.PublishAsync(applicationMessage, CancellationToken.None);
-        }
-
-
+        }  
 
         public async void PublishCommandMQ()
         { 
@@ -63,8 +61,7 @@ namespace TextVoiceServer.Serivices
             using (var mqttClient = mqttFactory.CreateMqttClient())
             {
                 var mqttClientOptions = new MqttClientOptionsBuilder()
-                    .WithTcpServer("hw.hellolinux.cn", 1883)
-                    
+                    .WithTcpServer("hw.hellolinux.cn", 1883) 
                     .WithCredentials("homediskrelay", "@Xiongsen1994!+")
                     .Build();
 

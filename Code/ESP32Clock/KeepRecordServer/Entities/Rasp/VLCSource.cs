@@ -10,6 +10,7 @@ namespace Entities.Rasp
         public string Name { get; set; }
         public string Value { get; set; }
         public string Remark { get; set; }
+        public int? IsClockSrc { get; set; }
         public int Status { get; set; }
          
     }

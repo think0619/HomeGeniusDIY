@@ -12,3 +12,17 @@ export function getvlcsrc() {
         data: ''
     })
 }
+
+export function setclocksrc(_clocksrc) {
+    var url = serverUrl + "/api/raspsrc/setclockurl";
+    let fromData = new FormData()
+    fromData.append('clocksrc', _clocksrc)
+    return axios({
+        url: url,
+        method: "post",
+        // headers: {
+        //     'Content-Type': 'application/json'
+        // },
+        data: fromData
+    })
+}
