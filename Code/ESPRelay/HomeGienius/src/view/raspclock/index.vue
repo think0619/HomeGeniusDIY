@@ -35,11 +35,10 @@
             <div style="margin-top: 15px;" class="oparea">
                 <van-space>
                     <div>
-                        <van-field v-model="vlcresult" is-link readonly name="picker" label="Source"
-                            placeholder="Select source" @click="colShowPicker = true" />
+                        <van-field v-model="vlcresult" is-link readonly name="picker" label="Source" placeholder="Select source" @click="colShowPicker = true" />
                         <van-popup v-model:show="colShowPicker" position="bottom">
                             <van-picker :columns="vlccolumns" @confirm="onconfirmvlc" @cancel="colShowPicker = false" />
-                        </van-popup>
+                        </van-popup>  
                     </div>
                     <van-button type="primary" @click="changevlcsrc();">Change</van-button>
                 </van-space>
@@ -68,11 +67,12 @@
             <div style="margin-top: 15px;" class="oparea">
                 <van-space>
                     <div>
-                        <van-field v-model="clocksrcresult" is-link readonly name="picker" label="Clock Source" placeholder="Select source" @click="colShowPicker = true" />
-                        <van-popup v-model:show="colShowPicker" position="bottom">
-                            <van-picker :columns="vlccolumns" @confirm="onconfirmClockSrc" @cancel="colShowPicker = false" />
+                        <van-field v-model="clocksrcresult" is-link readonly name="picker2" label="Clock Source" placeholder="Select source" @click="colShowPicker1 = true" />
+                        <van-popup v-model:show="colShowPicker1" position="bottom">
+                            <van-picker :columns="vlccolumns" @confirm="onconfirmClockSrc" @cancel="colShowPicker1 = false" />
                         </van-popup>
-                    </div> <van-button type="primary" @click="changeclocksrc();">Change</van-button>
+                    </div> 
+                    <van-button type="primary" @click="changeclocksrc();">Change</van-button>
                 </van-space>
                 <van-cell-group inset>
                     <van-field autosize v-model="clocksrcinput" label=" " label-width="0" type="textarea" rows="1" />
@@ -108,7 +108,7 @@ const active = ref(route.path);
 import { showSuccessToast, showFailToast, showToast } from 'vant';
 import { getMQTTInfo } from "@/api/mqtthelper";
 import * as mqtt from "mqtt/dist/mqtt.min";
-import { getvlcsrc,setclocksrc } from "@/api/rasp"
+import { getvlcsrc,setclocksrc,getdefaultclocksrc } from "@/api/rasp"
 
 export default {
     components: {
@@ -125,6 +125,7 @@ export default {
             clocksrcinput: '',
             vlcSrcResultValue: '',
             colShowPicker: false,
+            colShowPicker1: false,
             volumeValue: 0,
             vlcrunning: false,
             vlccolumns: [
@@ -149,6 +150,7 @@ export default {
         this.setTitle();
         let token = this.$store.state.token;
         if (token) {
+         
             getMQTTInfo(token).then((mqttr) => {
                 if (mqttr != null && mqttr.Status == 1) {
                     let mqttdata = mqttr.Data;
@@ -178,8 +180,9 @@ export default {
                                 });
                             }
                         }
+                        this.getDefaultClockUrl();
                     })
-
+                  
                     this.connectMQTT(mqtt_wsurl, mqtt_username, mqtt_password)
                 } else {
                     showFailToast({
@@ -327,7 +330,7 @@ export default {
             this.clocksrcresult  = selectOption?.text;
             // this.vlcSrcResultValue = selectOption?.value;
             this.clocksrcinput= selectOption?.value;
-            this.colShowPicker = false;  
+            this.colShowPicker1 = false;  
         },
         changeclocksrc(){
             let that=this;
@@ -378,7 +381,29 @@ export default {
                 this.sendmsg('rasp', 'stop')
             }
 
-        } 
+        },
+        getDefaultClockUrl() {
+            getdefaultclocksrc().then((result) => {
+                if (result != null && result.status == 200) {
+                    let resultdata = result.data;
+                    if (resultdata.Status == 1) {
+                        this.clocksrcinput=resultdata.Data
+                        this.vlccolumns.forEach(col => {
+                                    if(col.value==resultdata.Data){
+                                        this.clocksrcresult=col.text;
+                                        return;
+                                    }
+                                });
+                    } else {
+                        showFailToast({
+                            "wordBreak": "break-word",
+                            "message": "Identity expired." + resultdata.Msg,
+                            "duration": 800
+                        });
+                    }
+                }
+            })
+        }
     }
 }; 
 </script>

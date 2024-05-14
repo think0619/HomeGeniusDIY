@@ -26,3 +26,15 @@ export function setclocksrc(_clocksrc) {
         data: fromData
     })
 }
+
+export function getdefaultclocksrc() {
+    var url = serverUrl + "/api/raspsrc/getclockurl";
+    return axios({
+        url: url,
+        method: "post",
+        // headers: {
+        //     'Content-Type': 'application/json'
+        // },
+        // data: fromData
+    })
+}
