@@ -17,8 +17,7 @@ using TextVoiceServer.DBHandler;
 using TextVoiceServer.Serivices;
 using RestSharp;
 using Entities.User; 
-using Entities.Weather;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Entities.Weather; 
 using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace TextVoiceServer.DataApi

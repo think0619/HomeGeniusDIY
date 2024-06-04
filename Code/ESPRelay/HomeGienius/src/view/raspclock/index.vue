@@ -32,13 +32,16 @@
                     <van-button type="primary" @click="volumectrl('down');">Volume -</van-button>
                     <van-button type="primary" @click="volumectrl('half');">Volume 50%</van-button> -->
             </div>
+
+            <!-- radio source -->
             <div style="margin-top: 15px;" class="oparea">
                 <van-space>
                     <div>
-                        <van-field v-model="vlcresult" is-link readonly name="picker" label="Source" placeholder="Select source" @click="colShowPicker = true" />
+                        <van-field v-model="vlcresult" is-link readonly name="picker" label="Radio Source"
+                            placeholder="Select source" @click="colShowPicker = true" />
                         <van-popup v-model:show="colShowPicker" position="bottom">
                             <van-picker :columns="vlccolumns" @confirm="onconfirmvlc" @cancel="colShowPicker = false" />
-                        </van-popup>  
+                        </van-popup>
                     </div>
                     <van-button type="primary" @click="changevlcsrc();">Change</van-button>
                 </van-space>
@@ -47,6 +50,22 @@
                     <van-button type="primary" @click="changevlcsrcmanual();">Change</van-button>
                 </van-space>
             </div>
+            <!-- radio source -->
+
+             <!-- File source -->
+             <div style="margin-top: 15px;" class="oparea">
+                <van-space>
+                    <div>
+                        <van-field v-model="vlcinputlocalfilesrc" is-link readonly name="picker" label="File Source"  label-width="60" placeholder="Select source" @click="localFileShowPicker = true" type="textarea" rows="1"/>
+                        <van-popup v-model:show="localFileShowPicker" position="bottom">
+                            <van-picker :columns="vlclocalfiles" @confirm="onconfirmlocalFile" @cancel="localFileShowPicker = false" />
+                        </van-popup>
+                    </div>
+                    <van-button type="primary" @click="changevlcfilesrc();">Change</van-button>
+                </van-space>
+                
+            </div>
+            <!-- File source -->
 
             <div style="margin-top: 15px;" class="oparea">
                 <span style="font-size: var(--van-cell-font-size)">Countdown(min):</span>
@@ -67,11 +86,13 @@
             <div style="margin-top: 15px;" class="oparea">
                 <van-space>
                     <div>
-                        <van-field v-model="clocksrcresult" is-link readonly name="picker2" label="Clock Source" placeholder="Select source" @click="colShowPicker1 = true" />
+                        <van-field v-model="clocksrcresult" is-link readonly name="picker2" label="Clock Source"
+                            placeholder="Select source" @click="colShowPicker1 = true" />
                         <van-popup v-model:show="colShowPicker1" position="bottom">
-                            <van-picker :columns="vlccolumns" @confirm="onconfirmClockSrc" @cancel="colShowPicker1 = false" />
+                            <van-picker :columns="vlccolumns" @confirm="onconfirmClockSrc"
+                                @cancel="colShowPicker1 = false" />
                         </van-popup>
-                    </div> 
+                    </div>
                     <van-button type="primary" @click="changeclocksrc();">Change</van-button>
                 </van-space>
                 <van-cell-group inset>
@@ -108,7 +129,7 @@ const active = ref(route.path);
 import { showSuccessToast, showFailToast, showToast } from 'vant';
 import { getMQTTInfo } from "@/api/mqtthelper";
 import * as mqtt from "mqtt/dist/mqtt.min";
-import { getvlcsrc,setclocksrc,getdefaultclocksrc } from "@/api/rasp"
+import { getvlcsrc,setclocksrc,getdefaultclocksrc,getlocalfilesrc} from "@/api/rasp"
 
 export default {
     components: {
@@ -121,11 +142,14 @@ export default {
             msgcontent: '',
             vlcresult: '',
             vlcinputsrc: '',
+            vlcinputlocalfilesrc:'', 
+            vlclocalfilesrc: '',
             clocksrcresult: '',
             clocksrcinput: '',
             vlcSrcResultValue: '',
             colShowPicker: false,
             colShowPicker1: false,
+            localFileShowPicker: false,
             volumeValue: 0,
             vlcrunning: false,
             vlccolumns: [
@@ -138,6 +162,9 @@ export default {
                 // { text: '江苏交通广播', value: 'http://satellitepull.cnr.cn/live/wx32jsjtgb/playlist.m3u8' },
                 // { text: 'CNR经典音乐广播', value: 'http://liveop.cctv.cn/hls/jdyygb192/playlist.m3u8' },
                 // { text: '南京音乐广播', value: 'http://live.njgb.com:10588/show.mp3' },
+            ],
+            vlclocalfiles:[
+            { text: 'filename', value: 'Filepath' },
             ],
             scheduleCheck: '0',
         };
@@ -181,6 +208,31 @@ export default {
                             }
                         }
                         this.getDefaultClockUrl();
+                    })
+                    
+                    getlocalfilesrc().then((result) => {
+                        if (result != null && result.status == 200) {
+                            let resultdata = result.data;
+                            if (resultdata.Status == 1) {
+                                let videolist = resultdata.Data;
+                                if (videolist != null && videolist.length > 0) {
+                                    let that = this;
+                                    that.vlclocalfiles = [];
+                                    videolist.forEach(element => {
+                                        that.vlclocalfiles.push({
+                                            text: element.FileName,
+                                            value: element.FullFileSrc
+                                        })
+                                    });
+                                }
+                            } else {
+                                showFailToast({
+                                    "wordBreak": "break-word",
+                                    "message": "Identity expired." + resultdata.Msg,
+                                    "duration": 800
+                                });
+                            }
+                        } 
                     })
                   
                     this.connectMQTT(mqtt_wsurl, mqtt_username, mqtt_password)
@@ -305,6 +357,15 @@ export default {
                 }, 3000); 
             }
         },
+        changevlcfilesrc() {
+            let that = this;
+            if (that.vlclocalfilesrc) {
+                that.sendmsg('rasp', `changesrc|${that.vlcSrcResultValue}`);
+                // setTimeout(() => {
+                    
+                // }, 3000); 
+            }
+        },
         changevlcsrcmanual() {
             let that = this;
             if (that.vlcinputsrc) {
@@ -331,7 +392,14 @@ export default {
             // this.vlcSrcResultValue = selectOption?.value;
             this.clocksrcinput= selectOption?.value;
             this.colShowPicker1 = false;  
-        },
+        }, 
+        onconfirmlocalFile(result) {
+            var selectOption = result.selectedOptions[0];
+            this.vlcinputlocalfilesrc  = selectOption?.text;
+            // this.vlcSrcResultValue = selectOption?.value;
+            this.vlclocalfilesrc= selectOption?.value;
+            this.localFileShowPicker = false;  
+        }, 
         changeclocksrc(){
             let that=this;
             setclocksrc(that.clocksrcinput).then((result) => {

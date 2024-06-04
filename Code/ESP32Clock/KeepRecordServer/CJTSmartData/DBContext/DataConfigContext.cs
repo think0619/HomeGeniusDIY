@@ -20,8 +20,9 @@ namespace TextVoiceServer.DBContext
         public DbSet<APiConfig> tb_apiconfig { get; set; }
         public DbSet<ESPConfig> tb_espconfig { get; set; }
         public DbSet<LoginUser> tb_user { get; set; }
-        
+        public DbSet<LocalFileSrc> tb_localfile { get; set; }
 
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -31,6 +32,7 @@ namespace TextVoiceServer.DBContext
             modelBuilder.Entity<APiConfig>(entity => { entity.HasKey(e => e.recid); });
             modelBuilder.Entity<ESPConfig>(entity => { entity.HasKey(e => e.recid); });
             modelBuilder.Entity<LoginUser>(entity => { entity.HasKey(e => e.Id); });
+            modelBuilder.Entity<LocalFileSrc>(entity => { entity.HasKey(e => e.Id); });
         }
     }
 }

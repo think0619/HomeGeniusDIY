@@ -38,3 +38,15 @@ export function getdefaultclocksrc() {
         // data: fromData
     })
 }
+
+export function getlocalfilesrc() {
+    var url = serverUrl + "/api/raspsrc/getlocallist";
+    return axios({
+        url: url,
+        method: "post",
+        // headers: {
+        //     'Content-Type': 'application/json'
+        // },
+        // data: fromData
+    })
+}

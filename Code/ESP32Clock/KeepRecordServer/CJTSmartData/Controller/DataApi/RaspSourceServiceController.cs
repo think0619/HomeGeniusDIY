@@ -17,6 +17,7 @@ using TextVoiceServer.DBHandler;
 using Microsoft.AspNetCore.Authorization;
 using MsgMiddleServer.ComHandler;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Entities.Rasp;
 
 namespace TextVoiceServer.DataApi
 {
@@ -127,6 +128,42 @@ namespace TextVoiceServer.DataApi
             return Ok(tip);
         }
 
+        [HttpGet("getlocallist")]
+        [HttpPost("getlocallist")]
+        public async Task<IActionResult> GetLocalList()
+        {
+            TipResult tip = new TipResult()
+            {
+                Status = 0,
+                Msg = "",
+            };
+            try
+            {
+                using (var dbcontext = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataConfigContext>())
+                {
+                    tip.Data = await dbcontext.tb_localfile.Where(t => t.Status == 1).Select(x=>new 
+                    {
+                        FileName=x.FileName,
+                        FullFileSrc=x.FullFileSrc,
+                        ShowName = x.ShowName
 
+                    }).ToListAsync(); ;
+                    //tip.Data = await dbcontext.tb_localfile.Where(t => t.Status == 1).Select(x => new LocalFileSrc
+                    //{
+                    //    FileName = x.FileName,
+                    //    ShowName = x.ShowName,
+                      
+                    //    // Folder property will be ignored due to [JsonIgnore]
+                    //}).ToListAsync();
+                    tip.Status = 1;
+                    tip.Msg = "Success";
+                }
+            }
+            catch (Exception ex)
+            {
+                tip.Msg = ex.Message;
+            }
+            return Ok(tip);
+        }
     }
 }

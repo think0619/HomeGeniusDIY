@@ -19,8 +19,7 @@ using MsgMiddleServer.ComHandler;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using MySqlX.XDevAPI.Common;
-using Microsoft.AspNetCore.Http.HttpResults;
+using MySqlX.XDevAPI.Common; 
 
 namespace TextVoiceServer.DataApi
 {
