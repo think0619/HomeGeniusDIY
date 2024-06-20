@@ -32,6 +32,14 @@
                     <van-button type="primary" @click="volumectrl('down');">Volume -</van-button>
                     <van-button type="primary" @click="volumectrl('half');">Volume 50%</van-button> -->
             </div>
+            <div style="margin-top:15px;padding-bottom: 20px;" class="oparea">
+                <van-space direction="vertical" fill size="1.5rem">
+                    <span>Position</span>
+                    <div style="display: flex; justify-content: center;">
+                        <van-slider v-model="positionValue" @change="onPositionChange" style="width: 90%;" />
+                    </div>
+                </van-space> 
+            </div>
 
             <!-- radio source -->
             <div style="margin-top: 15px;" class="oparea">
@@ -151,6 +159,7 @@ export default {
             colShowPicker1: false,
             localFileShowPicker: false,
             volumeValue: 0,
+            positionValue: 0,
             vlcrunning: false,
             vlccolumns: [
                 { text: '中国之声', value: 'http://ngcdn001.cnr.cn/live/zgzs/index.m3u8' },
@@ -360,7 +369,7 @@ export default {
         changevlcfilesrc() {
             let that = this;
             if (that.vlclocalfilesrc) {
-                that.sendmsg('rasp', `changesrc|${that.vlcSrcResultValue}`);
+                that.sendmsg('rasp', `changesrc|${that.vlclocalfilesrc}`);
                 // setTimeout(() => {
                     
                 // }, 3000); 
@@ -440,6 +449,13 @@ export default {
             console.log("change")
             if (value != null && value >= 0 && value <= 100) {
                 this.sendmsg('rasp', `volume|${value}`);
+            }
+        },
+        
+        onPositionChange(value) {
+            console.log("change postion")
+            if (value != null && value >= 0 && value <= 100) {
+                this.sendmsg('rasp', `changetime|${value}`);
             }
         },
         onRunningChanged(value){

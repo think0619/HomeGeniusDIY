@@ -96,6 +96,12 @@ def subscribe(client: mqtt_client,player:VlcPlayer,pinnum):
                if src!=None:
                    relayhandler.controlrelay(5,1)
                    player.set_uri(src) 
+                   player.play()   
+            elif(cmdmsg.find('changetime')==0):
+                #`changetime|${that.vlcSrcResultValue}`
+               position=cmdmsg.split("|")[1]
+               if position!=None and position>=0 and position<1:
+                   player.set_position(position) 
                    player.play()  
             elif(cmdmsg.find('volume')==0):
                 #`volume|up` `volume|down`
