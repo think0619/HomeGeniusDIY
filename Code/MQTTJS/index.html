@@ -72,11 +72,14 @@
     <script>
         var machineID = 'ABC001';
         const url2 = "ws://10.10.10.49:8083/mqtt";
-        const url = 'ws://hw.hellolinux.cn:8083/mqtt';
-        const client = mqtt.connect(url)
+        const url = 'ws://hw.hellolinux.cn:8083';
+        const client = mqtt.connect(url, {
+            username: 'homediskrelay',
+            password: '@Xiongsen1994!+'
+        })
 
         client.on('connect', function() {
-            client.subscribe('CMD', function(err) {
+            client.subscribe('RaspController', function(err) {
                 if (!err) {
                     // client.publish('CMD', 'Hello mqtt')
                 }

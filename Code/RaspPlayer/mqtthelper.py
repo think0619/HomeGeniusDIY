@@ -99,10 +99,20 @@ def subscribe(client: mqtt_client,player:VlcPlayer,pinnum):
                    player.play()   
             elif(cmdmsg.find('changetime')==0):
                 #`changetime|${that.vlcSrcResultValue}`
-               position=cmdmsg.split("|")[1]
-               if position!=None and position>=0 and position<1:
-                   player.set_position(position) 
-                   player.play()  
+               position_str=cmdmsg.split("|")[1]
+               try: 
+                   #print("position_str:"+position_str) 
+                   position = float(position_str) / 100  # 尝试将字符串转换为浮点数
+                   if 0 <= position <= 1:
+                       #print("position:"+str(position) )
+                       player.set_position(position) 
+                       player.play()  
+                   else: 
+                       pass
+                       #print("position不在0到1之间")
+               except ValueError:
+                   pass
+                   #print("提取的position值无法转换为浮点数")  
             elif(cmdmsg.find('volume')==0):
                 #`volume|up` `volume|down`
                action=cmdmsg.split("|")[1]

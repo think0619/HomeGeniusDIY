@@ -7,11 +7,16 @@
         <div style="margin-top: 20px;">
             <div class="sysname"><span>Air Condition</span></div>
             <van-space size="1rem" wrap>
-                <van-button type="primary" @click="sendmsg('aircondition', 'turnon');">Turn on</van-button>
-                <van-button type="primary" @click="sendmsg('aircondition', 'turnoff');">Turn off</van-button>
-                <van-button type="primary" @click="sendmsg('aircondition', 'turnoff');">Mode</van-button>
-                <van-button type="primary" @click="sendmsg('aircondition', 'turnoff');">Temp +</van-button>
-                <van-button type="primary" @click="sendmsg('aircondition', 'turnoff');">Temp -</van-button>
+                <van-button type="primary" @click="sendmsg('aircondition', 'off');">Power Off</van-button> 
+            </van-space>
+            <van-space size="1rem" wrap>
+                <van-button type="primary" @click="sendmsg('aircondition', 'cold24');">Cold 24</van-button>
+                <van-button type="primary" @click="sendmsg('aircondition', 'cold25');">Cold 25</van-button>
+                <van-button type="primary" @click="sendmsg('aircondition', 'cold25T1h');">Cold 25-1H</van-button>
+                <van-button type="primary" @click="sendmsg('aircondition', 'cold25T2h');">Cold 25-2H</van-button> 
+            </van-space>
+             <van-space size="1rem" wrap>
+                <van-button type="primary" @click="sendmsg('aircondition', 'warmon');">Warm on</van-button> 
             </van-space>
         </div>
         <div style="margin-top: 20px;">
