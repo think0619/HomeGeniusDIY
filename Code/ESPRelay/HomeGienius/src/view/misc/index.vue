@@ -4,11 +4,11 @@
     </div>
     <div class="control">
         <div style="margin-top: 15px;">
-            <div class="sysname"><span>办公室门锁</span></div>
+            <div class="sysname"><span>控制测试</span></div>
             <van-space direction="vertical" fill size="15px"> 
-                <van-button type="primary" block @click="sendmsg('other', 'officedooropen');">开锁</van-button>
-                <van-button type="primary" block @click="sendmsg('other', 'officeopendoornon');">常开</van-button>
-                <van-button type="primary" block @click="sendmsg('other', 'officeopendoornoff');">解除常开</van-button>
+                <van-button type="primary" block @click="sendmsg('other', 'officedooropen');">test</van-button>
+                <!-- <van-button type="primary" block @click="sendmsg('other', 'officeopendoornon');">常开</van-button>
+                <van-button type="primary" block @click="sendmsg('other', 'officeopendoornoff');">解除常开</van-button> -->
             </van-space>
         </div>
     </div>
