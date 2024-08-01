@@ -4,16 +4,13 @@
     </div>
     <div class="control">
         <div style="margin-top: 15px;">
-            <div class="sysname"><span>For Office</span></div>
-            <van-space direction="vertical" fill size="15px"> 
-                <van-button type="primary" block @click="sendmsg('other', 'aircondition');">Air Condition</van-button>
-                <van-button type="primary" block @click="sendmsg('other', 'officedooropen');">Door</van-button>
-            </van-space>
-            <van-space direction="vertical" fill size="15px"> 
-             
-            </van-space>
-            
-           
+            <div class="sysname"><span>For Office</span></div> 
+            <van-row gutter="20">
+                <van-col span="10"> <van-button type="primary" block @click="sendmsg('other', 'aircondition');"
+                        icon="fire-o">Air Condition</van-button></van-col>
+                <van-col span="10"> <van-button type="primary" block
+                    icon="aim" @click="sendmsg('other', 'officedooropen');">Door</van-button></van-col>
+            </van-row>
         </div>
     </div>
 </template>
