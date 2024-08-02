@@ -32,7 +32,7 @@ def updatetime_func():
 #        print(micropythonntp.Gettime())
          settimefromserver()
          print("1")
-#        print("sync time success")
+         print("sync time success")
     except: 
         pass
 

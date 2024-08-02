@@ -74,8 +74,9 @@ def pressmock_pmw():
     ts_init = int((zerodeg/180*2 + 0.5) /20 *1023)
     pwmkey.duty(ts_init) 
     pwmkey.duty(pressdeg)
-    time.sleep(0.5)
+    time.sleep(0.3)
     pwmkey.duty(ts_init)
+    time.sleep(2)
  
    
 

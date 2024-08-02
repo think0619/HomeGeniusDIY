@@ -48,14 +48,15 @@ def notifyFunc():
                 #uart.write(bytes(stopdata))
             time.sleep(0.5) 
     except:
+        print('notifyFunc err')
         pass
 
-if(main.connectwifi_func()): 
-     print('111111') 
+if(main.connectwifi_func()):  
      #_thread.start_new_thread(main.updatetime_func, ()) 
-     _thread.start_new_thread(main.connectmqtt, ())
      main.updatetime_func()
-     _thread.start_new_thread(notifyFunc, ())
+     _thread.start_new_thread(main.connectmqtt, ())
+     #_thread.start_new_thread(notifyFunc, ())
+     
  
 
     
