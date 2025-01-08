@@ -4,22 +4,29 @@
     </div>
     <div class="control">
 
-        <div style="margin-top: 20px;">
+        <div style="margin-top: 20px;" class="content">
             <div class="sysname"><span>Air Condition</span></div>
             <van-space size="1rem" wrap>
-                <van-button type="primary" @click="sendmsg('aircondition', 'off');">Power Off</van-button> 
+                <van-button type="danger" @click="sendmsg('aircondition', 'off');">Power Off</van-button> 
             </van-space>
-            <van-space size="1rem" wrap>
-                <van-button type="primary" @click="sendmsg('aircondition', 'cold24');">Cold 24</van-button>
-                <van-button type="primary" @click="sendmsg('aircondition', 'cold25');">Cold 25</van-button>
-                <van-button type="primary" @click="sendmsg('aircondition', 'cold25T1h');">Cold 25-1H</van-button>
-                <van-button type="primary" @click="sendmsg('aircondition', 'cold25T2h');">Cold 25-2H</van-button> 
-            </van-space>
+            <van-divider :style="{ color: '#1989fa', borderColor: '#1989fa', padding: '0' ,margin:'2px 0' }" > Cold </van-divider>
+            <van-space size="1rem" wrap fill="true" >
+                <van-button type="primary"  @click="sendmsg('aircondition', 'cold24');">24℃</van-button>
+                <van-button type="primary"  @click="sendmsg('aircondition', 'cold25');">25℃</van-button>
+                <van-button type="primary"  @click="sendmsg('aircondition', 'cold25T1h');">25℃ 1h</van-button>
+                <van-button type="primary"  @click="sendmsg('aircondition', 'cold25T2h');">25℃ 2h</van-button> 
+            </van-space> 
+            <van-divider :style="{ color: '	#F4A460', borderColor: '	#F4A460', padding: '0' ,margin:'2px 0' }" > Warm </van-divider>
              <van-space size="1rem" wrap>
-                <van-button type="primary" @click="sendmsg('aircondition', 'warmon');">Warm on</van-button> 
+                <van-button type="warning"  color="linear-gradient(to right, #1989fa, #ee0a24)" @click="sendmsg('aircondition', 'warm25');">25℃</van-button> 
+                <van-button type="warning"  color="linear-gradient(to right, #1989fa, #ee0a24)" @click="sendmsg('aircondition', 'warm26');">26℃</van-button> 
+                <van-button type="warning" color="linear-gradient(to right, #1989fa, #ee0a24)" @click="sendmsg('aircondition', 'warm27');">27℃</van-button> 
+                <van-button type="warning" color="linear-gradient(to right, #1989fa, #ee0a24)" @click="sendmsg('aircondition', 'warmon');">28℃</van-button> 
+                <van-button type="warning" color="linear-gradient(to right, #1989fa, #ee0a24)" @click="sendmsg('aircondition', 'warm26T1h');">26℃ 1h</van-button> 
+                <van-button type="warning" color="linear-gradient(to right, #1989fa, #ee0a24)" @click="sendmsg('aircondition', 'warm26T2h');">26℃ 2h</van-button> 
             </van-space>
         </div>
-        <div style="margin-top: 20px;">
+        <div style="margin-top: 20px;" class="content2">
             <div class="sysname"><span>Polk Bluetooth speaker</span></div>
             <van-row gutter="5">
                 <van-col span="6">
@@ -225,5 +232,11 @@ export default {
 }
 .rowmagrin{
     margin: 18px 0 0 0;
+}
+.content button{
+    width: 100px;
+}
+.content2 button{
+    width: 80px;
 }
 </style>

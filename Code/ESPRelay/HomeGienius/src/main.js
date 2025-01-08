@@ -11,7 +11,7 @@ import { Tabbar, TabbarItem } from 'vant';
 import { Toast } from 'vant';
 import { Space } from 'vant';
 import { Image as VanImage } from 'vant';
-import { Form, Card, List, } from 'vant';
+import { Form, Card, List, Divider } from 'vant';
 import { Field, Cell, CellGroup, Col, Row } from 'vant';
 import { Picker, Popup, RadioGroup, Radio, Slider, Switch } from 'vant';
 
@@ -29,6 +29,7 @@ app.use(Card);
 app.use(List);
 app.use(Cell);
 app.use(CellGroup);
+app.use(Divider);
 app.use(Field);
 app.use(Picker);
 app.use(Popup);
