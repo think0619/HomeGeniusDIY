@@ -11,19 +11,19 @@
             </van-space>
             <van-divider :style="{ color: '#1989fa', borderColor: '#1989fa', padding: '0' ,margin:'2px 0' }" > Cold </van-divider>
             <van-space size="1rem" wrap fill="true" >
-                <van-button type="primary"  @click="sendmsg('aircondition', 'cold24');">24℃</van-button>
-                <van-button type="primary"  @click="sendmsg('aircondition', 'cold25');">25℃</van-button>
-                <van-button type="primary"  @click="sendmsg('aircondition', 'cold25T1h');">25℃ 1h</van-button>
-                <van-button type="primary"  @click="sendmsg('aircondition', 'cold25T2h');">25℃ 2h</van-button> 
+                <van-button type="primary"  :icon="coldimg" @click="sendmsg('aircondition', 'cold24');">24℃</van-button>
+                <van-button type="primary"  :icon="coldimg" @click="sendmsg('aircondition', 'cold25');">25℃</van-button>
+                <van-button type="primary"  :icon="coldimg" @click="sendmsg('aircondition', 'cold25T1h');">25℃ 1h</van-button>
+                <van-button type="primary"  :icon="coldimg" @click="sendmsg('aircondition', 'cold25T2h');">25℃ 2h</van-button> 
             </van-space> 
             <van-divider :style="{ color: '	#F4A460', borderColor: '	#F4A460', padding: '0' ,margin:'2px 0' }" > Warm </van-divider>
              <van-space size="1rem" wrap>
-                <van-button type="warning"  color="linear-gradient(to right, #1989fa, #ee0a24)" @click="sendmsg('aircondition', 'warm25');">25℃</van-button> 
-                <van-button type="warning"  color="linear-gradient(to right, #1989fa, #ee0a24)" @click="sendmsg('aircondition', 'warm26');">26℃</van-button> 
-                <van-button type="warning" color="linear-gradient(to right, #1989fa, #ee0a24)" @click="sendmsg('aircondition', 'warm27');">27℃</van-button> 
-                <van-button type="warning" color="linear-gradient(to right, #1989fa, #ee0a24)" @click="sendmsg('aircondition', 'warmon');">28℃</van-button> 
-                <van-button type="warning" color="linear-gradient(to right, #1989fa, #ee0a24)" @click="sendmsg('aircondition', 'warm26T1h');">26℃ 1h</van-button> 
-                <van-button type="warning" color="linear-gradient(to right, #1989fa, #ee0a24)" @click="sendmsg('aircondition', 'warm26T2h');">26℃ 2h</van-button> 
+                <van-button type="warning"  :icon="hotimg" color="linear-gradient(to right, #1989fa, #ee0a24)" @click="sendmsg('aircondition', 'warm25');">25℃</van-button> 
+                <van-button type="warning"  :icon="hotimg" color="linear-gradient(to right, #1989fa, #ee0a24)" @click="sendmsg('aircondition', 'warm26');">26℃</van-button> 
+                <van-button type="warning" :icon="hotimg" color="linear-gradient(to right, #1989fa, #ee0a24)" @click="sendmsg('aircondition', 'warm27');">27℃</van-button> 
+                <van-button type="warning" :icon="hotimg" color="linear-gradient(to right, #1989fa, #ee0a24)" @click="sendmsg('aircondition', 'warmon');">28℃</van-button> 
+                <van-button type="warning" :icon="hotimg" color="linear-gradient(to right, #1989fa, #ee0a24)" @click="sendmsg('aircondition', 'warm26T1h');">26℃ 1h</van-button> 
+                <van-button type="warning" :icon="hotimg" color="linear-gradient(to right, #1989fa, #ee0a24)" @click="sendmsg('aircondition', 'warm26T2h');">26℃ 2h</van-button> 
             </van-space>
         </div>
         <div style="margin-top: 20px;" class="content2">
@@ -93,7 +93,9 @@ const active = ref(route.path);
 import { showSuccessToast, showFailToast, showToast, } from 'vant';
 import { login } from "@/api/config";
 import { getMQTTInfo } from "@/api/mqtthelper";
-import * as mqtt from "mqtt/dist/mqtt.min";
+import * as mqtt from "mqtt/dist/mqtt.min"; 
+import coldimg from "@/assets/img/制冷1.svg";
+import hotimg from "@/assets/img/制热.svg";
 export default {
     components: {
     },
@@ -102,6 +104,8 @@ export default {
             contentTitle: '', //  
             currentdate: '', //  
             mqttclient: null,
+            hotimg:hotimg,
+            coldimg:coldimg,
         };
     },
     computed: {

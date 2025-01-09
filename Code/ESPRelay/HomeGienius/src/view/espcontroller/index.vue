@@ -75,6 +75,7 @@
                 currentdate: '', //  
                 mqttclient: null,
                 msgcontent: '',
+              
             };
         },
         computed: {
