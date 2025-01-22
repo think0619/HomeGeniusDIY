@@ -21,6 +21,11 @@ const raspclock = () =>
 const aircondition = () =>
     import ('@/view/aircondition/index.vue')
 
+
+
+const aircondition2 = () =>
+    import ('@/view/aircondition2/index.vue')
+
 const misccontrol = () =>
     import ('@/view/misc/index.vue')
 
@@ -59,6 +64,10 @@ const routes = [{
         name: 'irmachine',
         path: '/ir',
         component: aircondition,
+    }, {
+        name: 'irmachine2',
+        path: '/ir2',
+        component: aircondition2,
     },
     {
         name: 'weather',

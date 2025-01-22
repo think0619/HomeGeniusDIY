@@ -3,6 +3,12 @@
         <van-nav-bar :title="contentTitle" left-text="" left-arrow @click-left="onClickLeft"></van-nav-bar>
     </div>
     <div class="control">
+        <van-cell title="单元格" is-link value="空调==关"  @click="openActionsheet('airPowerShow');"/>
+        <van-cell title="单元格" is-link value="空调==制冷"   @click="openActionsheet('airColdShow');"/>
+        <van-cell title="单元格" is-link value="空调==制热" @click="openActionsheet('airHotShow');"/>
+        <van-cell title="单元格" is-link value="蓝牙音箱"  @click="openActionsheet('polkSpeakerShow');"/>
+
+
 
         <div style="margin-top: 20px;" class="content custombtn">
             <div class="sysname"><span>Air Condition</span></div>
@@ -106,6 +112,12 @@ export default {
             mqttclient: null,
             hotimg:hotimg,
             coldimg:coldimg,
+
+            airPowerShow:false,
+            airColdShow:false,
+            airHotShow:false,
+            polkSpeakerShow:false, 
+
         };
     },
     computed: {
